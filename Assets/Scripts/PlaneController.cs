@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class PlaneController : MonoBehaviour
 {
-    //当前向前、左右移动速度和初始向前、左右移动速度.
+    //自動前進速度、左右移动速度和初始向前、上下左右移動策度.
     public float forwordMoveSpeed;
     public float moveSpeed;
     public float initialFMSpeed;
@@ -43,9 +43,11 @@ public class PlaneController : MonoBehaviour
     void Update()
     {
         instance = this;
-        //自动向前行驶.
+
+        //自動前進
         transform.Translate(forwordMoveSpeed * Time.deltaTime, 0,0);
-        //move.
+        
+        //上下左右移動
         if (Input.GetKey(KeyCode.W))
         {
             transform.Translate(0, moveSpeed * Time.deltaTime*0.5f, 0);
