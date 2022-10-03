@@ -53,6 +53,7 @@ public class PlaneController : MonoBehaviour
             transform.Translate(0, moveSpeed * Time.deltaTime*0.5f, 0);
             if (planePrefab.transform.localEulerAngles.z<30|| planePrefab.transform.localEulerAngles.z > 329)
             {
+                //回転させる
                 if (planePrefab.transform.rotation.z > 0)
                 {
                     planePrefab.transform.Rotate(0, 0, rotateSpeed * Time.deltaTime, Space.World);
@@ -110,7 +111,7 @@ public class PlaneController : MonoBehaviour
             planePrefab.transform.Rotate(0, rotateSpeed * Time.deltaTime, 0 * returenRotateSpeed);
         }
 
-        //rotate.
+        //回転軸をもとに戻す処理
         if (!Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.S))
         {
 
