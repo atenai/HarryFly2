@@ -1,22 +1,20 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class PlaneController : MonoBehaviour
 {
-    //自動前進速度、左右移动速度和初始向前、上下左右移動策度.
+    //自動前進速度、左右回転速度、上下左右移動速度
     public float forwordMoveSpeed;
     public float moveSpeed;
     public float initialFMSpeed;
     public float initialMSpeed;
-    //旋转机身时候速度
+    //機体回転速度
     public float rotateSpeed;
     public float returenRotateSpeed;
-    private float cameraSpeed=3.5f;
+    private float cameraSpeed = 3.5f;
     private float changeFWSpeed = 2f;
     private float changeMSpeed = 1f;
-    //改变油量.
+    //燃料
     private float changBrustSlider = 0.3f;
 
     private bool canObstacle = true;
@@ -25,13 +23,11 @@ public class PlaneController : MonoBehaviour
     public Slider brustSlider;
     public GameObject mainCamera;
 
-    //加速拖尾特效/碰撞特效.
+    //加速/衝突効果
     public GameObject paticlePrefab;
     public GameObject boom;
 
     public static PlaneController instance;
-
-    
 
     private void Start()
     {
@@ -45,13 +41,13 @@ public class PlaneController : MonoBehaviour
         instance = this;
 
         //自動前進
-        transform.Translate(forwordMoveSpeed * Time.deltaTime, 0,0);
-        
+        transform.Translate(forwordMoveSpeed * Time.deltaTime, 0, 0);
+
         //上下左右移動
         if (Input.GetKey(KeyCode.W))
         {
-            transform.Translate(0, moveSpeed * Time.deltaTime*0.5f, 0);
-            if (planePrefab.transform.localEulerAngles.z<30|| planePrefab.transform.localEulerAngles.z > 329)
+            transform.Translate(0, moveSpeed * Time.deltaTime * 0.5f, 0);
+            if (planePrefab.transform.localEulerAngles.z < 30 || planePrefab.transform.localEulerAngles.z > 329)
             {
                 //回転させる
                 if (planePrefab.transform.rotation.z > 0)
@@ -59,7 +55,7 @@ public class PlaneController : MonoBehaviour
                     planePrefab.transform.Rotate(0, 0, rotateSpeed * Time.deltaTime, Space.World);
                 }
                 else planePrefab.transform.Rotate(0, 0, rotateSpeed * Time.deltaTime * returenRotateSpeed, Space.World);
-            }  
+            }
         }
 
         if (Input.GetKey(KeyCode.S))
@@ -77,7 +73,7 @@ public class PlaneController : MonoBehaviour
 
         if (Input.GetKey(KeyCode.D))
         {
-            transform.Translate( 0, 0, -moveSpeed * Time.deltaTime);
+            transform.Translate(0, 0, -moveSpeed * Time.deltaTime);
             if (planePrefab.transform.localEulerAngles.x < 31 || planePrefab.transform.localEulerAngles.x > 330)
             {
                 if (planePrefab.transform.rotation.x < 0)
@@ -91,17 +87,17 @@ public class PlaneController : MonoBehaviour
         if (Input.GetKey(KeyCode.A))
         {
             transform.Translate(0, 0, moveSpeed * Time.deltaTime);
-            if (planePrefab.transform.localEulerAngles.x < 30 || planePrefab.transform.localEulerAngles.x > 329) 
+            if (planePrefab.transform.localEulerAngles.x < 30 || planePrefab.transform.localEulerAngles.x > 329)
             {
                 if (planePrefab.transform.rotation.x > 0)
                 {
                     planePrefab.transform.Rotate(rotateSpeed * Time.deltaTime, 0, 0, Space.World);
                 }
                 else planePrefab.transform.Rotate(rotateSpeed * Time.deltaTime * returenRotateSpeed, 0, 0, Space.World);
-            }  
+            }
         }
 
-  
+
         if (planePrefab.transform.rotation.y > 0)
         {
             planePrefab.transform.Rotate(0, -rotateSpeed * Time.deltaTime, 0 * returenRotateSpeed);
@@ -137,7 +133,7 @@ public class PlaneController : MonoBehaviour
             }
         }
 
-        //加速.
+        //加速
         if (canObstacle == true)
         {
             if (Input.GetKey(KeyCode.Space) && brustSlider.value > 0)
@@ -155,10 +151,10 @@ public class PlaneController : MonoBehaviour
                 ChangeMSpeed(-changeMSpeed);
                 ChangeXOfCamera(cameraSpeed * Time.deltaTime * 2);
             }
-        }     
+        }
     }
 
-    //改变前进的速度.
+    //加速
     public void ChangeFMSpeed(float value)
     {
         forwordMoveSpeed += value;
@@ -172,7 +168,7 @@ public class PlaneController : MonoBehaviour
         }
     }
 
-    //改变左右的速度.
+    //左右のスピードを変える
     public void ChangeMSpeed(float value)
     {
         moveSpeed += value;
@@ -186,7 +182,7 @@ public class PlaneController : MonoBehaviour
         }
     }
 
-    //加速时，改变相机和飞机的距离.
+    //加速時のカメラと機体の距離を変更する
     public void ChangeXOfCamera(float value)
     {
         mainCamera.transform.Translate(value, 0, 0, Space.World);
@@ -200,7 +196,7 @@ public class PlaneController : MonoBehaviour
         }
     }
 
-    //改变加速燃料值.
+    //燃料の値を変更
     public void ChangeBrustSlider(float value)
     {
         brustSlider.value += value;
@@ -214,22 +210,21 @@ public class PlaneController : MonoBehaviour
         }
     }
 
-    //撞到建筑物.
     public void Obstacle()
     {
         canObstacle = false;
-        forwordMoveSpeed = initialFMSpeed*5;
+        forwordMoveSpeed = initialFMSpeed * 5;
         forwordMoveSpeed = -forwordMoveSpeed;
         Invoke("ObstacleOver", 0.5f);
         ChangeXOfCamera(-cameraSpeed * Time.deltaTime);
-        Instantiate(boom,transform.position,Quaternion.identity);
+        Instantiate(boom, transform.position, Quaternion.identity);
     }
-   
+
     public void ObstacleOver()
     {
         forwordMoveSpeed = initialFMSpeed;
         forwordMoveSpeed = -forwordMoveSpeed;
         canObstacle = true;
-        ChangeXOfCamera(cameraSpeed * Time.deltaTime*2);
+        ChangeXOfCamera(cameraSpeed * Time.deltaTime * 2);
     }
 }

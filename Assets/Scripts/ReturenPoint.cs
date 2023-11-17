@@ -1,16 +1,13 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ReturenPoint : MonoBehaviour
 {
     public GameObject player;
-    private Transform returnPoint;
-    public int returnPointNumber=0;
+    Transform returnPoint;
+    public int returnPointNumber = 0;
 
-    private void OnTriggerEnter(Collider other)
+    void OnTriggerEnter(Collider other)
     {
-
         if (other.tag == "Player")
         {
             changNumber();

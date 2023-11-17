@@ -1,21 +1,19 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    //UI.
+    //UI
     public GameObject gameClearUI;
     public GameObject gameOverUI;
-    //self.
+    //self
     public static GameManager instance;
-    //timer.
+    //timer
     public Text timer;
-    private float leftTime=30;
-    //游戏结束没.
-    private bool gameOver = false;
+    float leftTime = 30;
+    //ゲームオーバー
+    bool gameOver = false;
 
     void Start()
     {
@@ -37,12 +35,11 @@ public class GameManager : MonoBehaviour
         }
 
         leftTime -= Time.deltaTime;
-        timer.text = "残り時間："+leftTime.ToString("f1");
+        timer.text = "残り時間：" + leftTime.ToString("f1");
         if (leftTime <= 0)
         {
             GameOver();
         }
-
     }
 
     public void Replay()
@@ -51,7 +48,7 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene("PlayScene");
     }
 
-    //To menu.
+    //To menu
     public void ToMenu()
     {
         Time.timeScale = 1;
@@ -83,6 +80,5 @@ public class GameManager : MonoBehaviour
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
         }
-
     }
 }
