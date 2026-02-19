@@ -1,3 +1,4 @@
 {
-    "dotnet.preferCSharpExtension": true
+	"dotnet.preferCSharpExtension": true,
+	"dotnet.defaultSolution": "Library/com.singularitygroup.hotreload/Solution/HarryFly2_Git.sln"
 }
