@@ -1,16 +1,15 @@
 using UnityEngine;
 
+/// <summary>
+/// 障害物
+/// </summary>
 public class ObstacleObject : MonoBehaviour
 {
-    public GameObject player;
-    public ReturenPoint returnController;
-
-    void OnTriggerEnter(Collider other)
-    {
-        if (other.tag == "Player")
-        {
-            player.GetComponent<PlaneController>().Obstacle();
-            returnController.ReturnPoint();
-        }
-    }
+	void OnTriggerEnter(Collider other)
+	{
+		if (other.tag == "Player")
+		{
+			GameManager.SingletonInstance.GameOver();
+		}
+	}
 }

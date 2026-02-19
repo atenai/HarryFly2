@@ -8020,7 +8020,7 @@ GameObject:
   - component: {fileID: 994514965}
   - component: {fileID: 994514966}
   m_Layer: 0
-  m_Name: ReturnPoint
+  m_Name: CheckPoints
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11277,6 +11277,7 @@ MonoBehaviour:
   gameClearUI: {fileID: 1689637234}
   gameOverUI: {fileID: 397674802}
   timer: {fileID: 231215711}
+  totalTime: 30
 --- !u!4 &1774813012
 Transform:
   m_ObjectHideFlags: 0
@@ -12269,7 +12270,7 @@ PrefabInstance:
     - target: {fileID: 1262062587174175230, guid: d0aa497deff96624ea1f84f07cdf4d73,
         type: 3}
       propertyPath: m_Name
-      value: CheckPoint
+      value: CheckPoint (0)
       objectReference: {fileID: 0}
     - target: {fileID: 1262062587174175231, guid: d0aa497deff96624ea1f84f07cdf4d73,
         type: 3}

@@ -2,83 +2,103 @@
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+/// <summary>
+/// ゲームマネージャー
+/// </summary>
 public class GameManager : MonoBehaviour
 {
-    //UI
-    public GameObject gameClearUI;
-    public GameObject gameOverUI;
-    //self
-    public static GameManager instance;
-    //timer
-    public Text timer;
-    float leftTime = 30;
-    //ゲームオーバー
-    bool gameOver = false;
+	private static GameManager singletonInstance = null;
+	/// <summary>シングルトンで作成（ゲーム中に１つのみにする）</summary>
+	public static GameManager SingletonInstance => singletonInstance;
 
-    void Start()
-    {
-        Screen.SetResolution(1920, 1080, true, 60);
-        gameClearUI.SetActive(false);
-        gameOverUI.SetActive(false);
+	//UI
+	public GameObject gameClearUI;
+	public GameObject gameOverUI;
+	//timer
+	public Text timer;
+	[Tooltip("トータルの制限時間")]
+	[SerializeField] float totalTime = 30;
 
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
-    }
+	void Awake()
+	{
+		//staticな変数instanceはメモリ領域は確保されていますが、初回では中身が入っていないので、中身を入れます。
+		if (singletonInstance == null)
+		{
+			singletonInstance = this;//thisというのは自分自身のインスタンスという意味になります。この場合、Playerのインスタンスという意味になります。
+		}
+		else
+		{
+			Destroy(this.gameObject);//中身がすでに入っていた場合、自身のインスタンスがくっついているゲームオブジェクトを破棄します。
+		}
+	}
 
-    void Update()
-    {
-        instance = this;
+	void Start()
+	{
+		Screen.SetResolution(1920, 1080, true, 60);
 
-        if (Input.GetKey(KeyCode.Escape))
-        {
-            Application.Quit();
-        }
+		gameClearUI.SetActive(false);
+		gameOverUI.SetActive(false);
 
-        leftTime -= Time.deltaTime;
-        timer.text = "残り時間：" + leftTime.ToString("f1");
-        if (leftTime <= 0)
-        {
-            GameOver();
-        }
-    }
+		Cursor.visible = false;
+		Cursor.lockState = CursorLockMode.Locked;
+	}
 
-    public void Replay()
-    {
-        Time.timeScale = 1;
-        SceneManager.LoadScene("PlayScene");
-    }
+	void Update()
+	{
+		if (Input.GetKey(KeyCode.Escape))
+		{
+			Application.Quit();
+		}
 
-    //To menu
-    public void ToMenu()
-    {
-        Time.timeScale = 1;
-        SceneManager.LoadScene("TitleScene");
-    }
+		totalTime -= Time.deltaTime;
+		timer.text = "残り時間：" + totalTime.ToString("f1");
+		if (totalTime <= 0)
+		{
+			GameOver();
+		}
+	}
 
-    public void changeTimer(float value)
-    {
-        leftTime += value;
-    }
+	public void Replay()
+	{
+		Time.timeScale = 1;
+		SceneManager.LoadScene("PlayScene");
+	}
 
-    public void GameClear()
-    {
-        if (gameOver == false)
-        {
-            gameOver = true;
-            gameClearUI.SetActive(true);
-            Cursor.visible = true;
-            Cursor.lockState = CursorLockMode.None;
-        }
+	//To menu
+	public void ToMenu()
+	{
+		Time.timeScale = 1;
+		SceneManager.LoadScene("TitleScene");
+	}
 
-    }
-    public void GameOver()
-    {
-        if (gameOver == false)
-        {
-            gameOver = true;
-            gameOverUI.SetActive(true);
-            Cursor.visible = true;
-            Cursor.lockState = CursorLockMode.None;
-        }
-    }
+	/// <summary>
+	/// 時間を追加
+	/// </summary>
+	/// <param name="value">追加量</param>
+	public void AddTimer(float value)
+	{
+		totalTime = totalTime + value;
+	}
+
+	/// <summary>
+	/// ゲームクリアー
+	/// </summary>
+	public void GameClear()
+	{
+		gameClearUI.SetActive(true);
+
+		Cursor.visible = true;
+		Cursor.lockState = CursorLockMode.None;
+	}
+
+	/// <summary>
+	/// ゲームオーバー
+	/// </summary>
+	public void GameOver()
+	{
+		gameOverUI.SetActive(true);
+
+		Cursor.visible = true;
+		Cursor.lockState = CursorLockMode.None;
+	}
 }

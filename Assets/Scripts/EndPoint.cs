@@ -1,12 +1,15 @@
 ﻿using UnityEngine;
 
+/// <summary>
+/// ゴール
+/// </summary>
 public class EndPoint : MonoBehaviour
 {
-    void OnTriggerEnter(Collider other)
-    {
-        if (other.tag == "Player")
-        {
-            GameManager.instance.GameClear();
-        }
-    }
+	void OnTriggerEnter(Collider other)
+	{
+		if (other.tag == "Player")
+		{
+			GameManager.SingletonInstance.GameClear();
+		}
+	}
 }
