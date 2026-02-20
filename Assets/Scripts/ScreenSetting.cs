@@ -9,10 +9,8 @@ public class ScreenSetting : MonoBehaviour
 {
 	void Start()
 	{
-		//Screen.SetResolution(1920, 1080, true, 60);
-
-		//Cursor.visible = false;
-		//Cursor.lockState = CursorLockMode.Locked;
+		// 画面の向きを縦のみに設定
+		Screen.orientation = ScreenOrientation.Portrait;
 	}
 
 	void Update()
