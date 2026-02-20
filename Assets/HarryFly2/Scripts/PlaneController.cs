@@ -13,6 +13,8 @@ public class PlaneController : MonoBehaviour
 	[SerializeField] GameObject planePrefab;
 	[Tooltip("メインカメラ")]
 	[SerializeField] GameObject mainCamera;
+	[Tooltip("リジッドボディ")]
+	[SerializeField] Rigidbody rb;
 
 	[Tooltip("自動前進速度")]
 	[SerializeField] float forwordMoveSpeed;
@@ -64,112 +66,70 @@ public class PlaneController : MonoBehaviour
 	{
 		initialFMSpeed = forwordMoveSpeed;
 		initialMSpeed = moveSpeed;
+
+		if (rb == null)
+		{
+			rb = GetComponent<Rigidbody>();
+		}
 	}
 
 	void Update()
 	{
-		//自動前進
-		this.transform.Translate(forwordMoveSpeed * Time.deltaTime, 0, 0);
+		float joystickHorizontal = UI.SingletonInstance.FloatingJoystick.Horizontal;
+		float joystickVertical = UI.SingletonInstance.FloatingJoystick.Vertical;
+		Debug.Log("横の移動量 : " + joystickHorizontal);
+		Debug.Log("縦の移動量 : " + joystickVertical);
 
-		//上下左右移動
-		if (Input.GetKey(KeyCode.W))
+		//上下左右回転
+		if (Input.GetKey(KeyCode.W) || 0.1f < joystickVertical)
 		{
-			this.transform.Translate(0, moveSpeed * Time.deltaTime * 0.5f, 0);
-			if (planePrefab.transform.localEulerAngles.z < 30 || planePrefab.transform.localEulerAngles.z > 329)
-			{
-				//回転させる
-				if (planePrefab.transform.rotation.z > 0)
-				{
-					planePrefab.transform.Rotate(0, 0, rotateSpeed * Time.deltaTime, Space.World);
-				}
-				else
-				{
-					planePrefab.transform.Rotate(0, 0, rotateSpeed * Time.deltaTime * returenRotateSpeed, Space.World);
-				}
-			}
+			planePrefab.transform.Rotate(-rotateSpeed * Time.deltaTime * returenRotateSpeed, 0, 0, Space.World);
+		}
+		else if (Input.GetKey(KeyCode.S) || joystickVertical < -0.1f)
+		{
+			planePrefab.transform.Rotate(rotateSpeed * Time.deltaTime * returenRotateSpeed, 0, 0, Space.World);
 		}
 
-		if (Input.GetKey(KeyCode.S))
+		if (Input.GetKey(KeyCode.D) || 0.1f < joystickHorizontal)
 		{
-			this.transform.Translate(0, -moveSpeed * Time.deltaTime * 0.5f, 0);
-			if (planePrefab.transform.localEulerAngles.z < 31 || planePrefab.transform.localEulerAngles.z > 330)
-			{
-				if (planePrefab.transform.rotation.z < 0)
-				{
-					planePrefab.transform.Rotate(0, 0, -rotateSpeed * Time.deltaTime, Space.World);
-				}
-				else
-				{
-					planePrefab.transform.Rotate(0, 0, -rotateSpeed * Time.deltaTime * returenRotateSpeed, Space.World);
-				}
-			}
+			planePrefab.transform.Rotate(0, 0, -rotateSpeed * Time.deltaTime * returenRotateSpeed, Space.World);
 		}
-
-		if (Input.GetKey(KeyCode.D))
+		else if (Input.GetKey(KeyCode.A) || joystickHorizontal < -0.1f)
 		{
-			this.transform.Translate(0, 0, -moveSpeed * Time.deltaTime);
-			if (planePrefab.transform.localEulerAngles.x < 31 || planePrefab.transform.localEulerAngles.x > 330)
-			{
-				if (planePrefab.transform.rotation.x < 0)
-				{
-					planePrefab.transform.Rotate(-rotateSpeed * Time.deltaTime, 0, 0, Space.World);
-				}
-				else
-				{
-					planePrefab.transform.Rotate(-rotateSpeed * Time.deltaTime * returenRotateSpeed, 0, 0, Space.World);
-				}
-			}
-		}
-
-		if (Input.GetKey(KeyCode.A))
-		{
-			this.transform.Translate(0, 0, moveSpeed * Time.deltaTime);
-			if (planePrefab.transform.localEulerAngles.x < 30 || planePrefab.transform.localEulerAngles.x > 329)
-			{
-				if (planePrefab.transform.rotation.x > 0)
-				{
-					planePrefab.transform.Rotate(rotateSpeed * Time.deltaTime, 0, 0, Space.World);
-				}
-				else
-				{
-					planePrefab.transform.Rotate(rotateSpeed * Time.deltaTime * returenRotateSpeed, 0, 0, Space.World);
-				}
-			}
+			planePrefab.transform.Rotate(0, 0, rotateSpeed * Time.deltaTime * returenRotateSpeed, Space.World);
 		}
 
 
-		if (planePrefab.transform.rotation.y > 0)
+		if (0 < planePrefab.transform.rotation.y)
 		{
-			planePrefab.transform.Rotate(0, -rotateSpeed * Time.deltaTime, 0 * returenRotateSpeed);
+			planePrefab.transform.Rotate(0, -rotateSpeed * Time.deltaTime * returenRotateSpeed, 0, Space.World);
 		}
 		if (planePrefab.transform.rotation.y < 0)
 		{
-			planePrefab.transform.Rotate(0, rotateSpeed * Time.deltaTime, 0 * returenRotateSpeed);
+			planePrefab.transform.Rotate(0, rotateSpeed * Time.deltaTime * returenRotateSpeed, 0, Space.World);
 		}
 
 		//回転軸をもとに戻す処理
 		if (!Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.S))
 		{
-
-			if (planePrefab.transform.rotation.z > 0)
-			{
-				planePrefab.transform.Rotate(0, 0, -rotateSpeed * Time.deltaTime * returenRotateSpeed);
-			}
-			if (planePrefab.transform.rotation.z < 0)
-			{
-				planePrefab.transform.Rotate(0, 0, rotateSpeed * Time.deltaTime * returenRotateSpeed);
-			}
-
-		}
-		if (!Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D))
-		{
-			if (planePrefab.transform.rotation.x > 0)
+			if (0 < planePrefab.transform.rotation.x)
 			{
 				planePrefab.transform.Rotate(-rotateSpeed * Time.deltaTime * returenRotateSpeed, 0, 0);
 			}
 			if (planePrefab.transform.rotation.x < 0)
 			{
 				planePrefab.transform.Rotate(rotateSpeed * Time.deltaTime * returenRotateSpeed, 0, 0);
+			}
+		}
+		if (!Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D))
+		{
+			if (0 < planePrefab.transform.rotation.z)
+			{
+				planePrefab.transform.Rotate(0, 0, -rotateSpeed * Time.deltaTime * returenRotateSpeed);
+			}
+			if (planePrefab.transform.rotation.z < 0)
+			{
+				planePrefab.transform.Rotate(0, 0, rotateSpeed * Time.deltaTime * returenRotateSpeed);
 			}
 		}
 
@@ -188,6 +148,33 @@ public class PlaneController : MonoBehaviour
 			ChangeFMSpeed(-0.5f * changeFWSpeed);
 			ChangeMSpeed(-changeMSpeed);
 			ChangeXOfCamera(cameraSpeed * Time.deltaTime * 2);
+		}
+	}
+
+	void FixedUpdate()
+	{
+		// 移動は Rigidbody の速度で制御する
+		float joystickHorizontal = UI.SingletonInstance.FloatingJoystick.Horizontal;
+		float joystickVertical = UI.SingletonInstance.FloatingJoystick.Vertical;
+
+		float keyHorizontal = 0f;
+		if (Input.GetKey(KeyCode.D)) keyHorizontal += 1f;
+		if (Input.GetKey(KeyCode.A)) keyHorizontal -= 1f;
+		float keyVertical = 0f;
+		if (Input.GetKey(KeyCode.W)) keyVertical += 1f;
+		if (Input.GetKey(KeyCode.S)) keyVertical -= 1f;
+
+		float horizontal = Mathf.Clamp(joystickHorizontal + keyHorizontal, -1f, 1f);
+		float vertical = Mathf.Clamp(joystickVertical + keyVertical, -1f, 1f);
+
+		Vector3 vel = Vector3.zero;
+		vel += transform.forward * forwordMoveSpeed; // 自動前進
+		vel += Vector3.up * (vertical * moveSpeed * 0.5f); // 上下移動（Y軸）
+		vel += transform.right * (horizontal * moveSpeed); // 左右（A/D）
+
+		if (rb != null)
+		{
+			rb.velocity = vel;
 		}
 	}
 
@@ -222,17 +209,17 @@ public class PlaneController : MonoBehaviour
 	//加速時のカメラと機体の距離を変更する
 	public void ChangeXOfCamera(float value)
 	{
-		mainCamera.transform.Translate(value, 0, 0, Space.World);
+		// mainCamera.transform.Translate(value, 0, 0, Space.World);
 
-		if (mainCamera.transform.localPosition.x >= -2.5f)
-		{
-			mainCamera.transform.localPosition = new Vector3(-2.5f, 0.5f, 0);
-		}
+		// if (mainCamera.transform.localPosition.x >= -2.5f)
+		// {
+		// 	mainCamera.transform.localPosition = new Vector3(-2.5f, 0.5f, 0);
+		// }
 
-		if (mainCamera.transform.localPosition.x <= -7f)
-		{
-			mainCamera.transform.localPosition = new Vector3(-7f, 0.5f, 0);
-		}
+		// if (mainCamera.transform.localPosition.x <= -7f)
+		// {
+		// 	mainCamera.transform.localPosition = new Vector3(-7f, 0.5f, 0);
+		// }
 	}
 
 	/// <summary>
@@ -242,5 +229,46 @@ public class PlaneController : MonoBehaviour
 	public void AddFuel(float value)
 	{
 		currentFuel = currentFuel + value;
+	}
+
+	void OnGUI()
+	{
+#if UNITY_EDITOR//Unityエディター上での処理
+
+		GUIStyle styleGreen = new GUIStyle();
+		styleGreen.fontSize = 30;
+		GUIStyleState styleStateGreen = new GUIStyleState();
+		styleStateGreen.textColor = Color.green;
+		styleGreen.normal = styleStateGreen;
+
+		GUIStyle styleRed = new GUIStyle();
+		styleRed.fontSize = 30;
+		GUIStyleState styleStateRed = new GUIStyleState();
+		styleStateRed.textColor = Color.red;
+		styleRed.normal = styleStateRed;
+
+		GUIStyle styleBlack = new GUIStyle();
+		styleBlack.fontSize = 30;
+		GUIStyleState styleStateBlack = new GUIStyleState();
+		styleStateBlack.textColor = Color.black;
+		styleBlack.normal = styleStateBlack;
+
+		GUIStyle styleYellow = new GUIStyle();
+		styleYellow.fontSize = 30;
+		GUIStyleState styleStateYellow = new GUIStyleState();
+		styleStateYellow.textColor = Color.yellow;
+		styleYellow.normal = styleStateYellow;
+
+		int lineHeight = 50;
+
+		float joystickHorizontal = UI.SingletonInstance.FloatingJoystick.Horizontal;
+		float joystickVertical = UI.SingletonInstance.FloatingJoystick.Vertical;
+		GUI.Box(new Rect(10, 0 * lineHeight, 100, 50), "inputHorizontal", styleGreen);
+		GUI.Box(new Rect(350, 0 * lineHeight, 100, 50), joystickHorizontal.ToString(), styleGreen);
+		GUI.Box(new Rect(10, 1 * lineHeight, 100, 50), "inputVertical", styleGreen);
+		GUI.Box(new Rect(350, 1 * lineHeight, 100, 50), joystickVertical.ToString(), styleGreen);
+		GUI.Box(new Rect(10, 5 * lineHeight, 100, 50), "rb.velocity", styleGreen);
+		GUI.Box(new Rect(350, 5 * lineHeight, 100, 50), rb.velocity.ToString(), styleGreen);
+#endif //終了  
 	}
 }

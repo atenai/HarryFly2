@@ -19,6 +19,10 @@ public class UI : MonoBehaviour
 	[Tooltip("燃料スライダー")]
 	[SerializeField] Slider brustSlider;
 
+	[Tooltip("ジョイスティック")]
+	[SerializeField] FloatingJoystick floatingJoystick;
+	public FloatingJoystick FloatingJoystick => floatingJoystick;
+
 	void Awake()
 	{
 		//staticな変数instanceはメモリ領域は確保されていますが、初回では中身が入っていないので、中身を入れます。
