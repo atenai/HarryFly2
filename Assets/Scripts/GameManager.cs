@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 /// <summary>
 /// ゲームマネージャー
@@ -11,11 +10,6 @@ public class GameManager : MonoBehaviour
 	/// <summary>シングルトンで作成（ゲーム中に１つのみにする）</summary>
 	public static GameManager SingletonInstance => singletonInstance;
 
-	//UI
-	public GameObject gameClearUI;
-	public GameObject gameOverUI;
-	//timer
-	public Text timer;
 	[Tooltip("トータルの制限時間")]
 	[SerializeField] float totalTime = 30;
 
@@ -34,45 +28,26 @@ public class GameManager : MonoBehaviour
 
 	void Start()
 	{
-		Screen.SetResolution(1920, 1080, true, 60);
 
-		gameClearUI.SetActive(false);
-		gameOverUI.SetActive(false);
-
-		Cursor.visible = false;
-		Cursor.lockState = CursorLockMode.Locked;
 	}
 
 	void Update()
 	{
-		if (Input.GetKey(KeyCode.Escape))
-		{
-			Application.Quit();
-		}
+		TimerSystem();
+	}
 
+	void TimerSystem()
+	{
 		totalTime -= Time.deltaTime;
-		timer.text = "残り時間：" + totalTime.ToString("f1");
+		UI.SingletonInstance.TimerText.text = "残り時間：" + totalTime.ToString("f1");
 		if (totalTime <= 0)
 		{
 			GameOver();
 		}
 	}
 
-	public void Replay()
-	{
-		Time.timeScale = 1;
-		SceneManager.LoadScene("PlayScene");
-	}
-
-	//To menu
-	public void ToMenu()
-	{
-		Time.timeScale = 1;
-		SceneManager.LoadScene("TitleScene");
-	}
-
 	/// <summary>
-	/// 時間を追加
+	/// 時間の追加
 	/// </summary>
 	/// <param name="value">追加量</param>
 	public void AddTimer(float value)
@@ -85,10 +60,7 @@ public class GameManager : MonoBehaviour
 	/// </summary>
 	public void GameClear()
 	{
-		gameClearUI.SetActive(true);
-
-		Cursor.visible = true;
-		Cursor.lockState = CursorLockMode.None;
+		SceneManager.LoadScene("GameClear");
 	}
 
 	/// <summary>
@@ -96,9 +68,6 @@ public class GameManager : MonoBehaviour
 	/// </summary>
 	public void GameOver()
 	{
-		gameOverUI.SetActive(true);
-
-		Cursor.visible = true;
-		Cursor.lockState = CursorLockMode.None;
+		SceneManager.LoadScene("GameOver");
 	}
 }

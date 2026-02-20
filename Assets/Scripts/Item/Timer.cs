@@ -5,11 +5,14 @@ using UnityEngine;
 /// </summary>
 public class Timer : MonoBehaviour
 {
+	[Tooltip("追加時間")]
+	[SerializeField] float value = 5;
+
 	void OnTriggerEnter(Collider other)
 	{
 		if (other.tag == "Player")
 		{
-			GameManager.SingletonInstance.AddTimer(5);
+			GameManager.SingletonInstance.AddTimer(value);
 			Destroy(gameObject);
 		}
 	}

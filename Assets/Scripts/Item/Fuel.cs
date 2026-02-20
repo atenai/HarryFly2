@@ -5,11 +5,14 @@ using UnityEngine;
 /// </summary>
 public class Fuel : MonoBehaviour
 {
+	[Tooltip("追加燃料")]
+	[SerializeField] float value = 50;
+
 	void OnTriggerEnter(Collider other)
 	{
 		if (other.tag == "Player")
 		{
-			PlaneController.SingletonInstance.ChangeBrustSlider(0.5f);
+			PlaneController.SingletonInstance.AddFuel(value);
 			Destroy(gameObject);
 		}
 	}

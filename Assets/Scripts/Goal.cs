@@ -3,7 +3,7 @@
 /// <summary>
 /// ゴール
 /// </summary>
-public class EndPoint : MonoBehaviour
+public class Goal : MonoBehaviour
 {
 	void OnTriggerEnter(Collider other)
 	{

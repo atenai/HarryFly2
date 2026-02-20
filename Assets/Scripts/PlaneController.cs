@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 
 /// <summary>
 /// 飛行機コントローラー
@@ -9,6 +8,11 @@ public class PlaneController : MonoBehaviour
 	private static PlaneController singletonInstance = null;
 	/// <summary>シングルトンで作成（ゲーム中に１つのみにする）</summary>
 	public static PlaneController SingletonInstance => singletonInstance;
+
+	[Tooltip("飛行機のモデル")]
+	[SerializeField] GameObject planePrefab;
+	[Tooltip("メインカメラ")]
+	[SerializeField] GameObject mainCamera;
 
 	[Tooltip("自動前進速度")]
 	[SerializeField] float forwordMoveSpeed;
@@ -23,14 +27,21 @@ public class PlaneController : MonoBehaviour
 	private float cameraSpeed = 3.5f;
 	private float changeFWSpeed = 2f;
 	private float changeMSpeed = 1f;
-	//燃料
-	private float changBrustSlider = 0.3f;
 
-	private bool canObstacle = true;
+	/// <summary>
+	/// 現在の燃料
+	/// </summary>
+	float currentFuel = 100f;
+	public float CurrentFuel => currentFuel;
 
-	public GameObject planePrefab;
-	public Slider brustSlider;
-	public GameObject mainCamera;
+	/// <summary>
+	/// 燃料の最大値
+	/// </summary>
+	float maxFuel = 100;
+	public float MaxFuel => maxFuel;
+
+	[Tooltip("燃料消費量")]
+	[SerializeField] float fuelConsumption = 1;
 
 	//加速/衝突効果
 	public GameObject paticlePrefab;
@@ -51,7 +62,6 @@ public class PlaneController : MonoBehaviour
 
 	void Start()
 	{
-		brustSlider.value = 1;
 		initialFMSpeed = forwordMoveSpeed;
 		initialMSpeed = moveSpeed;
 	}
@@ -164,23 +174,20 @@ public class PlaneController : MonoBehaviour
 		}
 
 		//加速
-		if (canObstacle == true)
+		if (Input.GetKey(KeyCode.Space) && 0 < currentFuel)
 		{
-			if (Input.GetKey(KeyCode.Space) && brustSlider.value > 0)
-			{
-				paticlePrefab.SetActive(true);
-				ChangeFMSpeed(changeFWSpeed);
-				ChangeMSpeed(changeMSpeed);
-				ChangeBrustSlider(-changBrustSlider * Time.deltaTime);
-				ChangeXOfCamera(-cameraSpeed * Time.deltaTime);
-			}
-			else
-			{
-				paticlePrefab.SetActive(false);
-				ChangeFMSpeed(-.5f * changeFWSpeed);
-				ChangeMSpeed(-changeMSpeed);
-				ChangeXOfCamera(cameraSpeed * Time.deltaTime * 2);
-			}
+			paticlePrefab.SetActive(true);
+			ChangeFMSpeed(changeFWSpeed);
+			ChangeMSpeed(changeMSpeed);
+			ChangeXOfCamera(-cameraSpeed * Time.deltaTime);
+			currentFuel = currentFuel - fuelConsumption;
+		}
+		else
+		{
+			paticlePrefab.SetActive(false);
+			ChangeFMSpeed(-0.5f * changeFWSpeed);
+			ChangeMSpeed(-changeMSpeed);
+			ChangeXOfCamera(cameraSpeed * Time.deltaTime * 2);
 		}
 	}
 
@@ -216,45 +223,24 @@ public class PlaneController : MonoBehaviour
 	public void ChangeXOfCamera(float value)
 	{
 		mainCamera.transform.Translate(value, 0, 0, Space.World);
+
 		if (mainCamera.transform.localPosition.x >= -2.5f)
 		{
 			mainCamera.transform.localPosition = new Vector3(-2.5f, 0.5f, 0);
 		}
+
 		if (mainCamera.transform.localPosition.x <= -7f)
 		{
 			mainCamera.transform.localPosition = new Vector3(-7f, 0.5f, 0);
 		}
 	}
 
-	//燃料の値を変更
-	public void ChangeBrustSlider(float value)
+	/// <summary>
+	/// 燃料の追加
+	/// </summary>
+	/// <param name="value">追加量</param>
+	public void AddFuel(float value)
 	{
-		brustSlider.value += value;
-		if (brustSlider.value > 1)
-		{
-			brustSlider.value = 1;
-		}
-		if (brustSlider.value < 0)
-		{
-			brustSlider.value = 0;
-		}
-	}
-
-	public void Obstacle()
-	{
-		canObstacle = false;
-		forwordMoveSpeed = initialFMSpeed * 5;
-		forwordMoveSpeed = -forwordMoveSpeed;
-		Invoke("ObstacleOver", 0.5f);
-		ChangeXOfCamera(-cameraSpeed * Time.deltaTime);
-		Instantiate(boom, this.transform.position, Quaternion.identity);
-	}
-
-	public void ObstacleOver()
-	{
-		forwordMoveSpeed = initialFMSpeed;
-		forwordMoveSpeed = -forwordMoveSpeed;
-		canObstacle = true;
-		ChangeXOfCamera(cameraSpeed * Time.deltaTime * 2);
+		currentFuel = currentFuel + value;
 	}
 }
