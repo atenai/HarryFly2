@@ -23,9 +23,7 @@ public class PlaneController : MonoBehaviour
 	public float initialFMSpeed;
 	public float initialMSpeed;
 	[Tooltip("機体回転速度")]
-	[SerializeField] float rotateSpeed;
-	[Tooltip("機体元に戻す回転速度")]
-	[SerializeField] float returenRotateSpeed;
+	float rotateSpeed = 40;
 	private float cameraSpeed = 3.5f;
 	private float changeFWSpeed = 2f;
 	private float changeMSpeed = 1f;
@@ -66,70 +64,68 @@ public class PlaneController : MonoBehaviour
 	{
 		initialFMSpeed = forwordMoveSpeed;
 		initialMSpeed = moveSpeed;
-
-		if (rb == null)
-		{
-			rb = GetComponent<Rigidbody>();
-		}
 	}
 
 	void Update()
 	{
 		float joystickHorizontal = UI.SingletonInstance.FloatingJoystick.Horizontal;
 		float joystickVertical = UI.SingletonInstance.FloatingJoystick.Vertical;
-		Debug.Log("横の移動量 : " + joystickHorizontal);
-		Debug.Log("縦の移動量 : " + joystickVertical);
 
-		//上下左右回転
-		if (Input.GetKey(KeyCode.W) || 0.1f < joystickVertical)
+		//上下回転
+		if (0.1f < joystickVertical)
 		{
-			planePrefab.transform.Rotate(-rotateSpeed * Time.deltaTime * returenRotateSpeed, 0, 0, Space.World);
+			Debug.Log("縦の移動量 : " + joystickVertical);
+			planePrefab.transform.Rotate(-rotateSpeed * Time.deltaTime, 0, 0, Space.World);
 		}
-		else if (Input.GetKey(KeyCode.S) || joystickVertical < -0.1f)
+		else if (joystickVertical < -0.1f)
 		{
-			planePrefab.transform.Rotate(rotateSpeed * Time.deltaTime * returenRotateSpeed, 0, 0, Space.World);
-		}
-
-		if (Input.GetKey(KeyCode.D) || 0.1f < joystickHorizontal)
-		{
-			planePrefab.transform.Rotate(0, 0, -rotateSpeed * Time.deltaTime * returenRotateSpeed, Space.World);
-		}
-		else if (Input.GetKey(KeyCode.A) || joystickHorizontal < -0.1f)
-		{
-			planePrefab.transform.Rotate(0, 0, rotateSpeed * Time.deltaTime * returenRotateSpeed, Space.World);
+			Debug.Log("縦の移動量 : " + joystickVertical);
+			planePrefab.transform.Rotate(rotateSpeed * Time.deltaTime, 0, 0, Space.World);
 		}
 
+		//左右回転
+		if (0.1f < joystickHorizontal)
+		{
+			Debug.Log("横の移動量 : " + joystickHorizontal);
+			planePrefab.transform.Rotate(0, 0, -rotateSpeed * Time.deltaTime, Space.World);
+		}
+		else if (joystickHorizontal < -0.1f)
+		{
+			Debug.Log("横の移動量 : " + joystickHorizontal);
+			planePrefab.transform.Rotate(0, 0, rotateSpeed * Time.deltaTime, Space.World);
+		}
 
+		//y軸を元に戻す処理
 		if (0 < planePrefab.transform.rotation.y)
 		{
-			planePrefab.transform.Rotate(0, -rotateSpeed * Time.deltaTime * returenRotateSpeed, 0, Space.World);
+			planePrefab.transform.Rotate(0, -rotateSpeed * Time.deltaTime, 0, Space.World);
 		}
 		if (planePrefab.transform.rotation.y < 0)
 		{
-			planePrefab.transform.Rotate(0, rotateSpeed * Time.deltaTime * returenRotateSpeed, 0, Space.World);
+			planePrefab.transform.Rotate(0, rotateSpeed * Time.deltaTime, 0, Space.World);
 		}
 
 		//回転軸をもとに戻す処理
-		if (!Input.GetKey(KeyCode.W) && !Input.GetKey(KeyCode.S))
+		if (joystickVertical == 0.0f)
 		{
 			if (0 < planePrefab.transform.rotation.x)
 			{
-				planePrefab.transform.Rotate(-rotateSpeed * Time.deltaTime * returenRotateSpeed, 0, 0);
+				planePrefab.transform.Rotate(-rotateSpeed * Time.deltaTime, 0, 0);
 			}
 			if (planePrefab.transform.rotation.x < 0)
 			{
-				planePrefab.transform.Rotate(rotateSpeed * Time.deltaTime * returenRotateSpeed, 0, 0);
+				planePrefab.transform.Rotate(rotateSpeed * Time.deltaTime, 0, 0);
 			}
 		}
-		if (!Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D))
+		if (joystickHorizontal == 0.0f)
 		{
 			if (0 < planePrefab.transform.rotation.z)
 			{
-				planePrefab.transform.Rotate(0, 0, -rotateSpeed * Time.deltaTime * returenRotateSpeed);
+				planePrefab.transform.Rotate(0, 0, -rotateSpeed * Time.deltaTime);
 			}
 			if (planePrefab.transform.rotation.z < 0)
 			{
-				planePrefab.transform.Rotate(0, 0, rotateSpeed * Time.deltaTime * returenRotateSpeed);
+				planePrefab.transform.Rotate(0, 0, rotateSpeed * Time.deltaTime);
 			}
 		}
 
@@ -157,15 +153,8 @@ public class PlaneController : MonoBehaviour
 		float joystickHorizontal = UI.SingletonInstance.FloatingJoystick.Horizontal;
 		float joystickVertical = UI.SingletonInstance.FloatingJoystick.Vertical;
 
-		float keyHorizontal = 0f;
-		if (Input.GetKey(KeyCode.D)) keyHorizontal += 1f;
-		if (Input.GetKey(KeyCode.A)) keyHorizontal -= 1f;
-		float keyVertical = 0f;
-		if (Input.GetKey(KeyCode.W)) keyVertical += 1f;
-		if (Input.GetKey(KeyCode.S)) keyVertical -= 1f;
-
-		float horizontal = Mathf.Clamp(joystickHorizontal + keyHorizontal, -1f, 1f);
-		float vertical = Mathf.Clamp(joystickVertical + keyVertical, -1f, 1f);
+		float horizontal = Mathf.Clamp(joystickHorizontal, -1f, 1f);
+		float vertical = Mathf.Clamp(joystickVertical, -1f, 1f);
 
 		Vector3 vel = Vector3.zero;
 		vel += transform.forward * forwordMoveSpeed; // 自動前進
@@ -263,12 +252,10 @@ public class PlaneController : MonoBehaviour
 
 		float joystickHorizontal = UI.SingletonInstance.FloatingJoystick.Horizontal;
 		float joystickVertical = UI.SingletonInstance.FloatingJoystick.Vertical;
-		GUI.Box(new Rect(10, 0 * lineHeight, 100, 50), "inputHorizontal", styleGreen);
-		GUI.Box(new Rect(350, 0 * lineHeight, 100, 50), joystickHorizontal.ToString(), styleGreen);
-		GUI.Box(new Rect(10, 1 * lineHeight, 100, 50), "inputVertical", styleGreen);
-		GUI.Box(new Rect(350, 1 * lineHeight, 100, 50), joystickVertical.ToString(), styleGreen);
-		GUI.Box(new Rect(10, 5 * lineHeight, 100, 50), "rb.velocity", styleGreen);
-		GUI.Box(new Rect(350, 5 * lineHeight, 100, 50), rb.velocity.ToString(), styleGreen);
+		GUI.Box(new Rect(10, 0 * lineHeight, 100, 50), "inputHorizontal", styleRed);
+		GUI.Box(new Rect(350, 0 * lineHeight, 100, 50), joystickHorizontal.ToString(), styleRed);
+		GUI.Box(new Rect(10, 1 * lineHeight, 100, 50), "inputVertical", styleRed);
+		GUI.Box(new Rect(350, 1 * lineHeight, 100, 50), joystickVertical.ToString(), styleRed);
 #endif //終了  
 	}
 }
