@@ -62,6 +62,7 @@ public class PlaneController : MonoBehaviour
 
 	void Start()
 	{
+		UI.SingletonInstance.AccelerateButton.onClick.AddListener(Accelerate);
 		initialFMSpeed = forwordMoveSpeed;
 		initialMSpeed = moveSpeed;
 	}
@@ -137,8 +138,15 @@ public class PlaneController : MonoBehaviour
 			}
 		}
 
-		//加速
-		if (Input.GetKey(KeyCode.Space) && 0 < currentFuel)
+		Accelerate();
+	}
+
+	/// <summary>
+	/// 加速
+	/// </summary>
+	void Accelerate()
+	{
+		if (UI.SingletonInstance.ButtonDownFlag == true && 0 < currentFuel)
 		{
 			paticlePrefab.SetActive(true);
 			ChangeFMSpeed(changeFWSpeed);

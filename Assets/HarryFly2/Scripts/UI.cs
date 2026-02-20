@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,11 +18,19 @@ public class UI : MonoBehaviour
 	public Text TimerText => timerText;
 
 	[Tooltip("燃料スライダー")]
-	[SerializeField] Slider brustSlider;
+	[SerializeField] Slider fuelSlider;
 
 	[Tooltip("ジョイスティック")]
 	[SerializeField] FloatingJoystick floatingJoystick;
 	public FloatingJoystick FloatingJoystick => floatingJoystick;
+
+	[Tooltip("加速ボタン")]
+	[SerializeField] Button accelerateButton;
+	public Button AccelerateButton => accelerateButton;
+
+	// ボタンを押したときtrue、離したときfalseになるフラグ
+	bool buttonDownFlag = false;
+	public bool ButtonDownFlag => buttonDownFlag;
 
 	void Awake()
 	{
@@ -38,11 +47,25 @@ public class UI : MonoBehaviour
 
 	void Start()
 	{
-		brustSlider.value = PlaneController.SingletonInstance.CurrentFuel / PlaneController.SingletonInstance.MaxFuel;
+		fuelSlider.value = PlaneController.SingletonInstance.CurrentFuel / PlaneController.SingletonInstance.MaxFuel;
 	}
 
 	void Update()
 	{
-		brustSlider.value = PlaneController.SingletonInstance.CurrentFuel / PlaneController.SingletonInstance.MaxFuel;
+		fuelSlider.value = PlaneController.SingletonInstance.CurrentFuel / PlaneController.SingletonInstance.MaxFuel;
+	}
+
+	// ボタンを押したときの処理
+	public void OnButtonDown()
+	{
+		Debug.Log("Down");
+		buttonDownFlag = true;
+	}
+
+	// ボタンを離したときの処理
+	public void OnButtonUp()
+	{
+		Debug.Log("Up");
+		buttonDownFlag = false;
 	}
 }
