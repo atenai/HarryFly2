@@ -11,20 +11,18 @@ public class PlaneController : MonoBehaviour
 
 	[Tooltip("飛行機のモデル")]
 	[SerializeField] GameObject planePrefab;
-	[Tooltip("メインカメラ")]
-	[SerializeField] GameObject mainCamera;
 	[Tooltip("リジッドボディ")]
 	[SerializeField] Rigidbody rb;
 
 	[Tooltip("自動前進速度")]
-	[SerializeField] float forwordMoveSpeed;
+	float forwordMoveSpeed = 100f;
+	public float ForwordMoveSpeed => forwordMoveSpeed;
 	[Tooltip("上下左右移動速度")]
 	[SerializeField] float moveSpeed;
 	public float initialFMSpeed;
 	public float initialMSpeed;
 	[Tooltip("機体回転速度")]
 	float rotateSpeed = 40;
-	private float cameraSpeed = 3.5f;
 	private float changeFWSpeed = 2f;
 	private float changeMSpeed = 1f;
 
@@ -151,7 +149,6 @@ public class PlaneController : MonoBehaviour
 			paticlePrefab.SetActive(true);
 			ChangeFMSpeed(changeFWSpeed);
 			ChangeMSpeed(changeMSpeed);
-			ChangeXOfCamera(-cameraSpeed * Time.deltaTime);
 			currentFuel = currentFuel - fuelConsumption;
 		}
 		else
@@ -159,7 +156,6 @@ public class PlaneController : MonoBehaviour
 			paticlePrefab.SetActive(false);
 			ChangeFMSpeed(-0.5f * changeFWSpeed);
 			ChangeMSpeed(-changeMSpeed);
-			ChangeXOfCamera(cameraSpeed * Time.deltaTime * 2);
 		}
 	}
 
@@ -209,22 +205,6 @@ public class PlaneController : MonoBehaviour
 		{
 			moveSpeed = initialMSpeed;
 		}
-	}
-
-	//加速時のカメラと機体の距離を変更する
-	public void ChangeXOfCamera(float value)
-	{
-		// mainCamera.transform.Translate(value, 0, 0, Space.World);
-
-		// if (mainCamera.transform.localPosition.x >= -2.5f)
-		// {
-		// 	mainCamera.transform.localPosition = new Vector3(-2.5f, 0.5f, 0);
-		// }
-
-		// if (mainCamera.transform.localPosition.x <= -7f)
-		// {
-		// 	mainCamera.transform.localPosition = new Vector3(-7f, 0.5f, 0);
-		// }
 	}
 
 	/// <summary>
