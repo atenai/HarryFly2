@@ -74,25 +74,33 @@ public class PlaneController : MonoBehaviour
 		//上下回転
 		if (0.1f < joystickVertical)
 		{
-			Debug.Log("縦の移動量 : " + joystickVertical);
-			planePrefab.transform.Rotate(-rotateSpeed * Time.deltaTime, 0, 0, Space.World);
+			if (planePrefab.transform.localEulerAngles.x < 31 || planePrefab.transform.localEulerAngles.x > 330)
+			{
+				planePrefab.transform.Rotate(-rotateSpeed * Time.deltaTime, 0, 0, Space.World);
+			}
 		}
 		else if (joystickVertical < -0.1f)
 		{
-			Debug.Log("縦の移動量 : " + joystickVertical);
-			planePrefab.transform.Rotate(rotateSpeed * Time.deltaTime, 0, 0, Space.World);
+			if (planePrefab.transform.localEulerAngles.x < 30 || planePrefab.transform.localEulerAngles.x > 329)
+			{
+				planePrefab.transform.Rotate(rotateSpeed * Time.deltaTime, 0, 0, Space.World);
+			}
 		}
 
 		//左右回転
 		if (0.1f < joystickHorizontal)
 		{
-			Debug.Log("横の移動量 : " + joystickHorizontal);
-			planePrefab.transform.Rotate(0, 0, -rotateSpeed * Time.deltaTime, Space.World);
+			if (planePrefab.transform.localEulerAngles.z < 31 || planePrefab.transform.localEulerAngles.z > 330)
+			{
+				planePrefab.transform.Rotate(0, 0, -rotateSpeed * Time.deltaTime, Space.World);
+			}
 		}
 		else if (joystickHorizontal < -0.1f)
 		{
-			Debug.Log("横の移動量 : " + joystickHorizontal);
-			planePrefab.transform.Rotate(0, 0, rotateSpeed * Time.deltaTime, Space.World);
+			if (planePrefab.transform.localEulerAngles.z < 30 || planePrefab.transform.localEulerAngles.z > 329)
+			{
+				planePrefab.transform.Rotate(0, 0, rotateSpeed * Time.deltaTime, Space.World);
+			}
 		}
 
 		//y軸を元に戻す処理
@@ -105,7 +113,7 @@ public class PlaneController : MonoBehaviour
 			planePrefab.transform.Rotate(0, rotateSpeed * Time.deltaTime, 0, Space.World);
 		}
 
-		//回転軸をもとに戻す処理
+		//回転軸を元に戻す処理
 		if (joystickVertical == 0.0f)
 		{
 			if (0 < planePrefab.transform.rotation.x)
