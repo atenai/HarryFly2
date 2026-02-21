@@ -29,6 +29,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1504210889693815966}
   - {fileID: 7061372581981000993}
   m_Father: {fileID: 1344177959236785766}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -112,7 +113,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 2
 --- !u!1 &8758644627125908185
 GameObject:
   m_ObjectHideFlags: 0
@@ -4968,13 +4969,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8843079836619088968}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.06, y: -0.6, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: -0.7071068}
+  m_LocalPosition: {x: 0, y: 0, z: -0.030000003}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 9077339917434462344}
-  m_Father: {fileID: 7061372581981000993}
+  m_Father: {fileID: 7958803110855154063}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &2165743572304173088
 BoxCollider:
@@ -5507,11 +5508,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 96b3c9a3a09f9174790077df3e873843, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 1fe9c16e8ce2d0645b88994dd6480f8f,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1504210889693815966}
+    m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1fe9c16e8ce2d0645b88994dd6480f8f, type: 3}
 --- !u!4 &7061372581981000993 stripped

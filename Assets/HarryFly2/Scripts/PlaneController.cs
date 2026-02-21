@@ -14,17 +14,32 @@ public class PlaneController : MonoBehaviour
 	[Tooltip("リジッドボディ")]
 	[SerializeField] Rigidbody rb;
 
-	[Tooltip("自動前進速度")]
-	float forwordMoveSpeed = 100f;
-	public float ForwordMoveSpeed => forwordMoveSpeed;
-	[Tooltip("上下左右移動速度")]
-	[SerializeField] float moveSpeed;
-	public float initialFMSpeed;
-	public float initialMSpeed;
-	[Tooltip("機体回転速度")]
-	float rotateSpeed = 40;
-	private float changeFWSpeed = 2f;
-	private float changeMSpeed = 1f;
+	[Tooltip("追加の自動前進速度")]
+	float addForwordMoveSpeed = 300f;
+	[Tooltip("追加の上下左右移動速度")]
+	float addVerticalAndHorizontalMoveSpeed = 200f;
+	[Tooltip("自動前進速度の初期値")]
+	float initForwordMoveSpeed;
+	[Tooltip("上下左右移動速度の初期値")]
+	float initVerticalAndHorizontalMoveSpeed;
+	[Tooltip("通常時と加速時の自動前進速度を徐々に変える値")]
+	float changeForwordMovepeed = 2f;
+	[Tooltip("通常時と加速時の上下左右移動速度を徐々に変える値")]
+	float changeVerticalAndHorizontalMoveSpeed = 1f;
+
+	[Tooltip("上下の移動制限範囲")]
+	float verticalMin = -50f;
+	float verticalMax = 50f;
+	[Tooltip("左右の移動制限範囲")]
+	float horizontalMin = -50f;
+	float horizontalMax = 50f;
+
+	[Tooltip("上下の機体回転速度")]
+	float verticalRotateSpeed = 20;
+	[Tooltip("左右の機体回転速度")]
+	float horizontalRotateSpeed = 40;
+	[Tooltip("y軸の機体回転速度")]
+	float yRotateSpeed = 40;
 
 	/// <summary>
 	/// 現在の燃料
@@ -61,8 +76,8 @@ public class PlaneController : MonoBehaviour
 	void Start()
 	{
 		UI.SingletonInstance.AccelerateButton.onClick.AddListener(Accelerate);
-		initialFMSpeed = forwordMoveSpeed;
-		initialMSpeed = moveSpeed;
+		initForwordMoveSpeed = addForwordMoveSpeed;
+		initVerticalAndHorizontalMoveSpeed = addVerticalAndHorizontalMoveSpeed;
 	}
 
 	void Update()
@@ -75,14 +90,14 @@ public class PlaneController : MonoBehaviour
 		{
 			if (planePrefab.transform.localEulerAngles.x < 31 || planePrefab.transform.localEulerAngles.x > 330)
 			{
-				planePrefab.transform.Rotate(-rotateSpeed * Time.deltaTime, 0, 0, Space.World);
+				planePrefab.transform.Rotate(-verticalRotateSpeed * Time.deltaTime, 0, 0, Space.World);
 			}
 		}
 		else if (joystickVertical < -0.1f)
 		{
 			if (planePrefab.transform.localEulerAngles.x < 30 || planePrefab.transform.localEulerAngles.x > 329)
 			{
-				planePrefab.transform.Rotate(rotateSpeed * Time.deltaTime, 0, 0, Space.World);
+				planePrefab.transform.Rotate(verticalRotateSpeed * Time.deltaTime, 0, 0, Space.World);
 			}
 		}
 
@@ -91,25 +106,25 @@ public class PlaneController : MonoBehaviour
 		{
 			if (planePrefab.transform.localEulerAngles.z < 31 || planePrefab.transform.localEulerAngles.z > 330)
 			{
-				planePrefab.transform.Rotate(0, 0, -rotateSpeed * Time.deltaTime, Space.World);
+				planePrefab.transform.Rotate(0, 0, -horizontalRotateSpeed * Time.deltaTime, Space.World);
 			}
 		}
 		else if (joystickHorizontal < -0.1f)
 		{
 			if (planePrefab.transform.localEulerAngles.z < 30 || planePrefab.transform.localEulerAngles.z > 329)
 			{
-				planePrefab.transform.Rotate(0, 0, rotateSpeed * Time.deltaTime, Space.World);
+				planePrefab.transform.Rotate(0, 0, horizontalRotateSpeed * Time.deltaTime, Space.World);
 			}
 		}
 
 		//y軸を元に戻す処理
 		if (0 < planePrefab.transform.rotation.y)
 		{
-			planePrefab.transform.Rotate(0, -rotateSpeed * Time.deltaTime, 0, Space.World);
+			planePrefab.transform.Rotate(0, -yRotateSpeed * Time.deltaTime, 0, Space.World);
 		}
 		if (planePrefab.transform.rotation.y < 0)
 		{
-			planePrefab.transform.Rotate(0, rotateSpeed * Time.deltaTime, 0, Space.World);
+			planePrefab.transform.Rotate(0, yRotateSpeed * Time.deltaTime, 0, Space.World);
 		}
 
 		//回転軸を元に戻す処理
@@ -117,22 +132,22 @@ public class PlaneController : MonoBehaviour
 		{
 			if (0 < planePrefab.transform.rotation.x)
 			{
-				planePrefab.transform.Rotate(-rotateSpeed * Time.deltaTime, 0, 0);
+				planePrefab.transform.Rotate(-verticalRotateSpeed * Time.deltaTime, 0, 0);
 			}
 			if (planePrefab.transform.rotation.x < 0)
 			{
-				planePrefab.transform.Rotate(rotateSpeed * Time.deltaTime, 0, 0);
+				planePrefab.transform.Rotate(verticalRotateSpeed * Time.deltaTime, 0, 0);
 			}
 		}
 		if (joystickHorizontal == 0.0f)
 		{
 			if (0 < planePrefab.transform.rotation.z)
 			{
-				planePrefab.transform.Rotate(0, 0, -rotateSpeed * Time.deltaTime);
+				planePrefab.transform.Rotate(0, 0, -horizontalRotateSpeed * Time.deltaTime);
 			}
 			if (planePrefab.transform.rotation.z < 0)
 			{
-				planePrefab.transform.Rotate(0, 0, rotateSpeed * Time.deltaTime);
+				planePrefab.transform.Rotate(0, 0, horizontalRotateSpeed * Time.deltaTime);
 			}
 		}
 
@@ -147,15 +162,15 @@ public class PlaneController : MonoBehaviour
 		if (UI.SingletonInstance.ButtonDownFlag == true && 0 < currentFuel)
 		{
 			paticlePrefab.SetActive(true);
-			ChangeFMSpeed(changeFWSpeed);
-			ChangeMSpeed(changeMSpeed);
+			ChangeForwordMoveSpeed(changeForwordMovepeed);
+			ChangeVerticalAndHorizontalMoveSpeed(changeVerticalAndHorizontalMoveSpeed);
 			currentFuel = currentFuel - fuelConsumption;
 		}
 		else
 		{
 			paticlePrefab.SetActive(false);
-			ChangeFMSpeed(-0.5f * changeFWSpeed);
-			ChangeMSpeed(-changeMSpeed);
+			ChangeForwordMoveSpeed(changeForwordMovepeed * -0.5f);
+			ChangeVerticalAndHorizontalMoveSpeed(-changeVerticalAndHorizontalMoveSpeed);
 		}
 	}
 
@@ -168,42 +183,48 @@ public class PlaneController : MonoBehaviour
 		float horizontal = Mathf.Clamp(joystickHorizontal, -1f, 1f);
 		float vertical = Mathf.Clamp(joystickVertical, -1f, 1f);
 
-		Vector3 vel = Vector3.zero;
-		vel += transform.forward * forwordMoveSpeed; // 自動前進
-		vel += Vector3.up * (vertical * moveSpeed * 0.5f); // 上下移動（Y軸）
-		vel += transform.right * (horizontal * moveSpeed); // 左右（A/D）
+		Vector3 velocity = Vector3.zero;
+		velocity = velocity + this.transform.forward * addForwordMoveSpeed; // 自動前進
+		velocity = velocity + Vector3.up * (vertical * addVerticalAndHorizontalMoveSpeed * 0.5f); // 上下移動（Y軸）
+		velocity = velocity + this.transform.right * (horizontal * addVerticalAndHorizontalMoveSpeed); // 左右（A/D）
+		rb.velocity = velocity;
 
-		if (rb != null)
+		// 位置を範囲内にクランプ（ワールド座標の X/Y）
+		Vector3 pos = rb.position;
+		pos.x = Mathf.Clamp(pos.x, horizontalMin, horizontalMax);
+		pos.y = Mathf.Clamp(pos.y, verticalMin, verticalMax);
+		rb.position = pos;
+	}
+
+	//自動前進スピードを徐々に変える
+	void ChangeForwordMoveSpeed(float value)
+	{
+		addForwordMoveSpeed = addForwordMoveSpeed + value;
+
+		if (initForwordMoveSpeed * 5 <= addForwordMoveSpeed)
 		{
-			rb.velocity = vel;
+			addForwordMoveSpeed = initForwordMoveSpeed * 5;
+		}
+
+		if (addForwordMoveSpeed <= initForwordMoveSpeed)
+		{
+			addForwordMoveSpeed = initForwordMoveSpeed;
 		}
 	}
 
-	//加速
-	public void ChangeFMSpeed(float value)
+	//上下左右の移動スピードを徐々に変える
+	void ChangeVerticalAndHorizontalMoveSpeed(float value)
 	{
-		forwordMoveSpeed += value;
-		if (forwordMoveSpeed >= initialFMSpeed * 5)
-		{
-			forwordMoveSpeed = initialFMSpeed * 5;
-		}
-		if (forwordMoveSpeed <= initialFMSpeed)
-		{
-			forwordMoveSpeed = initialFMSpeed;
-		}
-	}
+		addVerticalAndHorizontalMoveSpeed = addVerticalAndHorizontalMoveSpeed + value;
 
-	//左右のスピードを変える
-	public void ChangeMSpeed(float value)
-	{
-		moveSpeed += value;
-		if (moveSpeed >= initialMSpeed * 2)
+		if (initVerticalAndHorizontalMoveSpeed * 2 <= addVerticalAndHorizontalMoveSpeed)
 		{
-			moveSpeed = initialMSpeed * 2;
+			addVerticalAndHorizontalMoveSpeed = initVerticalAndHorizontalMoveSpeed * 2;
 		}
-		if (moveSpeed <= initialMSpeed)
+
+		if (addVerticalAndHorizontalMoveSpeed <= initVerticalAndHorizontalMoveSpeed)
 		{
-			moveSpeed = initialMSpeed;
+			addVerticalAndHorizontalMoveSpeed = initVerticalAndHorizontalMoveSpeed;
 		}
 	}
 
