@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cinemachine;
 
 /// <summary>
 /// 飛行機カメラ
@@ -12,17 +13,12 @@ public class PlaneCamera : MonoBehaviour
 	public static PlaneCamera SingletonInstance => singletonInstance;
 
 	[Tooltip("子のメインカメラ")]
-	[SerializeField] GameObject childMainCamera;
+	[SerializeField] CinemachineVirtualCamera childMainDashMoveVirtualCamera;
 
-	[Tooltip("カメラ位置の縦位置")]
-	private float verticalOffset = 0.5f;
-	[Tooltip("通常時のカメラ位置")]
-	private float normalDistance = -2.5f;
-	[Tooltip("加速時のカメラ位置")]
-	private float accelerateDistance = -7f;
-	[Tooltip("カメラ位置のチェンジスピード")]
-	private float cameraChangeSpeed = 3.5f;
-
+	[Tooltip("カメラ位置のy位置")]
+	float verticalOffset = 0.5f;
+	[Tooltip("カメラのz位置")]
+	float normalDistance = -2.5f;
 
 	void Awake()
 	{
@@ -44,44 +40,21 @@ public class PlaneCamera : MonoBehaviour
 
 	void LateUpdate()
 	{
+		// オフセットは現在の距離を使う
+		Vector3 cameraPos = PlaneController.SingletonInstance.transform.position + PlaneController.SingletonInstance.transform.rotation * new Vector3(0, verticalOffset, normalDistance);
+
+		// カメラ位置をスムーズに移動
+		this.transform.position = cameraPos;
+
 		if (UI.SingletonInstance.ButtonDownFlag == true && 0 < PlaneController.SingletonInstance.CurrentFuel)
 		{
-			//徐々に子カメラを加速時の位置にする
-			ChangeChildCameraPos(-cameraChangeSpeed * Time.deltaTime);
+			//徐々に子カメラをダッシュ時の位置にする
+			childMainDashMoveVirtualCamera.Priority = 200;
 		}
 		else
 		{
 			//徐々に子カメラを通常時の位置にする
-			ChangeChildCameraPos(cameraChangeSpeed * Time.deltaTime * 2);
-		}
-
-		// オフセットは現在の距離を使う
-		Vector3 offset = new Vector3(0, verticalOffset, 0);
-		Vector3 cameraPos = PlaneController.SingletonInstance.transform.position + PlaneController.SingletonInstance.transform.rotation * offset;
-
-		// カメラ位置をスムーズに移動
-		this.transform.position = cameraPos;
-	}
-
-	/// <summary>
-	/// 加速時に子カメラの距離を変える
-	/// </summary>
-	/// <param name="value">徐々に変える値</param>
-	public void ChangeChildCameraPos(float value)
-	{
-		childMainCamera.transform.Translate(0, 0, value, Space.World);
-
-		//指定した通常時のカメラの位置より飛行機に近づいた場合
-		if (normalDistance <= childMainCamera.transform.localPosition.z)
-		{
-			//通常時のカメラ位置にする
-			childMainCamera.transform.localPosition = new Vector3(0, 0, normalDistance);
-		}
-		//指定した加速時のカメラの位置より飛行機に遠のいた場合
-		if (childMainCamera.transform.localPosition.z <= accelerateDistance)
-		{
-			//加速時のカメラ位置にする
-			childMainCamera.transform.localPosition = new Vector3(0, 0, accelerateDistance);
+			childMainDashMoveVirtualCamera.Priority = 10;
 		}
 	}
 }
