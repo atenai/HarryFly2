@@ -31,6 +31,8 @@ public class GameManager : MonoBehaviour
 	bool isGameOverLoaded = false;
 	bool isSceneSwitched = false;
 	public bool IsSceneSwitched => isSceneSwitched;
+	bool isGameClearTriggered = false;
+	bool isGameOverTriggered = false;
 
 	void Awake()
 	{
@@ -48,6 +50,8 @@ public class GameManager : MonoBehaviour
 		isSceneSwitched = false;
 		isGameClearLoaded = false;
 		isGameOverLoaded = false;
+		isGameClearTriggered = false;
+		isGameOverTriggered = false;
 		Load();
 	}
 
@@ -113,11 +117,40 @@ public class GameManager : MonoBehaviour
 		}
 	}
 
+	void Update()
+	{
+		if (isSceneSwitched == true)
+		{
+			return;
+		}
+
+		ShowGameClearScene();
+		ShowGameOverScene();
+
+		if (Input.GetMouseButton(0))
+		{
+			//ここにタップされた時の処理を書く
+			isPlay = true;
+		}
+
+		if (isPlay == false)
+		{
+			return;
+		}
+
+		TimerSystem();
+	}
+
 	/// <summary>
 	/// ゲームクリアー画面へ切り替える
 	/// </summary>
 	void ShowGameClearScene()
 	{
+		if (isGameClearTriggered == false)
+		{
+			return;
+		}
+
 		if (isSceneSwitched == true)
 		{
 			return;
@@ -125,7 +158,7 @@ public class GameManager : MonoBehaviour
 
 		if (isGameClearLoaded == false)
 		{
-			Debug.LogWarning("GameClearシーンがまだ読み込まれていません。");
+			Debug.Log("GameClearシーンがまだ読み込まれていません。");
 			return;
 		}
 
@@ -138,6 +171,11 @@ public class GameManager : MonoBehaviour
 	/// </summary>
 	void ShowGameOverScene()
 	{
+		if (isGameOverTriggered == false)
+		{
+			return;
+		}
+
 		if (isSceneSwitched == true)
 		{
 			return;
@@ -145,7 +183,7 @@ public class GameManager : MonoBehaviour
 
 		if (isGameOverLoaded == false)
 		{
-			Debug.LogWarning("GameOverシーンがまだ読み込まれていません。");
+			Debug.Log("GameOverシーンがまだ読み込まれていません。");
 			return;
 		}
 
@@ -174,27 +212,6 @@ public class GameManager : MonoBehaviour
 		}
 
 		SceneManager.SetActiveScene(targetScene);
-	}
-
-	void Update()
-	{
-		if (Input.GetMouseButton(0))
-		{
-			//ここにタップされた時の処理を書く
-			isPlay = true;
-		}
-
-		if (isPlay == false)
-		{
-			return;
-		}
-
-		if (isSceneSwitched == true)
-		{
-			return;
-		}
-
-		TimerSystem();
 	}
 
 	/// <summary>
@@ -242,7 +259,7 @@ public class GameManager : MonoBehaviour
 		//セーブ
 		ES3.Save("CoinCount", coinCount);
 		// シーンを切り替える
-		ShowGameClearScene();
+		isGameClearTriggered = true;
 	}
 
 	/// <summary>
@@ -252,5 +269,6 @@ public class GameManager : MonoBehaviour
 	{
 		// シーンを切り替える
 		ShowGameOverScene();
+		isGameOverTriggered = true;
 	}
 }

@@ -64,6 +64,11 @@ public class UI : MonoBehaviour
 
 	void Update()
 	{
+		if (GameManager.SingletonInstance.IsSceneSwitched == true)
+		{
+			return;
+		}
+
 		fuelSlider.value = PlaneController.SingletonInstance.CurrentFuel / PlaneController.Max_Fuel;
 
 		if (GameManager.SingletonInstance.IsPlay == false)
@@ -79,11 +84,6 @@ public class UI : MonoBehaviour
 		}
 
 		if (GameManager.SingletonInstance.IsPlay == false)
-		{
-			return;
-		}
-
-		if (GameManager.SingletonInstance.IsSceneSwitched == true)
 		{
 			return;
 		}

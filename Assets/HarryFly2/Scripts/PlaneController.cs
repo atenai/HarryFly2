@@ -79,12 +79,12 @@ public class PlaneController : MonoBehaviour
 
 	void Update()
 	{
-		if (GameManager.SingletonInstance.IsPlay == false)
+		if (GameManager.SingletonInstance.IsSceneSwitched == true)
 		{
 			return;
 		}
 
-		if (GameManager.SingletonInstance.IsSceneSwitched == true)
+		if (GameManager.SingletonInstance.IsPlay == false)
 		{
 			return;
 		}
@@ -183,12 +183,12 @@ public class PlaneController : MonoBehaviour
 
 	void FixedUpdate()
 	{
-		if (GameManager.SingletonInstance.IsPlay == false)
+		if (GameManager.SingletonInstance.IsSceneSwitched == true)
 		{
 			return;
 		}
 
-		if (GameManager.SingletonInstance.IsSceneSwitched == true)
+		if (GameManager.SingletonInstance.IsPlay == false)
 		{
 			return;
 		}
