@@ -84,6 +84,11 @@ public class PlaneController : MonoBehaviour
 			return;
 		}
 
+		if (GameManager.SingletonInstance.IsSceneSwitched == true)
+		{
+			return;
+		}
+
 		float joystickHorizontal = UI.SingletonInstance.FloatingJoystick.Horizontal;
 		float joystickVertical = UI.SingletonInstance.FloatingJoystick.Vertical;
 
@@ -179,6 +184,11 @@ public class PlaneController : MonoBehaviour
 	void FixedUpdate()
 	{
 		if (GameManager.SingletonInstance.IsPlay == false)
+		{
+			return;
+		}
+
+		if (GameManager.SingletonInstance.IsSceneSwitched == true)
 		{
 			return;
 		}

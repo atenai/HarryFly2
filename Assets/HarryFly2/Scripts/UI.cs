@@ -82,6 +82,11 @@ public class UI : MonoBehaviour
 		{
 			return;
 		}
+
+		if (GameManager.SingletonInstance.IsSceneSwitched == true)
+		{
+			return;
+		}
 	}
 
 	// ボタンを押したときの処理

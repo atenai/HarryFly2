@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 /// <summary>
 /// ゲームマネージャー
@@ -22,6 +23,15 @@ public class GameManager : MonoBehaviour
 	public int CoinCount => coinCount;
 	public static readonly int Max_Coin_Count = 999999;
 
+	[Header("事前に読み込むシーン名")]
+	[SerializeField] string gameClearSceneName = "GameClear";
+	[SerializeField] string gameOverSceneName = "GameOver";
+
+	bool isGameClearLoaded = false;
+	bool isGameOverLoaded = false;
+	bool isSceneSwitched = false;
+	public bool IsSceneSwitched => isSceneSwitched;
+
 	void Awake()
 	{
 		//staticな変数instanceはメモリ領域は確保されていますが、初回では中身が入っていないので、中身を入れます。
@@ -35,6 +45,9 @@ public class GameManager : MonoBehaviour
 		}
 
 		isPlay = false;
+		isSceneSwitched = false;
+		isGameClearLoaded = false;
+		isGameOverLoaded = false;
 		Load();
 	}
 
@@ -54,6 +67,113 @@ public class GameManager : MonoBehaviour
 	void Start()
 	{
 		UI.SingletonInstance.CoinText.text = GameManager.SingletonInstance.CoinCount.ToString();
+		StartCoroutine(PreloadScenesCoroutine());
+	}
+
+	/// <summary>
+	/// ゲームクリアーシーンとゲームオーバーシーンを事前ロードする
+	/// </summary>
+	IEnumerator PreloadScenesCoroutine()
+	{
+		yield return StartCoroutine(LoadSceneAdditiveAndHide(gameClearSceneName));
+		yield return StartCoroutine(LoadSceneAdditiveAndHide(gameOverSceneName));
+	}
+
+	/// <summary>
+	/// シーンを Additive で非同期ロードし、読み込み後にルートオブジェクトを非表示にする
+	/// </summary>
+	IEnumerator LoadSceneAdditiveAndHide(string sceneName)
+	{
+		AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
+
+		while (asyncOperation.isDone == false)
+		{
+			yield return null;
+		}
+
+		Scene loadedScene = SceneManager.GetSceneByName(sceneName);
+
+		if (loadedScene.IsValid() == true && loadedScene.isLoaded == true)
+		{
+			GameObject[] rootObjects = loadedScene.GetRootGameObjects();
+
+			for (int i = 0; i < rootObjects.Length; i++)
+			{
+				rootObjects[i].SetActive(false);
+			}
+		}
+
+		if (sceneName == gameClearSceneName)
+		{
+			isGameClearLoaded = true;
+		}
+		else if (sceneName == gameOverSceneName)
+		{
+			isGameOverLoaded = true;
+		}
+	}
+
+	/// <summary>
+	/// ゲームクリアー画面へ切り替える
+	/// </summary>
+	void ShowGameClearScene()
+	{
+		if (isSceneSwitched == true)
+		{
+			return;
+		}
+
+		if (isGameClearLoaded == false)
+		{
+			Debug.LogWarning("GameClearシーンがまだ読み込まれていません。");
+			return;
+		}
+
+		isSceneSwitched = true;
+		ShowScene(gameClearSceneName);
+	}
+
+	/// <summary>
+	/// ゲームオーバー画面へ切り替える
+	/// </summary>
+	void ShowGameOverScene()
+	{
+		if (isSceneSwitched == true)
+		{
+			return;
+		}
+
+		if (isGameOverLoaded == false)
+		{
+			Debug.LogWarning("GameOverシーンがまだ読み込まれていません。");
+			return;
+		}
+
+		isSceneSwitched = true;
+		ShowScene(gameOverSceneName);
+	}
+
+	/// <summary>
+	/// 指定シーンを表示し、そのシーンをアクティブにする
+	/// </summary>
+	void ShowScene(string sceneName)
+	{
+		Scene targetScene = SceneManager.GetSceneByName(sceneName);
+
+		if (targetScene.IsValid() == false || targetScene.isLoaded == false)
+		{
+			Debug.LogWarning(sceneName + " シーンが見つかりません。");
+			return;
+		}
+
+		GameObject[] rootObjects = targetScene.GetRootGameObjects();
+
+		for (int i = 0; i < rootObjects.Length; i++)
+		{
+			rootObjects[i].SetActive(true);
+		}
+
+		SceneManager.SetActiveScene(targetScene);
 	}
 
 	void Update()
@@ -69,12 +189,21 @@ public class GameManager : MonoBehaviour
 			return;
 		}
 
+		if (isSceneSwitched == true)
+		{
+			return;
+		}
+
 		TimerSystem();
 	}
 
+	/// <summary>
+	/// 制限時間のシステム
+	/// </summary>
 	void TimerSystem()
 	{
 		totalTime = totalTime - Time.deltaTime;
+		Debug.Log("残り時間：" + totalTime);
 		UI.SingletonInstance.TimerText.text = "残り時間：" + totalTime.ToString("f1");
 		if (totalTime <= 0)
 		{
@@ -112,7 +241,8 @@ public class GameManager : MonoBehaviour
 	{
 		//セーブ
 		ES3.Save("CoinCount", coinCount);
-		SceneManager.LoadScene("GameClear");
+		// シーンを切り替える
+		ShowGameClearScene();
 	}
 
 	/// <summary>
@@ -120,6 +250,7 @@ public class GameManager : MonoBehaviour
 	/// </summary>
 	public void GameOver()
 	{
-		SceneManager.LoadScene("GameOver");
+		// シーンを切り替える
+		ShowGameOverScene();
 	}
 }
