@@ -58,7 +58,6 @@ public class PlaneController : MonoBehaviour
 
 	//加速/衝突効果
 	public GameObject paticlePrefab;
-	public GameObject boom;
 
 	void Awake()
 	{
@@ -78,10 +77,16 @@ public class PlaneController : MonoBehaviour
 		UI.SingletonInstance.AccelerateButton.onClick.AddListener(Accelerate);
 		initForwordMoveSpeed = addForwordMoveSpeed;
 		initVerticalAndHorizontalMoveSpeed = addVerticalAndHorizontalMoveSpeed;
+		paticlePrefab.SetActive(false);
 	}
 
 	void Update()
 	{
+		if (GameManager.SingletonInstance.IsPlay == false)
+		{
+			return;
+		}
+
 		float joystickHorizontal = UI.SingletonInstance.FloatingJoystick.Horizontal;
 		float joystickVertical = UI.SingletonInstance.FloatingJoystick.Vertical;
 
@@ -176,6 +181,11 @@ public class PlaneController : MonoBehaviour
 
 	void FixedUpdate()
 	{
+		if (GameManager.SingletonInstance.IsPlay == false)
+		{
+			return;
+		}
+
 		// 移動は Rigidbody の速度で制御する
 		float joystickHorizontal = UI.SingletonInstance.FloatingJoystick.Horizontal;
 		float joystickVertical = UI.SingletonInstance.FloatingJoystick.Vertical;

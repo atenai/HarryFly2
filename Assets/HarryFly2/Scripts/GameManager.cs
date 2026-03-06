@@ -11,7 +11,9 @@ public class GameManager : MonoBehaviour
 	public static GameManager SingletonInstance => singletonInstance;
 
 	[Tooltip("トータルの制限時間")]
-	[SerializeField] float totalTime = 30;
+	float totalTime = 30;
+	bool isPlay = false;
+	public bool IsPlay => isPlay;
 
 	void Awake()
 	{
@@ -24,6 +26,8 @@ public class GameManager : MonoBehaviour
 		{
 			Destroy(this.gameObject);//中身がすでに入っていた場合、自身のインスタンスがくっついているゲームオブジェクトを破棄します。
 		}
+
+		isPlay = false;
 	}
 
 	void Start()
@@ -33,12 +37,23 @@ public class GameManager : MonoBehaviour
 
 	void Update()
 	{
+		if (Input.GetMouseButton(0))
+		{
+			//ここにタップされた時の処理を書く
+			isPlay = true;
+		}
+
+		if (isPlay == false)
+		{
+			return;
+		}
+
 		TimerSystem();
 	}
 
 	void TimerSystem()
 	{
-		totalTime -= Time.deltaTime;
+		totalTime = totalTime - Time.deltaTime;
 		UI.SingletonInstance.TimerText.text = "残り時間：" + totalTime.ToString("f1");
 		if (totalTime <= 0)
 		{
