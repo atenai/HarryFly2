@@ -33,8 +33,14 @@ public class UI : MonoBehaviour
 	bool buttonDownFlag = false;
 	public bool ButtonDownFlag => buttonDownFlag;
 
+	[Tooltip("タップテキスト")]
 	[SerializeField] TextMeshProUGUI tapText;
 	private Tween tapTween;
+
+	[Tooltip("コインテキスト")]
+	[SerializeField] TextMeshProUGUI coinText;
+	int coinCount = 0;
+	public static readonly int Max_Coin_Count = 999999;
 
 	void Awake()
 	{
@@ -51,7 +57,9 @@ public class UI : MonoBehaviour
 
 	void Start()
 	{
-		fuelSlider.value = PlaneController.SingletonInstance.CurrentFuel / PlaneController.SingletonInstance.MaxFuel;
+		fuelSlider.value = PlaneController.SingletonInstance.CurrentFuel / PlaneController.Max_Fuel;
+
+		coinText.text = coinCount.ToString();
 
 		tapText.transform.localScale = Vector3.one;
 		tapTween = tapText.transform.DOScale(new Vector3(1.5f, 1.5f, 1f), 0.6f).SetLoops(-1, LoopType.Yoyo).SetAutoKill(false).Pause();
@@ -59,7 +67,7 @@ public class UI : MonoBehaviour
 
 	void Update()
 	{
-		fuelSlider.value = PlaneController.SingletonInstance.CurrentFuel / PlaneController.SingletonInstance.MaxFuel;
+		fuelSlider.value = PlaneController.SingletonInstance.CurrentFuel / PlaneController.Max_Fuel;
 
 		if (GameManager.SingletonInstance.IsPlay == false)
 		{
@@ -91,5 +99,15 @@ public class UI : MonoBehaviour
 	{
 		Debug.Log("Up");
 		buttonDownFlag = false;
+	}
+
+	public void AddCoin(int value)
+	{
+		coinCount = coinCount + value;
+		if (Max_Coin_Count <= coinCount)
+		{
+			coinCount = Max_Coin_Count;
+		}
+		coinText.text = coinCount.ToString();
 	}
 }

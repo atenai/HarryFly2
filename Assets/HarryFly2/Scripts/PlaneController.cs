@@ -47,11 +47,8 @@ public class PlaneController : MonoBehaviour
 	float currentFuel = 100f;
 	public float CurrentFuel => currentFuel;
 
-	/// <summary>
-	/// 燃料の最大値
-	/// </summary>
-	float maxFuel = 100;
-	public float MaxFuel => maxFuel;
+	/// <summary> 燃料の最大値 </summary>
+	public static readonly float Max_Fuel = 100;
 
 	[Tooltip("燃料消費量")]
 	[SerializeField] float fuelConsumption = 1;
@@ -245,6 +242,10 @@ public class PlaneController : MonoBehaviour
 	public void AddFuel(float value)
 	{
 		currentFuel = currentFuel + value;
+		if (Max_Fuel <= currentFuel)
+		{
+			currentFuel = Max_Fuel;
+		}
 	}
 
 	void OnGUI()
