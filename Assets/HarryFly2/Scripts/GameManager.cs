@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
@@ -10,10 +10,17 @@ public class GameManager : MonoBehaviour
 	/// <summary>シングルトンで作成（ゲーム中に１つのみにする）</summary>
 	public static GameManager SingletonInstance => singletonInstance;
 
-	[Tooltip("トータルの制限時間")]
-	float totalTime = 30;
+	/// <summary>ゲームプレイ中かどうか</summary>
 	bool isPlay = false;
 	public bool IsPlay => isPlay;
+
+	/// <summary>トータルの制限時間</summary>
+	float totalTime = 30;
+
+	/// <summary>コイン数</summary>
+	int coinCount = 0;
+	public int CoinCount => coinCount;
+	public static readonly int Max_Coin_Count = 999999;
 
 	void Awake()
 	{
@@ -28,11 +35,25 @@ public class GameManager : MonoBehaviour
 		}
 
 		isPlay = false;
+		Load();
+	}
+
+	void Load()
+	{
+		//セーブデータの読み込み
+		if (ES3.KeyExists("CoinCount"))
+		{
+			coinCount = ES3.Load<int>("CoinCount");
+		}
+		else
+		{
+			coinCount = 0;
+		}
 	}
 
 	void Start()
 	{
-
+		UI.SingletonInstance.CoinText.text = GameManager.SingletonInstance.CoinCount.ToString();
 	}
 
 	void Update()
@@ -71,10 +92,26 @@ public class GameManager : MonoBehaviour
 	}
 
 	/// <summary>
+	/// コインの追加
+	/// </summary>
+	/// <param name="value"></param>
+	public void AddCoin(int value)
+	{
+		coinCount = coinCount + value;
+		if (Max_Coin_Count <= coinCount)
+		{
+			coinCount = Max_Coin_Count;
+		}
+		UI.SingletonInstance.CoinText.text = coinCount.ToString();
+	}
+
+	/// <summary>
 	/// ゲームクリアー
 	/// </summary>
 	public void GameClear()
 	{
+		//セーブ
+		ES3.Save("CoinCount", coinCount);
 		SceneManager.LoadScene("GameClear");
 	}
 
