@@ -29,8 +29,8 @@ public class GameManager : MonoBehaviour
 
 	bool isGameClearLoaded = false;
 	bool isGameOverLoaded = false;
-	bool isSceneSwitched = false;
-	public bool IsSceneSwitched => isSceneSwitched;
+	bool isGameClearAndGameOverSceneSwitched = false;
+	public bool IsGameClearAndGameOverSceneSwitched => isGameClearAndGameOverSceneSwitched;
 	bool isGameClearTriggered = false;
 	bool isGameOverTriggered = false;
 
@@ -47,12 +47,17 @@ public class GameManager : MonoBehaviour
 		}
 
 		isPlay = false;
-		isSceneSwitched = false;
+		InitScene();
+		Load();
+	}
+
+	void InitScene()
+	{
+		isGameClearAndGameOverSceneSwitched = false;
 		isGameClearLoaded = false;
 		isGameOverLoaded = false;
 		isGameClearTriggered = false;
 		isGameOverTriggered = false;
-		Load();
 	}
 
 	void Load()
@@ -119,7 +124,7 @@ public class GameManager : MonoBehaviour
 
 	void Update()
 	{
-		if (isSceneSwitched == true)
+		if (isGameClearAndGameOverSceneSwitched == true)
 		{
 			return;
 		}
@@ -151,7 +156,7 @@ public class GameManager : MonoBehaviour
 			return;
 		}
 
-		if (isSceneSwitched == true)
+		if (isGameClearAndGameOverSceneSwitched == true)
 		{
 			return;
 		}
@@ -162,7 +167,7 @@ public class GameManager : MonoBehaviour
 			return;
 		}
 
-		isSceneSwitched = true;
+		isGameClearAndGameOverSceneSwitched = true;
 		ShowScene(gameClearSceneName);
 	}
 
@@ -176,7 +181,7 @@ public class GameManager : MonoBehaviour
 			return;
 		}
 
-		if (isSceneSwitched == true)
+		if (isGameClearAndGameOverSceneSwitched == true)
 		{
 			return;
 		}
@@ -187,7 +192,7 @@ public class GameManager : MonoBehaviour
 			return;
 		}
 
-		isSceneSwitched = true;
+		isGameClearAndGameOverSceneSwitched = true;
 		ShowScene(gameOverSceneName);
 	}
 
@@ -268,7 +273,6 @@ public class GameManager : MonoBehaviour
 	public void GameOver()
 	{
 		// シーンを切り替える
-		ShowGameOverScene();
 		isGameOverTriggered = true;
 	}
 }

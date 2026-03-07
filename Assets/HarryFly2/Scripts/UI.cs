@@ -64,7 +64,7 @@ public class UI : MonoBehaviour
 
 	void Update()
 	{
-		if (GameManager.SingletonInstance.IsSceneSwitched == true)
+		if (GameManager.SingletonInstance.IsGameClearAndGameOverSceneSwitched == true)
 		{
 			return;
 		}

@@ -79,7 +79,7 @@ public class PlaneController : MonoBehaviour
 
 	void Update()
 	{
-		if (GameManager.SingletonInstance.IsSceneSwitched == true)
+		if (GameManager.SingletonInstance.IsGameClearAndGameOverSceneSwitched == true)
 		{
 			return;
 		}
@@ -183,7 +183,7 @@ public class PlaneController : MonoBehaviour
 
 	void FixedUpdate()
 	{
-		if (GameManager.SingletonInstance.IsSceneSwitched == true)
+		if (GameManager.SingletonInstance.IsGameClearAndGameOverSceneSwitched == true)
 		{
 			return;
 		}
