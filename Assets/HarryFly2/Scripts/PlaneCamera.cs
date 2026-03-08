@@ -26,6 +26,7 @@ public class PlaneCamera : MonoBehaviour
 		if (singletonInstance == null)
 		{
 			singletonInstance = this;//thisというのは自分自身のインスタンスという意味になります。この場合、Playerのインスタンスという意味になります。
+			DontDestroyOnLoad(this.gameObject);//シーンを切り替えた時に破棄しない
 		}
 		else
 		{

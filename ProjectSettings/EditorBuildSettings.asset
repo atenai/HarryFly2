@@ -6,15 +6,12 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Title.unity
-    guid: 3233aecc7855fcc4fab96ba3d92d778d
+    path: Assets/HarryFly2/Scenes/Stage0.unity
+    guid: 8ea9bce807b242345bcba7dcd3db073c
   - enabled: 1
-    path: Assets/Scenes/GameClear.unity
-    guid: dab941bb34f2c4d4bb86e29f6a8545ae
-  - enabled: 1
-    path: Assets/Scenes/GameOver.unity
-    guid: 7ce5145afc289c04cb793d597a1afa4f
-  - enabled: 1
-    path: Assets/Scenes/Stage1.unity
+    path: Assets/HarryFly2/Scenes/Stage1.unity
     guid: e9867a4bf1c75ae42949a2ecc682d36a
+  - enabled: 1
+    path: Assets/HarryFly2/Scenes/Stage2.unity
+    guid: 8a33f4de0aa1eef47937f2ab18806e7f
   m_configObjects: {}
