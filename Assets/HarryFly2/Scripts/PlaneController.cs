@@ -71,6 +71,11 @@ public class PlaneController : MonoBehaviour
 			return;
 		}
 
+		if (ui.IsFade == false)
+		{
+			return;
+		}
+
 		if (gameManager.IsPlay == false)
 		{
 			return;
@@ -176,6 +181,12 @@ public class PlaneController : MonoBehaviour
 			return;
 		}
 
+		if (ui.IsFade == false)
+		{
+			rb.velocity = Vector3.zero;
+			return;
+		}
+
 		if (gameManager.IsPlay == false)
 		{
 			rb.velocity = Vector3.zero;
@@ -238,7 +249,7 @@ public class PlaneController : MonoBehaviour
 	/// 燃料の追加
 	/// </summary>
 	/// <param name="value">追加量</param>
-	public void AddFuel(float value)
+	void AddFuel(float value)
 	{
 		currentFuel = currentFuel + value;
 		if (Max_Fuel <= currentFuel)

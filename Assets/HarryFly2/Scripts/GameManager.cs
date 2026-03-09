@@ -14,15 +14,23 @@ public class GameManager : MonoBehaviour
 
 	/// <summary>トータルの制限時間</summary>
 	float totalTime = 30;
+	public float TotalTime => totalTime;
 
 	/// <summary>コイン数</summary>
 	int coinCount = 0;
+	public int CoinCount => coinCount;
 	public static readonly int Max_Coin_Count = 999999;
 
 	void Awake()
 	{
 		isPlay = false;
+	}
+
+	void Start()
+	{
 		Load();
+		//ui.FadeIn();
+		CoinText();
 	}
 
 	void Load()
@@ -38,7 +46,7 @@ public class GameManager : MonoBehaviour
 		}
 	}
 
-	void Start()
+	void CoinText()
 	{
 		ui.CoinText.text = coinCount.ToString();
 	}
@@ -46,6 +54,13 @@ public class GameManager : MonoBehaviour
 	void Update()
 	{
 		if (StageManager.SingletonInstance.IsSceneSwitched == true)
+		{
+			return;
+		}
+
+		ui.FadeOut();
+
+		if (ui.IsFade == false)
 		{
 			return;
 		}
@@ -70,8 +85,7 @@ public class GameManager : MonoBehaviour
 	void TimerSystem()
 	{
 		totalTime = totalTime - Time.deltaTime;
-		Debug.Log("残り時間：" + totalTime);
-		ui.TimerText.text = "残り時間：" + totalTime.ToString("f1");
+		//Debug.Log("残り時間：" + totalTime);
 		if (totalTime <= 0)
 		{
 			// シーンを切り替える
@@ -99,8 +113,42 @@ public class GameManager : MonoBehaviour
 		{
 			coinCount = Max_Coin_Count;
 		}
-		ui.CoinText.text = coinCount.ToString();
 		//セーブ
 		ES3.Save("CoinCount", coinCount);
+	}
+
+	void OnGUI()
+	{
+#if UNITY_EDITOR//Unityエディター上での処理
+
+		GUIStyle styleGreen = new GUIStyle();
+		styleGreen.fontSize = 30;
+		GUIStyleState styleStateGreen = new GUIStyleState();
+		styleStateGreen.textColor = Color.green;
+		styleGreen.normal = styleStateGreen;
+
+		GUIStyle styleRed = new GUIStyle();
+		styleRed.fontSize = 30;
+		GUIStyleState styleStateRed = new GUIStyleState();
+		styleStateRed.textColor = Color.red;
+		styleRed.normal = styleStateRed;
+
+		GUIStyle styleBlack = new GUIStyle();
+		styleBlack.fontSize = 30;
+		GUIStyleState styleStateBlack = new GUIStyleState();
+		styleStateBlack.textColor = Color.black;
+		styleBlack.normal = styleStateBlack;
+
+		GUIStyle styleYellow = new GUIStyle();
+		styleYellow.fontSize = 30;
+		GUIStyleState styleStateYellow = new GUIStyleState();
+		styleStateYellow.textColor = Color.yellow;
+		styleYellow.normal = styleStateYellow;
+
+		int lineHeight = 50;
+
+		GUI.Box(new Rect(10, 2 * lineHeight, 100, 50), "コイン", styleYellow);
+		GUI.Box(new Rect(350, 2 * lineHeight, 100, 50), coinCount.ToString(), styleRed);
+#endif //終了  
 	}
 }
