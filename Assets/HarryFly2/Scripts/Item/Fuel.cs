@@ -7,6 +7,7 @@ public class Fuel : MonoBehaviour
 {
 	[Tooltip("追加燃料")]
 	[SerializeField] float value = 50;
+	public float Value => value;
 
 	void OnTriggerEnter(Collider other)
 	{

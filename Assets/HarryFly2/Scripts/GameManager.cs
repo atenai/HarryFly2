@@ -1,6 +1,4 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using System.Collections;
 
 /// <summary>
 /// ゲームマネージャー
@@ -19,7 +17,6 @@ public class GameManager : MonoBehaviour
 
 	/// <summary>コイン数</summary>
 	int coinCount = 0;
-	public int CoinCount => coinCount;
 	public static readonly int Max_Coin_Count = 999999;
 
 	void Awake()
@@ -103,37 +100,7 @@ public class GameManager : MonoBehaviour
 			coinCount = Max_Coin_Count;
 		}
 		ui.CoinText.text = coinCount.ToString();
-	}
-
-	/// <summary>
-	/// ゲームクリアー
-	/// </summary>
-	public void GameClear()
-	{
-		if (StageManager.SingletonInstance.IsSceneSwitched == true)
-		{
-			return;
-		}
-
 		//セーブ
 		ES3.Save("CoinCount", coinCount);
-		// シーンを切り替える
-		StageManager.SingletonInstance.IsTriggered = true;
-	}
-
-	/// <summary>
-	/// ゲームオーバー
-	/// </summary>
-	public void GameOver()
-	{
-		if (StageManager.SingletonInstance.IsSceneSwitched == true)
-		{
-			return;
-		}
-
-		//セーブ
-		ES3.Save("CoinCount", coinCount);
-		// シーンを切り替える
-		StageManager.SingletonInstance.IsTriggered = true;
 	}
 }

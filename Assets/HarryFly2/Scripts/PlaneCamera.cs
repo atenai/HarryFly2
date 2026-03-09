@@ -14,6 +14,7 @@ public class PlaneCamera : MonoBehaviour
 	[Tooltip("UI")]
 	[SerializeField] UI ui;
 
+	[Header("カメラに関する変数")]
 	[Tooltip("子のメインカメラ")]
 	[SerializeField] CinemachineVirtualCamera childMainDashMoveVirtualCamera;
 

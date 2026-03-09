@@ -15,6 +15,7 @@ public class UI : MonoBehaviour
 	[Tooltip("ゲームマネージャー")]
 	[SerializeField] GameManager gameManager;
 
+	[Header("UIに関する変数")]
 	[Tooltip("タイマーテキスト")]
 	[SerializeField] Text timerText;
 	public Text TimerText => timerText;

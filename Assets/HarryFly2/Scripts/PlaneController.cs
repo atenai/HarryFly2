@@ -5,10 +5,12 @@
 /// </summary>
 public class PlaneController : MonoBehaviour
 {
-	[Tooltip("UI")]
-	[SerializeField] UI ui;
 	[Tooltip("ゲームマネージャー")]
 	[SerializeField] GameManager gameManager;
+	[Tooltip("UI")]
+	[SerializeField] UI ui;
+
+	[Header("飛行機に関する変数")]
 	[Tooltip("飛行機のモデル")]
 	[SerializeField] GameObject planePrefab;
 	[Tooltip("リジッドボディ")]
@@ -41,9 +43,7 @@ public class PlaneController : MonoBehaviour
 	[Tooltip("y軸の機体回転速度")]
 	float yRotateSpeed = 40;
 
-	/// <summary>
-	/// 現在の燃料
-	/// </summary>
+	/// <summary>現在の燃料 </summary>
 	float currentFuel = 100f;
 	public float CurrentFuel => currentFuel;
 
@@ -247,6 +247,24 @@ public class PlaneController : MonoBehaviour
 		}
 	}
 
+	void OnTriggerEnter(Collider other)
+	{
+		if (other.tag == "Coin")
+		{
+			gameManager.AddCoin(other.GetComponent<Coin>().Value);
+		}
+
+		if (other.tag == "Fuel")
+		{
+			AddFuel(other.GetComponent<Fuel>().Value);
+		}
+
+		if (other.tag == "Timer")
+		{
+			gameManager.AddTimer(other.GetComponent<Timer>().Value);
+		}
+	}
+
 	/// <summary>
 	/// プレイヤーの位置をリセットする
 	/// </summary>
@@ -256,24 +274,6 @@ public class PlaneController : MonoBehaviour
 		this.transform.position = Vector3.zero;
 		this.transform.rotation = Quaternion.identity;
 		planePrefab.transform.localRotation = Quaternion.identity;
-	}
-
-	void OnTriggerEnter(Collider other)
-	{
-		if (other.tag == "Coin")
-		{
-			gameManager.AddCoin(1);
-		}
-
-		if (other.tag == "Fuel")
-		{
-			AddFuel(50);
-		}
-
-		if (other.tag == "Timer")
-		{
-			gameManager.AddTimer(5);
-		}
 	}
 
 	void OnGUI()
