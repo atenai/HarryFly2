@@ -65,7 +65,7 @@ public class UI : MonoBehaviour
 
 	void Update()
 	{
-		if (GameManager.SingletonInstance.IsSceneSwitched == true)
+		if (StageManager.SingletonInstance.IsSceneSwitched == true)
 		{
 			return;
 		}

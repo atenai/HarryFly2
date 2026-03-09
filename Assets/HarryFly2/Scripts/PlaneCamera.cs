@@ -34,11 +34,6 @@ public class PlaneCamera : MonoBehaviour
 		}
 	}
 
-	void Start()
-	{
-
-	}
-
 	void LateUpdate()
 	{
 		// オフセットは現在の距離を使う
