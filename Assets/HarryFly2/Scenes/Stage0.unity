@@ -591,6 +591,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!114 &260255253 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5333956510699450168, guid: a6494d0a26d3e62428312e751997d13b,
+    type: 3}
+  m_PrefabInstance: {fileID: 5360111990892336074}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4505db6c1c6e3ef47a2aec6fc4e953a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &296820503
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -895,12 +907,36 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1766455983}
   m_SourcePrefab: {fileID: 100100000, guid: ba37c11b413347040b65def322e4838a, type: 3}
+--- !u!114 &407127925 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9148636938308393773, guid: b807181cffb14ca4db2b4e9e143bfc3a,
+    type: 3}
+  m_PrefabInstance: {fileID: 7286492726945130822}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 576b520ba2b8cfc4fb8584fa137cce02, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &412938438 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 148404e027c770649a2930db1814746c,
     type: 3}
   m_PrefabInstance: {fileID: 357458265}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &426218109 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8074827458377192832, guid: 4fd6146eef823e245850b5bd8e27bbc1,
+    type: 3}
+  m_PrefabInstance: {fileID: 9050661442771471587}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cba68d2fd173ea04588d6f4af512f7d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &431114004 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: aba0d17be42e0b34b9594e43669d53cd,
@@ -3538,7 +3574,7 @@ PrefabInstance:
     - target: {fileID: 4243981443197828887, guid: 77422d51673e5484b8b1f04b8d25cb47,
         type: 3}
       propertyPath: m_Name
-      value: TimeUp
+      value: Timer
       objectReference: {fileID: 0}
     - target: {fileID: 4243981443197828888, guid: 77422d51673e5484b8b1f04b8d25cb47,
         type: 3}
@@ -3785,6 +3821,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3a628279ae2d4640b60c2f3c1326b34, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  planeController: {fileID: 260255253}
+  ui: {fileID: 407127925}
   childMainDashMoveVirtualCamera: {fileID: 129861697}
 --- !u!1 &1894001430662041876
 GameObject:
@@ -4129,6 +4167,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: Plane
       objectReference: {fileID: 0}
+    - target: {fileID: 5333956510699450168, guid: a6494d0a26d3e62428312e751997d13b,
+        type: 3}
+      propertyPath: ui
+      value: 
+      objectReference: {fileID: 407127925}
+    - target: {fileID: 5333956510699450168, guid: a6494d0a26d3e62428312e751997d13b,
+        type: 3}
+      propertyPath: gameManager
+      value: 
+      objectReference: {fileID: 426218109}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -4365,6 +4413,16 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 9148636938308393773, guid: b807181cffb14ca4db2b4e9e143bfc3a,
+        type: 3}
+      propertyPath: gameManager
+      value: 
+      objectReference: {fileID: 426218109}
+    - target: {fileID: 9148636938308393773, guid: b807181cffb14ca4db2b4e9e143bfc3a,
+        type: 3}
+      propertyPath: planeController
+      value: 
+      objectReference: {fileID: 260255253}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -4400,6 +4458,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: GameManager
       objectReference: {fileID: 0}
+    - target: {fileID: 8074827458377192832, guid: 4fd6146eef823e245850b5bd8e27bbc1,
+        type: 3}
+      propertyPath: ui
+      value: 
+      objectReference: {fileID: 407127925}
     - target: {fileID: 9220397726765511976, guid: 4fd6146eef823e245850b5bd8e27bbc1,
         type: 3}
       propertyPath: m_LocalPosition.x

@@ -223,5 +223,8 @@ public class StageManager : MonoBehaviour
 		yield return op;
 
 		//アンロード後の処理を書く
+		Debug.Log(sceneName + " をアンロードしました。");
+		InitScene();
+		LoadNextStage();
 	}
 }

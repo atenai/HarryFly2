@@ -10,9 +10,10 @@ using DG.Tweening;
 /// </summary>
 public class UI : MonoBehaviour
 {
-	private static UI singletonInstance = null;
-	/// <summary>シングルトンで作成（ゲーム中に１つのみにする）</summary>
-	public static UI SingletonInstance => singletonInstance;
+	[Tooltip("飛行機のモデル")]
+	[SerializeField] PlaneController planeController;
+	[Tooltip("ゲームマネージャー")]
+	[SerializeField] GameManager gameManager;
 
 	[Tooltip("タイマーテキスト")]
 	[SerializeField] Text timerText;
@@ -41,23 +42,9 @@ public class UI : MonoBehaviour
 	[SerializeField] TextMeshProUGUI coinText;
 	public TextMeshProUGUI CoinText => coinText;
 
-	void Awake()
-	{
-		//staticな変数instanceはメモリ領域は確保されていますが、初回では中身が入っていないので、中身を入れます。
-		if (singletonInstance == null)
-		{
-			singletonInstance = this;//thisというのは自分自身のインスタンスという意味になります。この場合、Playerのインスタンスという意味になります。
-			DontDestroyOnLoad(this.gameObject);//シーンを切り替えた時に破棄しない
-		}
-		else
-		{
-			Destroy(this.gameObject);//中身がすでに入っていた場合、自身のインスタンスがくっついているゲームオブジェクトを破棄します。
-		}
-	}
-
 	void Start()
 	{
-		fuelSlider.value = PlaneController.SingletonInstance.CurrentFuel / PlaneController.Max_Fuel;
+		fuelSlider.value = planeController.CurrentFuel / PlaneController.Max_Fuel;
 
 		tapText.transform.localScale = Vector3.one;
 		tapTween = tapText.transform.DOScale(new Vector3(1.5f, 1.5f, 1f), 0.6f).SetLoops(-1, LoopType.Yoyo).SetAutoKill(false).Pause();
@@ -70,9 +57,9 @@ public class UI : MonoBehaviour
 			return;
 		}
 
-		fuelSlider.value = PlaneController.SingletonInstance.CurrentFuel / PlaneController.Max_Fuel;
+		fuelSlider.value = planeController.CurrentFuel / PlaneController.Max_Fuel;
 
-		if (GameManager.SingletonInstance.IsPlay == false)
+		if (gameManager.IsPlay == false)
 		{
 			tapText.gameObject.SetActive(true);
 			tapTween.Play();
@@ -84,7 +71,7 @@ public class UI : MonoBehaviour
 			tapText.transform.localScale = Vector3.one;
 		}
 
-		if (GameManager.SingletonInstance.IsPlay == false)
+		if (gameManager.IsPlay == false)
 		{
 			return;
 		}

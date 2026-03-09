@@ -15,8 +15,8 @@ GameObject:
   - component: {fileID: 4243981443197828884}
   - component: {fileID: 6153067982339923489}
   m_Layer: 0
-  m_Name: TimeUp
-  m_TagString: Untagged
+  m_Name: Timer
+  m_TagString: Timer
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

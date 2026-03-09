@@ -9,7 +9,8 @@ public class Obstacle : MonoBehaviour
 	{
 		if (other.tag == "Player")
 		{
-			GameManager.SingletonInstance.GameOver();
+			// シーンを切り替える
+			StageManager.SingletonInstance.IsTriggered = true;
 		}
 	}
 }

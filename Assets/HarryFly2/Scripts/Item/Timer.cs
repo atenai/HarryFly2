@@ -12,7 +12,6 @@ public class Timer : MonoBehaviour
 	{
 		if (other.tag == "Player")
 		{
-			GameManager.SingletonInstance.AddTimer(value);
 			Destroy(gameObject);
 		}
 	}

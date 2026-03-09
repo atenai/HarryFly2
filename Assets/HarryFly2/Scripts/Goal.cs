@@ -9,7 +9,8 @@ public class Goal : MonoBehaviour
 	{
 		if (other.tag == "Player")
 		{
-			GameManager.SingletonInstance.GameClear();
+			// シーンを切り替える
+			StageManager.SingletonInstance.IsTriggered = true;
 		}
 	}
 }

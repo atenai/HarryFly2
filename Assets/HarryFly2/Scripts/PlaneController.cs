@@ -5,10 +5,10 @@
 /// </summary>
 public class PlaneController : MonoBehaviour
 {
-	private static PlaneController singletonInstance = null;
-	/// <summary>シングルトンで作成（ゲーム中に１つのみにする）</summary>
-	public static PlaneController SingletonInstance => singletonInstance;
-
+	[Tooltip("UI")]
+	[SerializeField] UI ui;
+	[Tooltip("ゲームマネージャー")]
+	[SerializeField] GameManager gameManager;
 	[Tooltip("飛行機のモデル")]
 	[SerializeField] GameObject planePrefab;
 	[Tooltip("リジッドボディ")]
@@ -56,23 +56,9 @@ public class PlaneController : MonoBehaviour
 	//加速/衝突効果
 	public GameObject paticlePrefab;
 
-	void Awake()
-	{
-		//staticな変数instanceはメモリ領域は確保されていますが、初回では中身が入っていないので、中身を入れます。
-		if (singletonInstance == null)
-		{
-			singletonInstance = this;//thisというのは自分自身のインスタンスという意味になります。この場合、Playerのインスタンスという意味になります。
-			DontDestroyOnLoad(this.gameObject);//シーンを切り替えた時に破棄しない
-		}
-		else
-		{
-			Destroy(this.gameObject);//中身がすでに入っていた場合、自身のインスタンスがくっついているゲームオブジェクトを破棄します。
-		}
-	}
-
 	void Start()
 	{
-		UI.SingletonInstance.AccelerateButton.onClick.AddListener(Accelerate);
+		ui.AccelerateButton.onClick.AddListener(Accelerate);
 		initForwordMoveSpeed = addForwordMoveSpeed;
 		initVerticalAndHorizontalMoveSpeed = addVerticalAndHorizontalMoveSpeed;
 		paticlePrefab.SetActive(false);
@@ -85,13 +71,13 @@ public class PlaneController : MonoBehaviour
 			return;
 		}
 
-		if (GameManager.SingletonInstance.IsPlay == false)
+		if (gameManager.IsPlay == false)
 		{
 			return;
 		}
 
-		float joystickHorizontal = UI.SingletonInstance.FloatingJoystick.Horizontal;
-		float joystickVertical = UI.SingletonInstance.FloatingJoystick.Vertical;
+		float joystickHorizontal = ui.FloatingJoystick.Horizontal;
+		float joystickVertical = ui.FloatingJoystick.Vertical;
 
 		//上下回転
 		if (0.1f < joystickVertical)
@@ -167,7 +153,7 @@ public class PlaneController : MonoBehaviour
 	/// </summary>
 	void Accelerate()
 	{
-		if (UI.SingletonInstance.ButtonDownFlag == true && 0 < currentFuel)
+		if (ui.ButtonDownFlag == true && 0 < currentFuel)
 		{
 			paticlePrefab.SetActive(true);
 			ChangeForwordMoveSpeed(changeForwordMovepeed);
@@ -186,17 +172,19 @@ public class PlaneController : MonoBehaviour
 	{
 		if (StageManager.SingletonInstance.IsSceneSwitched == true)
 		{
+			rb.velocity = Vector3.zero;
 			return;
 		}
 
-		if (GameManager.SingletonInstance.IsPlay == false)
+		if (gameManager.IsPlay == false)
 		{
+			rb.velocity = Vector3.zero;
 			return;
 		}
 
 		// 移動は Rigidbody の速度で制御する
-		float joystickHorizontal = UI.SingletonInstance.FloatingJoystick.Horizontal;
-		float joystickVertical = UI.SingletonInstance.FloatingJoystick.Vertical;
+		float joystickHorizontal = ui.FloatingJoystick.Horizontal;
+		float joystickVertical = ui.FloatingJoystick.Vertical;
 
 		float horizontal = Mathf.Clamp(joystickHorizontal, -1f, 1f);
 		float vertical = Mathf.Clamp(joystickVertical, -1f, 1f);
@@ -259,6 +247,35 @@ public class PlaneController : MonoBehaviour
 		}
 	}
 
+	/// <summary>
+	/// プレイヤーの位置をリセットする
+	/// </summary>
+	public void ResetPlayerPosition()
+	{
+		rb.velocity = Vector3.zero;
+		this.transform.position = Vector3.zero;
+		this.transform.rotation = Quaternion.identity;
+		planePrefab.transform.localRotation = Quaternion.identity;
+	}
+
+	void OnTriggerEnter(Collider other)
+	{
+		if (other.tag == "Coin")
+		{
+			gameManager.AddCoin(1);
+		}
+
+		if (other.tag == "Fuel")
+		{
+			AddFuel(50);
+		}
+
+		if (other.tag == "Timer")
+		{
+			gameManager.AddTimer(5);
+		}
+	}
+
 	void OnGUI()
 	{
 #if UNITY_EDITOR//Unityエディター上での処理
@@ -289,8 +306,8 @@ public class PlaneController : MonoBehaviour
 
 		int lineHeight = 50;
 
-		float joystickHorizontal = UI.SingletonInstance.FloatingJoystick.Horizontal;
-		float joystickVertical = UI.SingletonInstance.FloatingJoystick.Vertical;
+		float joystickHorizontal = ui.FloatingJoystick.Horizontal;
+		float joystickVertical = ui.FloatingJoystick.Vertical;
 		GUI.Box(new Rect(10, 0 * lineHeight, 100, 50), "inputHorizontal", styleRed);
 		GUI.Box(new Rect(350, 0 * lineHeight, 100, 50), joystickHorizontal.ToString(), styleRed);
 		GUI.Box(new Rect(10, 1 * lineHeight, 100, 50), "inputVertical", styleRed);

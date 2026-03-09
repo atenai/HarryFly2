@@ -7,9 +7,8 @@ using System.Collections;
 /// </summary>
 public class GameManager : MonoBehaviour
 {
-	private static GameManager singletonInstance = null;
-	/// <summary>シングルトンで作成（ゲーム中に１つのみにする）</summary>
-	public static GameManager SingletonInstance => singletonInstance;
+	[Tooltip("UI")]
+	[SerializeField] UI ui;
 
 	/// <summary>ゲームプレイ中かどうか</summary>
 	bool isPlay = false;
@@ -25,17 +24,6 @@ public class GameManager : MonoBehaviour
 
 	void Awake()
 	{
-		//staticな変数instanceはメモリ領域は確保されていますが、初回では中身が入っていないので、中身を入れます。
-		if (singletonInstance == null)
-		{
-			singletonInstance = this;//thisというのは自分自身のインスタンスという意味になります。この場合、Playerのインスタンスという意味になります。
-			DontDestroyOnLoad(this.gameObject);//シーンを切り替えた時に破棄しない
-		}
-		else
-		{
-			Destroy(this.gameObject);//中身がすでに入っていた場合、自身のインスタンスがくっついているゲームオブジェクトを破棄します。
-		}
-
 		isPlay = false;
 		Load();
 	}
@@ -55,7 +43,7 @@ public class GameManager : MonoBehaviour
 
 	void Start()
 	{
-		UI.SingletonInstance.CoinText.text = GameManager.SingletonInstance.CoinCount.ToString();
+		ui.CoinText.text = coinCount.ToString();
 	}
 
 	void Update()
@@ -86,10 +74,11 @@ public class GameManager : MonoBehaviour
 	{
 		totalTime = totalTime - Time.deltaTime;
 		Debug.Log("残り時間：" + totalTime);
-		UI.SingletonInstance.TimerText.text = "残り時間：" + totalTime.ToString("f1");
+		ui.TimerText.text = "残り時間：" + totalTime.ToString("f1");
 		if (totalTime <= 0)
 		{
-			GameOver();
+			// シーンを切り替える
+			StageManager.SingletonInstance.IsTriggered = true;
 		}
 	}
 
@@ -113,7 +102,7 @@ public class GameManager : MonoBehaviour
 		{
 			coinCount = Max_Coin_Count;
 		}
-		UI.SingletonInstance.CoinText.text = coinCount.ToString();
+		ui.CoinText.text = coinCount.ToString();
 	}
 
 	/// <summary>

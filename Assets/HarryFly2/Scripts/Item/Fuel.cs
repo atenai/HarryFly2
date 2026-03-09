@@ -12,7 +12,6 @@ public class Fuel : MonoBehaviour
 	{
 		if (other.tag == "Player")
 		{
-			PlaneController.SingletonInstance.AddFuel(value);
 			Destroy(gameObject);
 		}
 	}
