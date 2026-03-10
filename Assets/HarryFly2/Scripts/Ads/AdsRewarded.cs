@@ -5,7 +5,7 @@ using UnityEngine.Advertisements;
 //リワード広告スクリプト
 public class AdsRewarded : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowListener
 {
-	[SerializeField] Button _showAdButton;//ボタンの変数を作る理由が何かあるみたいこれ
+	[SerializeField] Button _showAdButton = null;//ボタンの変数を作る理由が何かあるみたいこれ
 	[SerializeField] string _androidAuUnitId = "Rewarded_Android";
 	[SerializeField] string _iOSAdUnitId = "Rewarded_iOS";
 	string _adUnitId = null;
@@ -19,8 +19,11 @@ public class AdsRewarded : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowLi
 #elif UNITY_ANDROID
 		_adUnitId = _androidAuUnitId;
 #endif
-		//リワード広告表示ボタンをオフにする
-		_showAdButton.interactable = false;
+		if (_showAdButton != null)
+		{
+			//リワード広告表示ボタンをオフにする
+			_showAdButton.interactable = false;
+		}
 	}
 
 	//リワード広告をロード
@@ -38,18 +41,24 @@ public class AdsRewarded : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowLi
 
 		if (adUnitId.Equals(_adUnitId))
 		{
-			//ボタンをクリックしたらShowAd関数を呼び出す
-			_showAdButton.onClick.AddListener(ShowAd);
-			//リワード広告表示ボタンをオンにする
-			_showAdButton.interactable = true;
+			if (_showAdButton != null)
+			{
+				//ボタンをクリックしたらShowAd関数を呼び出す
+				_showAdButton.onClick.AddListener(ShowAd);
+				//リワード広告表示ボタンをオンにする
+				_showAdButton.interactable = true;
+			}
 		}
 	}
 
 	//リワード広告を表示する
 	public void ShowAd()
 	{
-		//リワード広告表示ボタンをオフにする
-		_showAdButton.interactable = false;
+		if (_showAdButton != null)
+		{
+			//リワード広告表示ボタンをオフにする
+			_showAdButton.interactable = false;
+		}
 		//リワード広告を表示する
 		Advertisement.Show(_adUnitId, this);
 	}
@@ -87,7 +96,10 @@ public class AdsRewarded : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowLi
 
 	void OnDestroy()
 	{
-		//ボタンリスナーを全て消す
-		_showAdButton.onClick.RemoveAllListeners();
+		if (_showAdButton != null)
+		{
+			//ボタンリスナーを全て消す
+			_showAdButton.onClick.RemoveAllListeners();
+		}
 	}
 }
