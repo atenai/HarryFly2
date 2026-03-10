@@ -13,6 +13,7 @@ public class AdsManager : MonoBehaviour, IUnityAdsInitializationListener
 
 	[SerializeField] AdsRewarded adsRewarded;
 	[SerializeField] AdsInterstitial adsInterstitial;
+	[SerializeField] AdsBanner adsBanner;
 
 	void Awake()
 	{
@@ -36,6 +37,8 @@ public class AdsManager : MonoBehaviour, IUnityAdsInitializationListener
 		adsRewarded.LoadAd();
 		//インターステーショナル広告をロードする
 		adsInterstitial.LoadAd();
+		//バナー広告をロードする
+		adsBanner.LoadAd();
 	}
 
 	//初期化処理が失敗した場合に実行する
