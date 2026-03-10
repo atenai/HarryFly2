@@ -29,7 +29,7 @@ public class GameManager : MonoBehaviour
 	void Start()
 	{
 		Load();
-		//ui.FadeIn();
+		ui.FadeIn();
 		CoinText();
 	}
 

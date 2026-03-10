@@ -832,7 +832,7 @@ PlayerSettings:
   webGLMemoryGeometricGrowthCap: 96
   webGLPowerPreference: 2
   scriptingDefineSymbols:
-    Android: DOTWEEN;DOTWEEN_TEXTMESHPRO;ES3_TMPRO;ES3_UGUI
+    Android: DOTWEEN;DOTWEEN_TEXTMESHPRO;ES3_TMPRO;ES3_UGUI;LEVELPLAY_DEPENDENCIES_INSTALLED
     EmbeddedLinux: DOTWEEN;DOTWEEN_TEXTMESHPRO;ES3_TMPRO;ES3_UGUI
     GameCoreScarlett: DOTWEEN;DOTWEEN_TEXTMESHPRO
     GameCoreXboxOne: DOTWEEN;DOTWEEN_TEXTMESHPRO
@@ -940,6 +940,7 @@ PlayerSettings:
   vrEditorSettings: {}
   cloudServicesEnabled:
     UNet: 1
+    Unity Ads: 0
   luminIcon:
     m_Name: 
     m_ModelFolderPath: 
@@ -959,11 +960,11 @@ PlayerSettings:
   apiCompatibilityLevel: 6
   activeInputHandler: 0
   windowsGamepadBackendHint: 0
-  cloudProjectId: 
+  cloudProjectId: 18a2a539-b293-4a3b-a42f-990571027b30
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: 
-  organizationId: 
+  projectName: HarryFly2
+  organizationId: atenai47
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}

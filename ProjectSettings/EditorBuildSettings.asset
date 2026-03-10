@@ -5,13 +5,16 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/HarryFly2/Scenes/Stage0.unity
     guid: 8ea9bce807b242345bcba7dcd3db073c
-  - enabled: 1
+  - enabled: 0
     path: Assets/HarryFly2/Scenes/Stage1.unity
     guid: e9867a4bf1c75ae42949a2ecc682d36a
-  - enabled: 1
+  - enabled: 0
     path: Assets/HarryFly2/Scenes/Stage2.unity
     guid: 8a33f4de0aa1eef47937f2ab18806e7f
+  - enabled: 1
+    path: Assets/HarryFly2/Scenes/AdsTest.unity
+    guid: d28b5b5622d8b6f4a873d600aa31b615
   m_configObjects: {}
