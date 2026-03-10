@@ -50,6 +50,9 @@ public class UI : MonoBehaviour
 	[SerializeField] TextMeshProUGUI coinText;
 	public TextMeshProUGUI CoinText => coinText;
 
+	[Tooltip("広告報酬ボタン")]
+	[SerializeField] Button adsRewardedButton;
+
 	void Start()
 	{
 		timerText.text = "残り時間：" + gameManager.TotalTime.ToString("f1");
@@ -57,6 +60,8 @@ public class UI : MonoBehaviour
 
 		tapText.transform.localScale = Vector3.one;
 		tapTween = tapText.transform.DOScale(new Vector3(1.5f, 1.5f, 1f), 0.6f).SetLoops(-1, LoopType.Yoyo).SetAutoKill(false).Pause();
+
+		adsRewardedButton.onClick.AddListener(AdsManager.SingletonInstance.AdsRewarded.ShowAd);
 	}
 
 	void Update()

@@ -4145,6 +4145,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: Canvas
       objectReference: {fileID: 0}
+    - target: {fileID: 7022485006891454316, guid: b807181cffb14ca4db2b4e9e143bfc3a,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7022485006891454316, guid: b807181cffb14ca4db2b4e9e143bfc3a,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7022485006891454316, guid: b807181cffb14ca4db2b4e9e143bfc3a,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7022485006891454316, guid: b807181cffb14ca4db2b4e9e143bfc3a,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7365940278884193328, guid: b807181cffb14ca4db2b4e9e143bfc3a,
         type: 3}
       propertyPath: m_Pivot.x
@@ -4243,6 +4263,26 @@ PrefabInstance:
     - target: {fileID: 7365940278884193328, guid: b807181cffb14ca4db2b4e9e143bfc3a,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7404455948585115006, guid: b807181cffb14ca4db2b4e9e143bfc3a,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7404455948585115006, guid: b807181cffb14ca4db2b4e9e143bfc3a,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7404455948585115006, guid: b807181cffb14ca4db2b4e9e143bfc3a,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7404455948585115006, guid: b807181cffb14ca4db2b4e9e143bfc3a,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8652861033675301134, guid: b807181cffb14ca4db2b4e9e143bfc3a,
@@ -4348,6 +4388,7 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 170076735}
+  - {fileID: 240581374}
   - {fileID: 6111132128100661649}
   - {fileID: 9050661442771471587}
   - {fileID: 1991489384205733244}
@@ -4356,7 +4397,6 @@ SceneRoots:
   - {fileID: 1985344270603428485}
   - {fileID: 7286492726945130822}
   - {fileID: 1383451434}
-  - {fileID: 240581374}
   - {fileID: 1248699878}
   - {fileID: 129322189}
   - {fileID: 637947365}
