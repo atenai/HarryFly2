@@ -10,8 +10,8 @@ EditorBuildSettings:
     guid: 8ea9bce807b242345bcba7dcd3db073c
   - enabled: 1
     path: Assets/HarryFly2/Scenes/Stage1.unity
-    guid: fdd0e3824b995c44ab7efa9d43c2b552
+    guid: 08344060c1a83444294290eb4dd42209
   - enabled: 1
     path: Assets/HarryFly2/Scenes/Stage2.unity
-    guid: 880f7378c9bdd7b4b8aab2b54f62db41
+    guid: 807e2125d62ed3d479cf3c6fae6b8e7c
   m_configObjects: {}

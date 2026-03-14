@@ -10,7 +10,7 @@ public class Obstacle : MonoBehaviour
 		if (other.tag == "Player")
 		{
 			// シーンを切り替える
-			StageManager.SingletonInstance.IsTriggered = true;
+			//StageManager.SingletonInstance.IsTriggered = true;
 		}
 	}
 }

@@ -274,33 +274,42 @@ public class PlaneController : MonoBehaviour
 		}
 	}
 
-	void OnTriggerEnter(Collider other)
+	void OnTriggerEnter(Collider collider)
 	{
-		if (other.tag == "Coin")
+		if (collider.tag == "Coin")
 		{
-			gameManager.AddCoin(other.GetComponent<Coin>().Value);
+			gameManager.AddCoin(collider.GetComponent<Coin>().Value);
 		}
 
-		if (other.tag == "Fuel")
+		if (collider.tag == "Fuel")
 		{
-			AddFuel(other.GetComponent<Fuel>().Value);
+			AddFuel(collider.GetComponent<Fuel>().Value);
 		}
 
-		if (other.tag == "Timer")
+		if (collider.tag == "Timer")
 		{
-			gameManager.AddTimer(other.GetComponent<Timer>().Value);
+			gameManager.AddTimer(collider.GetComponent<Timer>().Value);
 		}
 
-		if (other.tag == "Goal")
+		if (collider.tag == "Goal")
 		{
+			Debug.Log("ゴール！");
 			AdsManager.SingletonInstance.ShowAdsInterstitialCount();
+			// シーンを切り替える
+			StageManager.SingletonInstance.IsTriggered = true;
 		}
+	}
 
-		if (other.tag == "Obstacle")
+	void OnCollisionEnter(Collision collision)
+	{
+		Debug.Log("障害物に衝突した" + collision.gameObject.tag);
+		if (collision.gameObject.CompareTag("Obstacle") == true)
 		{
 			AdsManager.SingletonInstance.ShowAdsInterstitialCount();
 			ui.FadeIn();
 			ResetPlayerPosition();
+			// シーンを切り替える
+			StageManager.SingletonInstance.IsTriggered = true;
 		}
 	}
 
