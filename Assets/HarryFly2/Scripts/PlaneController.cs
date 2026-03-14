@@ -12,7 +12,7 @@ public class PlaneController : MonoBehaviour
 
 	[Header("飛行機に関する変数")]
 	[Tooltip("飛行機のモデル")]
-	[SerializeField] GameObject planePrefab;
+	[SerializeField] GameObject[] planePrefabs;
 	[Tooltip("リジッドボディ")]
 	[SerializeField] Rigidbody rb;
 
@@ -62,6 +62,16 @@ public class PlaneController : MonoBehaviour
 		initForwordMoveSpeed = addForwordMoveSpeed;
 		initVerticalAndHorizontalMoveSpeed = addVerticalAndHorizontalMoveSpeed;
 		paticlePrefab.SetActive(false);
+		ChangePlaneModel();
+	}
+
+	void ChangePlaneModel()
+	{
+		foreach (var model in planePrefabs)
+		{
+			model.SetActive(false);
+		}
+		planePrefabs[ShopManager.SingletonInstance.PlaneModelNumber].SetActive(true);
 	}
 
 	void Update()
@@ -76,6 +86,12 @@ public class PlaneController : MonoBehaviour
 			return;
 		}
 
+		if (ui.Shop.gameObject.activeSelf == true)
+		{
+			ChangePlaneModel();
+			return;
+		}
+
 		if (gameManager.IsPlay == false)
 		{
 			return;
@@ -87,66 +103,66 @@ public class PlaneController : MonoBehaviour
 		//上下回転
 		if (0.1f < joystickVertical)
 		{
-			if (planePrefab.transform.localEulerAngles.x < 31 || planePrefab.transform.localEulerAngles.x > 330)
+			if (planePrefabs[ShopManager.SingletonInstance.PlaneModelNumber].transform.localEulerAngles.x < 31 || planePrefabs[ShopManager.SingletonInstance.PlaneModelNumber].transform.localEulerAngles.x > 330)
 			{
-				planePrefab.transform.Rotate(-verticalRotateSpeed * Time.deltaTime, 0, 0, Space.World);
+				planePrefabs[ShopManager.SingletonInstance.PlaneModelNumber].transform.Rotate(-verticalRotateSpeed * Time.deltaTime, 0, 0, Space.World);
 			}
 		}
 		else if (joystickVertical < -0.1f)
 		{
-			if (planePrefab.transform.localEulerAngles.x < 30 || planePrefab.transform.localEulerAngles.x > 329)
+			if (planePrefabs[ShopManager.SingletonInstance.PlaneModelNumber].transform.localEulerAngles.x < 30 || planePrefabs[ShopManager.SingletonInstance.PlaneModelNumber].transform.localEulerAngles.x > 329)
 			{
-				planePrefab.transform.Rotate(verticalRotateSpeed * Time.deltaTime, 0, 0, Space.World);
+				planePrefabs[ShopManager.SingletonInstance.PlaneModelNumber].transform.Rotate(verticalRotateSpeed * Time.deltaTime, 0, 0, Space.World);
 			}
 		}
 
 		//左右回転
 		if (0.1f < joystickHorizontal)
 		{
-			if (planePrefab.transform.localEulerAngles.z < 31 || planePrefab.transform.localEulerAngles.z > 330)
+			if (planePrefabs[ShopManager.SingletonInstance.PlaneModelNumber].transform.localEulerAngles.z < 31 || planePrefabs[ShopManager.SingletonInstance.PlaneModelNumber].transform.localEulerAngles.z > 330)
 			{
-				planePrefab.transform.Rotate(0, 0, -horizontalRotateSpeed * Time.deltaTime, Space.World);
+				planePrefabs[ShopManager.SingletonInstance.PlaneModelNumber].transform.Rotate(0, 0, -horizontalRotateSpeed * Time.deltaTime, Space.World);
 			}
 		}
 		else if (joystickHorizontal < -0.1f)
 		{
-			if (planePrefab.transform.localEulerAngles.z < 30 || planePrefab.transform.localEulerAngles.z > 329)
+			if (planePrefabs[ShopManager.SingletonInstance.PlaneModelNumber].transform.localEulerAngles.z < 30 || planePrefabs[ShopManager.SingletonInstance.PlaneModelNumber].transform.localEulerAngles.z > 329)
 			{
-				planePrefab.transform.Rotate(0, 0, horizontalRotateSpeed * Time.deltaTime, Space.World);
+				planePrefabs[ShopManager.SingletonInstance.PlaneModelNumber].transform.Rotate(0, 0, horizontalRotateSpeed * Time.deltaTime, Space.World);
 			}
 		}
 
 		//y軸を元に戻す処理
-		if (0 < planePrefab.transform.rotation.y)
+		if (0 < planePrefabs[ShopManager.SingletonInstance.PlaneModelNumber].transform.rotation.y)
 		{
-			planePrefab.transform.Rotate(0, -yRotateSpeed * Time.deltaTime, 0, Space.World);
+			planePrefabs[ShopManager.SingletonInstance.PlaneModelNumber].transform.Rotate(0, -yRotateSpeed * Time.deltaTime, 0, Space.World);
 		}
-		if (planePrefab.transform.rotation.y < 0)
+		if (planePrefabs[ShopManager.SingletonInstance.PlaneModelNumber].transform.rotation.y < 0)
 		{
-			planePrefab.transform.Rotate(0, yRotateSpeed * Time.deltaTime, 0, Space.World);
+			planePrefabs[ShopManager.SingletonInstance.PlaneModelNumber].transform.Rotate(0, yRotateSpeed * Time.deltaTime, 0, Space.World);
 		}
 
 		//回転軸を元に戻す処理
 		if (joystickVertical == 0.0f)
 		{
-			if (0 < planePrefab.transform.rotation.x)
+			if (0 < planePrefabs[ShopManager.SingletonInstance.PlaneModelNumber].transform.rotation.x)
 			{
-				planePrefab.transform.Rotate(-verticalRotateSpeed * Time.deltaTime, 0, 0);
+				planePrefabs[ShopManager.SingletonInstance.PlaneModelNumber].transform.Rotate(-verticalRotateSpeed * Time.deltaTime, 0, 0);
 			}
-			if (planePrefab.transform.rotation.x < 0)
+			if (planePrefabs[ShopManager.SingletonInstance.PlaneModelNumber].transform.rotation.x < 0)
 			{
-				planePrefab.transform.Rotate(verticalRotateSpeed * Time.deltaTime, 0, 0);
+				planePrefabs[ShopManager.SingletonInstance.PlaneModelNumber].transform.Rotate(verticalRotateSpeed * Time.deltaTime, 0, 0);
 			}
 		}
 		if (joystickHorizontal == 0.0f)
 		{
-			if (0 < planePrefab.transform.rotation.z)
+			if (0 < planePrefabs[ShopManager.SingletonInstance.PlaneModelNumber].transform.rotation.z)
 			{
-				planePrefab.transform.Rotate(0, 0, -horizontalRotateSpeed * Time.deltaTime);
+				planePrefabs[ShopManager.SingletonInstance.PlaneModelNumber].transform.Rotate(0, 0, -horizontalRotateSpeed * Time.deltaTime);
 			}
-			if (planePrefab.transform.rotation.z < 0)
+			if (planePrefabs[ShopManager.SingletonInstance.PlaneModelNumber].transform.rotation.z < 0)
 			{
-				planePrefab.transform.Rotate(0, 0, horizontalRotateSpeed * Time.deltaTime);
+				planePrefabs[ShopManager.SingletonInstance.PlaneModelNumber].transform.Rotate(0, 0, horizontalRotateSpeed * Time.deltaTime);
 			}
 		}
 
@@ -284,7 +300,7 @@ public class PlaneController : MonoBehaviour
 		rb.velocity = Vector3.zero;
 		this.transform.position = Vector3.zero;
 		this.transform.rotation = Quaternion.identity;
-		planePrefab.transform.localRotation = Quaternion.identity;
+		planePrefabs[ShopManager.SingletonInstance.PlaneModelNumber].transform.localRotation = Quaternion.identity;
 	}
 
 	void OnGUI()

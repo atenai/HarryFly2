@@ -65,6 +65,11 @@ public class GameManager : MonoBehaviour
 			return;
 		}
 
+		if (ui.Shop.gameObject.activeSelf == true)
+		{
+			return;
+		}
+
 		if (Input.GetMouseButton(0))
 		{
 			//ここにタップされた時の処理を書く

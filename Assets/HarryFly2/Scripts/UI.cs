@@ -15,6 +15,9 @@ public class UI : MonoBehaviour
 	[SerializeField] PlaneController planeController;
 	[Tooltip("ゲームマネージャー")]
 	[SerializeField] GameManager gameManager;
+	[Tooltip("ショップ")]
+	[SerializeField] Shop shop;
+	public Shop Shop => shop;
 
 	[Header("UIに関する変数")]
 	[Tooltip("タイマーテキスト")]
