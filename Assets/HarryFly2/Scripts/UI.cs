@@ -161,29 +161,10 @@ public class UI : MonoBehaviour
 		buttonDownFlag = false;
 	}
 
-
 	/// <summary>
 	/// 指定した Image をフェードインします。
 	/// 不透明にする
 	/// </summary>
-	public Tween FadeIn(float duration, TweenCallback onComplete = null)
-	{
-		if (fadeImage == null)
-		{
-			return null;
-		}
-
-		fadeImage.gameObject.SetActive(true);
-		Color color = fadeImage.color;
-		color.a = 0f;
-		fadeImage.color = color;
-
-		return fadeImage.DOFade(1f, duration).OnComplete(() =>
-		{
-			onComplete?.Invoke();
-		});
-	}
-
 	public void FadeIn()
 	{
 		fadeImage.gameObject.SetActive(true);

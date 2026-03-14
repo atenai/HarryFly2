@@ -183,7 +183,6 @@ public class StageManager : MonoBehaviour
 			return;
 		}
 
-		AdsManager.SingletonInstance.AdsInterstitial.ShowAd();
 		IsSceneSwitched = true;
 		OnUnloadScene("stage" + currentSceneIndex);
 		ShowScene("Stage" + nextSceneIndex);

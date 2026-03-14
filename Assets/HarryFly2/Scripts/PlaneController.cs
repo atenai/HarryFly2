@@ -290,12 +290,24 @@ public class PlaneController : MonoBehaviour
 		{
 			gameManager.AddTimer(other.GetComponent<Timer>().Value);
 		}
+
+		if (other.tag == "Goal")
+		{
+			AdsManager.SingletonInstance.ShowAdsInterstitialCount();
+		}
+
+		if (other.tag == "Obstacle")
+		{
+			AdsManager.SingletonInstance.ShowAdsInterstitialCount();
+			ui.FadeIn();
+			ResetPlayerPosition();
+		}
 	}
 
 	/// <summary>
 	/// プレイヤーの位置をリセットする
 	/// </summary>
-	public void ResetPlayerPosition()
+	void ResetPlayerPosition()
 	{
 		rb.velocity = Vector3.zero;
 		this.transform.position = Vector3.zero;

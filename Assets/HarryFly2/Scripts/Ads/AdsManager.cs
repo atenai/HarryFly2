@@ -21,6 +21,9 @@ public class AdsManager : MonoBehaviour, IUnityAdsInitializationListener
 	public AdsInterstitial AdsInterstitial => adsInterstitial;
 	[SerializeField] AdsBanner adsBanner;
 
+	int adsInterstitialCount = 0;
+	const int Max_AdsInterstitial_Count = 3;
+
 	void Awake()
 	{
 		//staticな変数instanceはメモリ領域は確保されていますが、初回では中身が入っていないので、中身を入れます。
@@ -62,5 +65,15 @@ public class AdsManager : MonoBehaviour, IUnityAdsInitializationListener
 	public void OnInitializationFailed(UnityAdsInitializationError error, string message)
 	{
 		Debug.Log($"Unity Ads Initialization Failed: {error.ToString()} - {message}");
+	}
+
+	public void ShowAdsInterstitialCount()
+	{
+		adsInterstitialCount++;
+		if (Max_AdsInterstitial_Count <= adsInterstitialCount)
+		{
+			adsInterstitialCount = 0;
+			adsInterstitial.ShowAd();
+		}
 	}
 }

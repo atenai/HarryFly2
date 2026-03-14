@@ -7,6 +7,8 @@ TagManager:
   - Coin
   - Fuel
   - Timer
+  - Goal
+  - Obstacle
   layers:
   - Default
   - TransparentFX
