@@ -86,7 +86,7 @@ public class PlaneController : MonoBehaviour
 			return;
 		}
 
-		if (ui.Shop.gameObject.activeSelf == true)
+		if (ui.Panel_Shop.gameObject.activeSelf == true)
 		{
 			ChangePlaneModel();
 			return;

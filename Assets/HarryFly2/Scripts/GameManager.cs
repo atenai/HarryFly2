@@ -10,7 +10,11 @@ public class GameManager : MonoBehaviour
 
 	/// <summary>ゲームプレイ中かどうか</summary>
 	bool isPlay = false;
-	public bool IsPlay => isPlay;
+	public bool IsPlay
+	{
+		get { return isPlay; }
+		set { isPlay = value; }
+	}
 
 	/// <summary>トータルの制限時間</summary>
 	float totalTime = 30;
@@ -63,17 +67,6 @@ public class GameManager : MonoBehaviour
 		if (ui.IsFade == false)
 		{
 			return;
-		}
-
-		if (ui.Shop.gameObject.activeSelf == true)
-		{
-			return;
-		}
-
-		if (Input.GetMouseButton(0))
-		{
-			//ここにタップされた時の処理を書く
-			isPlay = true;
 		}
 
 		if (isPlay == false)

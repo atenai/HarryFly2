@@ -15,9 +15,19 @@ public class UI : MonoBehaviour
 	[SerializeField] PlaneController planeController;
 	[Tooltip("ゲームマネージャー")]
 	[SerializeField] GameManager gameManager;
-	[Tooltip("ショップ")]
-	[SerializeField] Shop shop;
-	public Shop Shop => shop;
+
+	[Tooltip("ショップパネル")]
+	[SerializeField] GameObject panel_Shop;
+	public GameObject Panel_Shop => panel_Shop;
+	[Tooltip("ショップを開くボタン")]
+	[SerializeField] Button openShopButton;
+	[Tooltip("ショップを閉じるボタン")]
+	[SerializeField] Button closeShopButton;
+	[Tooltip("飛行機のモデル")]
+	[SerializeField] Button[] modelButton;
+
+	[Tooltip("ゲームスタートボタン")]
+	[SerializeField] Button gameStartButton;
 
 	[Header("UIに関する変数")]
 	[Tooltip("タイマーテキスト")]
@@ -65,6 +75,46 @@ public class UI : MonoBehaviour
 		tapTween = tapText.transform.DOScale(new Vector3(1.5f, 1.5f, 1f), 0.6f).SetLoops(-1, LoopType.Yoyo).SetAutoKill(false).Pause();
 
 		adsRewardedButton.onClick.AddListener(AdsManager.SingletonInstance.AdsRewarded.ShowAd);
+		gameStartButton.onClick.AddListener(() =>
+		{
+			openShopButton.gameObject.SetActive(false);
+			gameStartButton.gameObject.SetActive(false);
+			gameManager.IsPlay = true;
+		});
+
+		InitShop();
+	}
+
+	void InitShop()
+	{
+		Panel_Shop.SetActive(false);
+		openShopButton.onClick.AddListener(OnClickShopOpen);
+		closeShopButton.onClick.AddListener(OnClickShopClose);
+		modelButton[0].onClick.AddListener(OnClickModel0);
+		modelButton[1].onClick.AddListener(OnClickModel1);
+	}
+
+	void OnClickShopOpen()
+	{
+		Panel_Shop.SetActive(true);
+		gameStartButton.gameObject.SetActive(false);
+	}
+
+	void OnClickShopClose()
+	{
+		Panel_Shop.SetActive(false);
+		gameStartButton.gameObject.SetActive(true);
+	}
+
+
+	void OnClickModel0()
+	{
+		ShopManager.SingletonInstance.PlaneModelNumber = 0;
+	}
+
+	void OnClickModel1()
+	{
+		ShopManager.SingletonInstance.PlaneModelNumber = 1;
 	}
 
 	void Update()

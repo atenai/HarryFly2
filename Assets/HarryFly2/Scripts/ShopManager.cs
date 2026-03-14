@@ -15,13 +15,6 @@ public class ShopManager : MonoBehaviour
 		set { planeModelNumber = value; }
 	}
 
-	bool isShopActive = true;
-	public bool IsShopActive
-	{
-		get { return isShopActive; }
-		set { isShopActive = value; }
-	}
-
 	void Awake()
 	{
 		//staticな変数instanceはメモリ領域は確保されていますが、初回では中身が入っていないので、中身を入れます。
@@ -34,15 +27,5 @@ public class ShopManager : MonoBehaviour
 		{
 			Destroy(this.gameObject);//中身がすでに入っていた場合、自身のインスタンスがくっついているゲームオブジェクトを破棄します。
 		}
-	}
-
-	void Start()
-	{
-
-	}
-
-	void Update()
-	{
-
 	}
 }
