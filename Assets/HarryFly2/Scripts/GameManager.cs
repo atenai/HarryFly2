@@ -115,6 +115,23 @@ public class GameManager : MonoBehaviour
 		ES3.Save("CoinCount", coinCount);
 	}
 
+	/// <summary>
+	/// コインを消費する。指定額以上あれば消費してtrueを返す。
+	/// </summary>
+	public bool SpendCoin(int amount)
+	{
+		if (amount <= 0) return false;
+		if (coinCount < amount) return false;
+		coinCount -= amount;
+		if (coinCount < 0) coinCount = 0;
+		ES3.Save("CoinCount", coinCount);
+		if (ui != null)
+		{
+			ui.CoinText.text = coinCount.ToString();
+		}
+		return true;
+	}
+
 	void OnGUI()
 	{
 #if UNITY_EDITOR//Unityエディター上での処理

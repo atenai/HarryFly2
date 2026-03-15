@@ -90,8 +90,10 @@ public class UI : MonoBehaviour
 		Panel_Shop.SetActive(false);
 		openShopButton.onClick.AddListener(OnClickShopOpen);
 		closeShopButton.onClick.AddListener(OnClickShopClose);
-		modelButton[0].onClick.AddListener(OnClickModel0);
-		modelButton[1].onClick.AddListener(OnClickModel1);
+		modelButton[0].onClick.AddListener(() => OnClickModel(0));
+		modelButton[1].onClick.AddListener(() => OnClickModel(1));
+
+		RefreshModelButtons();
 	}
 
 	void OnClickShopOpen()
@@ -107,14 +109,30 @@ public class UI : MonoBehaviour
 	}
 
 
-	void OnClickModel0()
+	void OnClickModel(int index)
 	{
-		ShopManager.SingletonInstance.PlaneModelNumber = 0;
+		if (ShopManager.SingletonInstance == null)
+		{
+			Debug.LogWarning("ShopManager not found");
+			return;
+		}
+
+		bool result = ShopManager.SingletonInstance.SelectModel(index);
+		if (result)
+		{
+			// 選択/購入成功したらボタン状態を更新
+			RefreshModelButtons();
+		}
 	}
 
-	void OnClickModel1()
+	void RefreshModelButtons()
 	{
-		ShopManager.SingletonInstance.PlaneModelNumber = 1;
+		if (modelButton == null || modelButton.Length == 0) return;
+		for (int i = 0; i < modelButton.Length; i++)
+		{
+			// ボタンは常に押せる（ロックされていれば購入処理が走る）
+			modelButton[i].interactable = true;
+		}
 	}
 
 	void Update()
