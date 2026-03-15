@@ -59,6 +59,16 @@ public class ShopManager : MonoBehaviour
 	}
 
 	/// <summary>
+	/// 指定モデルの価格を返す。範囲外なら-1を返す。
+	/// </summary>
+	public int GetPrice(int index)
+	{
+		if (modelPrices == null) return -1;
+		if (index < 0 || index >= modelPrices.Length) return -1;
+		return modelPrices[index];
+	}
+
+	/// <summary>
 	/// モデルを選択します。アンロックされていなければコインを消費して購入を試行します。
 	/// 成功した場合は選択してtrueを返します。
 	/// </summary>

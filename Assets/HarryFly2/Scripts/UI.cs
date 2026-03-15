@@ -130,8 +130,32 @@ public class UI : MonoBehaviour
 		if (modelButton == null || modelButton.Length == 0) return;
 		for (int i = 0; i < modelButton.Length; i++)
 		{
-			// ボタンは常に押せる（ロックされていれば購入処理が走る）
-			modelButton[i].interactable = true;
+			modelButton[i].interactable = true; // 押せるようにしておく
+
+			// ボタンの子にある Text (Legacy) を探してラベルを更新
+			Text label = modelButton[i].GetComponentInChildren<Text>();
+			if (label != null)
+			{
+				if (ShopManager.SingletonInstance != null)
+				{
+					bool unlocked = ShopManager.SingletonInstance.IsUnlocked(i);
+					int price = ShopManager.SingletonInstance.GetPrice(i);
+					if (!unlocked)
+					{
+						if (price >= 0)
+							label.text = "ロック\n必要:" + price.ToString() + "コイン";
+						else
+							label.text = "ロック";
+					}
+					else
+					{
+						if (ShopManager.SingletonInstance.PlaneModelNumber == i)
+							label.text = "選択中";
+						else
+							label.text = "使用可能";
+					}
+				}
+			}
 		}
 	}
 
