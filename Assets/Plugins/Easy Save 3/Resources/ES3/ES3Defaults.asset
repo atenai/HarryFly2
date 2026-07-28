@@ -41,6 +41,11 @@ MonoBehaviour:
     - Purchasing.Common
     - SingularityGroup.HotReload.Runtime
     - SingularityGroup.HotReload.Runtime.Public
+    - UniTask
+    - UniTask.Addressables
+    - UniTask.DOTween
+    - UniTask.Linq
+    - UniTask.TextMeshPro
     showAdvancedSettings: 0
   addMgrToSceneAutomatically: 0
   autoUpdateReferences: 1
