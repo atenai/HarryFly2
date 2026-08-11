@@ -184,7 +184,7 @@ public class StageManager : MonoBehaviour
 		}
 
 		IsSceneSwitched = true;
-		OnUnloadScene("stage" + currentSceneIndex);
+		OnUnloadScene("Stage" + currentSceneIndex);
 		ShowScene("Stage" + nextSceneIndex);
 	}
 
