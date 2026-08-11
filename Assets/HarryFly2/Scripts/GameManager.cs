@@ -8,6 +8,9 @@ public class GameManager : MonoBehaviour
 	[Tooltip("UI")]
 	[SerializeField] UI ui;
 
+	/// <summary>フェードアウトを開始済みかどうか</summary>
+	bool hasStartedFadeOut = false;
+
 	/// <summary>ゲームプレイ中かどうか</summary>
 	bool isPlay = false;
 	public bool IsPlay
@@ -62,7 +65,11 @@ public class GameManager : MonoBehaviour
 			return;
 		}
 
-		ui.FadeOut();
+		if (hasStartedFadeOut == false)
+		{
+			hasStartedFadeOut = true;
+			ui.FadeOut();
+		}
 
 		if (ui.IsFade == false)
 		{
