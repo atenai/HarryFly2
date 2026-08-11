@@ -41,6 +41,7 @@ MonoBehaviour:
     - Purchasing.Common
     - SingularityGroup.HotReload.Runtime
     - SingularityGroup.HotReload.Runtime.Public
+    - uLoopMCP.Runtime
     - UniTask
     - UniTask.Addressables
     - UniTask.DOTween
