@@ -76,24 +76,29 @@ public class PlaneController : MonoBehaviour
 
 	void Update()
 	{
+		// 以下の中断条件では Accelerate() を通らないので、ブースト中の振動をここで止めておく
 		if (StageManager.SingletonInstance.IsSceneSwitched == true)
 		{
+			HapticFeedback.StopContinuous();
 			return;
 		}
 
 		if (ui.IsFade == false)
 		{
+			HapticFeedback.StopContinuous();
 			return;
 		}
 
 		if (ui.Panel_Shop.gameObject.activeSelf == true)
 		{
+			HapticFeedback.StopContinuous();
 			ChangePlaneModel();
 			return;
 		}
 
 		if (gameManager.IsPlay == false)
 		{
+			HapticFeedback.StopContinuous();
 			return;
 		}
 
@@ -180,12 +185,14 @@ public class PlaneController : MonoBehaviour
 			ChangeForwordMoveSpeed(changeForwordMovepeed);
 			ChangeVerticalAndHorizontalMoveSpeed(changeVerticalAndHorizontalMoveSpeed);
 			currentFuel = currentFuel - fuelConsumption;
+			HapticFeedback.StartContinuous(HapticFeedback.Strength.VeryLight);
 		}
 		else
 		{
 			paticlePrefab.SetActive(false);
 			ChangeForwordMoveSpeed(changeForwordMovepeed * -0.5f);
 			ChangeVerticalAndHorizontalMoveSpeed(-changeVerticalAndHorizontalMoveSpeed);
+			HapticFeedback.StopContinuous();
 		}
 	}
 
@@ -279,21 +286,26 @@ public class PlaneController : MonoBehaviour
 		if (collider.tag == "Coin")
 		{
 			gameManager.AddCoin(collider.GetComponent<Coin>().Value);
+			HapticFeedback.Play(HapticFeedback.Strength.Light);
 		}
 
 		if (collider.tag == "Fuel")
 		{
 			AddFuel(collider.GetComponent<Fuel>().Value);
+			HapticFeedback.Play(HapticFeedback.Strength.Medium);
 		}
 
 		if (collider.tag == "Timer")
 		{
 			gameManager.AddTimer(collider.GetComponent<Timer>().Value);
+			HapticFeedback.Play(HapticFeedback.Strength.Medium);
 		}
 
 		if (collider.tag == "Goal")
 		{
 			Debug.Log("ゴール！");
+			HapticFeedback.StopContinuous();
+			HapticFeedback.Play(HapticFeedback.Strength.Heavy);
 			AdsManager.SingletonInstance.ShowAdsInterstitialCount();
 			// シーンを切り替える
 			StageManager.SingletonInstance.IsTriggered = true;
@@ -305,12 +317,20 @@ public class PlaneController : MonoBehaviour
 		Debug.Log("障害物に衝突した" + collision.gameObject.tag);
 		if (collision.gameObject.CompareTag("Obstacle") == true)
 		{
+			HapticFeedback.StopContinuous();
+			HapticFeedback.Play(HapticFeedback.Strength.VeryHeavy);
 			AdsManager.SingletonInstance.ShowAdsInterstitialCount();
 			ui.FadeIn();
 			ResetPlayerPosition();
 			// シーンを切り替える
 			StageManager.SingletonInstance.IsTriggered = true;
 		}
+	}
+
+	void OnDisable()
+	{
+		// シーン切り替えなどで消えるときに振動が鳴りっぱなしにならないようにする
+		HapticFeedback.StopContinuous();
 	}
 
 	/// <summary>
