@@ -77,10 +77,7 @@ public class UI : MonoBehaviour
 		tapText.transform.localScale = Vector3.one;
 		tapTween = tapText.transform.DOScale(new Vector3(1.5f, 1.5f, 1f), 0.6f).SetLoops(-1, LoopType.Yoyo).SetAutoKill(false).Pause();
 
-		if (goalText != null)
-		{
-			goalText.gameObject.SetActive(false);
-		}
+		goalText.gameObject.SetActive(false);
 
 		adsRewardedButton.onClick.AddListener(AdsManager.SingletonInstance.AdsRewarded.ShowAd);
 		gameStartButton.onClick.AddListener(() =>
