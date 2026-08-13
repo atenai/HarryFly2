@@ -307,6 +307,9 @@ public class PlaneController : MonoBehaviour
 			HapticFeedback.StopContinuous();
 			HapticFeedback.Play(HapticFeedback.Strength.Heavy);
 			AdsManager.SingletonInstance.ShowAdsInterstitialCount();
+			// 次ステージのロードが終わるまでシーンは切り替わらない。
+			// その間プレイヤーが飛び続けるのが見えてしまうので、障害物に当たったときと同様に画面を隠す
+			ui.FadeIn();
 			// シーンを切り替える
 			StageManager.SingletonInstance.IsTriggered = true;
 		}

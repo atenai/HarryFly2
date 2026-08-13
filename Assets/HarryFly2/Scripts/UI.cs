@@ -63,6 +63,9 @@ public class UI : MonoBehaviour
 	[SerializeField] TextMeshProUGUI coinText;
 	public TextMeshProUGUI CoinText => coinText;
 
+	[Tooltip("ゴール時に中央に出すテキスト")]
+	[SerializeField] TextMeshProUGUI goalText;
+
 	[Tooltip("広告報酬ボタン")]
 	[SerializeField] Button adsRewardedButton;
 
@@ -73,6 +76,11 @@ public class UI : MonoBehaviour
 
 		tapText.transform.localScale = Vector3.one;
 		tapTween = tapText.transform.DOScale(new Vector3(1.5f, 1.5f, 1f), 0.6f).SetLoops(-1, LoopType.Yoyo).SetAutoKill(false).Pause();
+
+		if (goalText != null)
+		{
+			goalText.gameObject.SetActive(false);
+		}
 
 		adsRewardedButton.onClick.AddListener(AdsManager.SingletonInstance.AdsRewarded.ShowAd);
 		gameStartButton.onClick.AddListener(() =>
@@ -201,6 +209,23 @@ public class UI : MonoBehaviour
 	{
 		Debug.Log("Up");
 		buttonDownFlag = false;
+	}
+
+	/// <summary>
+	/// ゴール時に「GOAL!!」を画面中央に表示します。
+	/// フェード用の Image より手前に配置してあるので、暗転した上に重なって出ます。
+	/// </summary>
+	public void ShowGoalText()
+	{
+		if (goalText == null)
+		{
+			return;
+		}
+
+		goalText.gameObject.SetActive(true);
+		// 小さい状態から弾むように出す
+		goalText.transform.localScale = Vector3.one * 0.5f;
+		goalText.transform.DOScale(Vector3.one, 0.4f).SetEase(Ease.OutBack);
 	}
 
 	/// <summary>

@@ -41,6 +41,11 @@ public class StageManager : MonoBehaviour
 
 	void Awake()
 	{
+		// 非同期ロードの優先度を上げる。既定の BelowNormal のままだと、
+		// ブーストで飛ばしたときに次ステージのロードが間に合わずゴールで待たされる。
+		// 読み込み中のフレーム落ちが気になる場合は Normal に下げる。
+		Application.backgroundLoadingPriority = ThreadPriority.High;
+
 		//staticな変数instanceはメモリ領域は確保されていますが、初回では中身が入っていないので、中身を入れます。
 		if (singletonInstance == null)
 		{
