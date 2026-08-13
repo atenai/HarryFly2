@@ -217,11 +217,6 @@ public class UI : MonoBehaviour
 	/// </summary>
 	public void ShowGoalText()
 	{
-		if (goalText == null)
-		{
-			return;
-		}
-
 		goalText.gameObject.SetActive(true);
 		// 小さい状態から弾むように出す
 		goalText.transform.localScale = Vector3.one * 0.5f;
