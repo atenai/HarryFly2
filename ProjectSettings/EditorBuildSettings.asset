@@ -14,4 +14,34 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/HarryFly2/Scenes/Stage2.unity
     guid: 807e2125d62ed3d479cf3c6fae6b8e7c
+  - enabled: 1
+    path: Assets/HarryFly2/Scenes/Stage3.unity
+    guid: 1caaf743a3aaec14e9df7885becbbfbf
+  - enabled: 1
+    path: Assets/HarryFly2/Scenes/Stage4.unity
+    guid: 0e4758ebdcfa63e4ca886ad38b1bb6c6
+  - enabled: 1
+    path: Assets/HarryFly2/Scenes/Stage5.unity
+    guid: e3e65cfa8cbe32f48b204e1ae7a8d065
+  - enabled: 1
+    path: Assets/HarryFly2/Scenes/Stage6.unity
+    guid: 220f512f382b5c5498ee8c46b9db6bf3
+  - enabled: 1
+    path: Assets/HarryFly2/Scenes/Stage7.unity
+    guid: 484f28bf09aea1540ac1d46c740b2b05
+  - enabled: 1
+    path: Assets/HarryFly2/Scenes/Stage8.unity
+    guid: 8f2a64cf96f7485448196f5535cbbb13
+  - enabled: 1
+    path: Assets/HarryFly2/Scenes/Stage9.unity
+    guid: 154a1832c2a447443a9b000589110ee1
+  - enabled: 1
+    path: Assets/HarryFly2/Scenes/Stage10.unity
+    guid: 0399961fe3f0f0b42a6f9bbdc18ac5ae
+  - enabled: 1
+    path: Assets/HarryFly2/Scenes/Stage11.unity
+    guid: 1ee2a946b43cd234fb6c3f5ae08460c2
+  - enabled: 1
+    path: Assets/HarryFly2/Scenes/Stage12.unity
+    guid: aecf739b38223e8428e6b0107d2db668
   m_configObjects: {}
