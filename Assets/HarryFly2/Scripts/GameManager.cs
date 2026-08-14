@@ -28,6 +28,9 @@ public class GameManager : MonoBehaviour
 	public int CoinCount => coinCount;
 	public static readonly int Max_Coin_Count = 999999;
 
+	/// <summary>最後にセーブしたコイン数。同じ値を何度も書き込まないための比較用</summary>
+	int savedCoinCount = 0;
+
 	void Awake()
 	{
 		isPlay = false;
@@ -51,6 +54,7 @@ public class GameManager : MonoBehaviour
 		{
 			coinCount = 0;
 		}
+		savedCoinCount = coinCount;
 	}
 
 	void CoinText()
@@ -93,6 +97,8 @@ public class GameManager : MonoBehaviour
 		//Debug.Log("残り時間：" + totalTime);
 		if (totalTime <= 0)
 		{
+			// 時間切れもステージの切り替えなので、切り替わる前にコインを保存する
+			SaveCoin();
 			// シーンを切り替える
 			StageManager.SingletonInstance.IsTriggered = true;
 		}
@@ -118,8 +124,37 @@ public class GameManager : MonoBehaviour
 		{
 			coinCount = Max_Coin_Count;
 		}
-		//セーブ
+	}
+
+	/// <summary>
+	/// コイン数をセーブする。
+	/// コインを拾うたびに書き込むと取得が密集したところで処理落ちするので、
+	/// ステージが切り替わる直前（ゴール・障害物への衝突・時間切れ）にまとめて保存する。
+	/// 前回セーブから値が変わっていなければ書き込まないので、毎フレーム呼んでも問題ない
+	/// </summary>
+	public void SaveCoin()
+	{
+		if (coinCount == savedCoinCount)
+		{
+			return;
+		}
+		savedCoinCount = coinCount;
 		ES3.Save("CoinCount", coinCount);
+	}
+
+	/// <summary>
+	/// アプリがバックグラウンドへ回るときにコインを保存する。
+	/// ステージの途中で中断されると、その周回で拾った分が消えてしまうため。
+	/// Androidでは OnApplicationQuit が呼ばれる保証がないので、こちらで受ける
+	/// </summary>
+	/// <param name="isPaused">バックグラウンドへ回ったかどうか</param>
+	void OnApplicationPause(bool isPaused)
+	{
+		if (isPaused == false)
+		{
+			return;
+		}
+		SaveCoin();
 	}
 
 	/// <summary>
@@ -131,7 +166,10 @@ public class GameManager : MonoBehaviour
 		if (coinCount < amount) return false;
 		coinCount -= amount;
 		if (coinCount < 0) coinCount = 0;
-		ES3.Save("CoinCount", coinCount);
+		// 購入だけはステージ切り替えを待たずに即セーブする。
+		// ShopManager 側はアンロック状態をその場で保存するので、
+		// ここを遅らせるとアプリを落としたときに機体だけ残ってコインが戻ってしまう
+		SaveCoin();
 		if (ui != null)
 		{
 			ui.CoinText.text = coinCount.ToString();

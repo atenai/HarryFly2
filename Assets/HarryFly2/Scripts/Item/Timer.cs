@@ -11,7 +11,7 @@ public class Timer : MonoBehaviour
 
 	void OnTriggerEnter(Collider other)
 	{
-		if (other.tag == "Player")
+		if (other.CompareTag("Player") == true)
 		{
 			Destroy(gameObject);
 		}

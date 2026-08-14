@@ -1409,7 +1409,6 @@ GameObject:
   - component: {fileID: 191019627}
   - component: {fileID: 191019630}
   - component: {fileID: 191019629}
-  - component: {fileID: 191019628}
   m_Layer: 0
   m_Name: Rubble_Ruin_1
   m_TagString: Untagged
@@ -1432,18 +1431,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1198341339}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &191019628
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 191019626}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5e7879e76ac88cd44ac54affc3536afb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!23 &191019629
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -3867,7 +3854,6 @@ GameObject:
   - component: {fileID: 503337994}
   - component: {fileID: 503337997}
   - component: {fileID: 503337996}
-  - component: {fileID: 503337995}
   m_Layer: 0
   m_Name: Rubble_Ruin_2
   m_TagString: Untagged
@@ -3890,18 +3876,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1198341339}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &503337995
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 503337993}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5e7879e76ac88cd44ac54affc3536afb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!23 &503337996
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -17856,7 +17830,6 @@ GameObject:
   - component: {fileID: 2072015990}
   - component: {fileID: 2072015993}
   - component: {fileID: 2072015992}
-  - component: {fileID: 2072015991}
   m_Layer: 0
   m_Name: Rubble_Ruin_3
   m_TagString: Untagged
@@ -17879,18 +17852,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1198341339}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2072015991
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2072015989}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5e7879e76ac88cd44ac54affc3536afb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!23 &2072015992
 MeshRenderer:
   m_ObjectHideFlags: 0
