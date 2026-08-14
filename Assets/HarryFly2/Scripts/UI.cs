@@ -30,9 +30,9 @@ public class UI : MonoBehaviour
 	[SerializeField] Button gameStartButton;
 
 	[Header("UIに関する変数")]
-	[Tooltip("タイマーテキスト")]
-	[SerializeField] Text timerText;
-	public Text TimerText => timerText;
+	[Tooltip("タイマーテキスト（数値のみ。'TIME' のラベルは別オブジェクト）")]
+	[SerializeField] TextMeshProUGUI timerText;
+	public TextMeshProUGUI TimerText => timerText;
 
 	[Tooltip("燃料スライダー")]
 	[SerializeField] Slider fuelSlider;
@@ -74,7 +74,7 @@ public class UI : MonoBehaviour
 
 	void Start()
 	{
-		timerText.text = "残り時間：" + gameManager.TotalTime.ToString("f1");
+		timerText.text = gameManager.TotalTime.ToString("f1");
 		fuelSlider.value = planeController.CurrentFuel / PlaneController.Max_Fuel;
 
 		tapText.transform.localScale = Vector3.one;
@@ -273,7 +273,7 @@ public class UI : MonoBehaviour
 			tapText.transform.localScale = Vector3.one;
 		}
 
-		timerText.text = "残り時間：" + gameManager.TotalTime.ToString("f1");
+		timerText.text = gameManager.TotalTime.ToString("f1");
 		coinText.text = gameManager.CoinCount.ToString();
 		fuelSlider.value = planeController.CurrentFuel / PlaneController.Max_Fuel;
 	}
