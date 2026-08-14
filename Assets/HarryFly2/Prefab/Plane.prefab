@@ -86,6 +86,10 @@ MonoBehaviour:
   planePrefabs:
   - {fileID: 1856757013120470021}
   - {fileID: 5507565377384467256}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   rb: {fileID: 3658238267189483658}
   fuelConsumptionPerSecond: 60
   paticlePrefab: {fileID: 8758644627125908185}

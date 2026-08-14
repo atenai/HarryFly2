@@ -10,6 +10,12 @@ public class AdsRewarded : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowLi
 	[SerializeField] string _iOSAdUnitId = "Rewarded_iOS";
 	string _adUnitId = null;
 
+	/// <summary>
+	/// リワード広告を最後まで見たときに呼ばれる。報酬の中身は購読側が決める。
+	/// AdsManager は DontDestroyOnLoad なので、購読側は必ず OnDestroy で解除すること
+	/// </summary>
+	public event System.Action OnRewarded;
+
 	void Awake()
 	{
 		//iOSかAndroidかの広告IDを取得する
@@ -71,6 +77,9 @@ public class AdsRewarded : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowLi
 			Debug.Log("Unity Ads Rewarded Ad Completed");
 
 			Debug.Log("<color=red>あなたはリワード広告をゲットしました。</color>");
+
+			//報酬を渡す（コインの付与などは購読側が行う）
+			OnRewarded?.Invoke();
 
 			//リワード広告をロードする
 			Advertisement.Load(_adUnitId, this);

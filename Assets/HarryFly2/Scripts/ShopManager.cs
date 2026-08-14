@@ -16,8 +16,8 @@ public class ShopManager : MonoBehaviour
 	}
 
 	[Header("Shop Settings")]
-	[Tooltip("各モデルのアンロック価格 (インデックスに対応)")]
-	[SerializeField] int[] modelPrices = new int[] { 0, 100 };
+	[Tooltip("各モデルのアンロック価格 (インデックスに対応)。要素数がショップに並ぶ機体数になる")]
+	[SerializeField] int[] modelPrices = new int[] { 0, 100, 500, 1500, 3000, 5000 };
 
 	// アンロック状態の配列
 	bool[] unlockedModels = null;
@@ -125,18 +125,26 @@ public class ShopManager : MonoBehaviour
 		if (ES3.KeyExists("UnlockedModels"))
 		{
 			unlockedModels = ES3.Load<bool[]>("UnlockedModels");
-			// 確認サイズ
-			if (unlockedModels == null || unlockedModels.Length != modelPrices.Length)
-			{
-				bool[] newArr = new bool[modelPrices.Length];
-				for (int i = 0; i < Mathf.Min(newArr.Length, unlockedModels.Length); i++) newArr[i] = unlockedModels[i];
-				unlockedModels = newArr;
-			}
 		}
-		else
+
+		// 機体数を増やすと、古いセーブは要素数が足りない状態で読み込まれる。
+		// 元の実装は unlockedModels が null のときに Length を参照して落ちていたので、
+		// コピー元の有無を先に判定する
+		if (unlockedModels == null || unlockedModels.Length != modelPrices.Length)
 		{
-			unlockedModels = new bool[modelPrices.Length];
-			if (unlockedModels.Length > 0) unlockedModels[0] = true;
+			bool[] newArr = new bool[modelPrices.Length];
+			int copyCount = unlockedModels != null ? Mathf.Min(newArr.Length, unlockedModels.Length) : 0;
+			for (int i = 0; i < copyCount; i++)
+			{
+				newArr[i] = unlockedModels[i];
+			}
+			unlockedModels = newArr;
+		}
+
+		// 0番は価格0の初期機体なので常に解放しておく
+		if (unlockedModels.Length > 0)
+		{
+			unlockedModels[0] = true;
 		}
 	}
 }

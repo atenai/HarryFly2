@@ -64,13 +64,41 @@ public class PlaneController : MonoBehaviour
 		ChangePlaneModel();
 	}
 
+	/// <summary>
+	/// 指定番号の機体モデルが設定されているか。
+	/// ショップの枠は6個先に用意してあるので、モデル未設定のスロットを
+	/// 選ばせないための判定に使う
+	/// </summary>
+	/// <param name="index">機体スロット番号</param>
+	public bool HasModel(int index)
+	{
+		return 0 <= index && index < planePrefabs.Length && planePrefabs[index] != null;
+	}
+
+	/// <summary>ショップに並ぶ機体スロット数</summary>
+	public int ModelCount => planePrefabs.Length;
+
 	void ChangePlaneModel()
 	{
 		foreach (var model in planePrefabs)
 		{
-			model.SetActive(false);
+			// モデル未設定のスロットは空のままなので飛ばす
+			if (model != null)
+			{
+				model.SetActive(false);
+			}
 		}
-		planePrefabs[ShopManager.SingletonInstance.PlaneModelNumber].SetActive(true);
+
+		int index = ShopManager.SingletonInstance.PlaneModelNumber;
+		if (HasModel(index) == false)
+		{
+			// 念のため。未設定スロットが選ばれていたら0番に戻す
+			index = 0;
+		}
+		if (HasModel(index) == true)
+		{
+			planePrefabs[index].SetActive(true);
+		}
 	}
 
 	void Update()
@@ -319,6 +347,9 @@ public class PlaneController : MonoBehaviour
 			HapticFeedback.StopContinuous();
 			HapticFeedback.Play(HapticFeedback.Strength.Heavy);
 			ui.ShowGoalText();
+			// ゴール報酬：このステージで拾ったコインを2倍にする
+			int bonusCoin = gameManager.ApplyGoalBonus();
+			Debug.Log("ゴールボーナス：+" + bonusCoin);
 			AdsManager.SingletonInstance.ShowAdsInterstitialCount();
 			// ステージが切り替わる前にコインを保存する
 			gameManager.SaveCoin();
@@ -332,10 +363,9 @@ public class PlaneController : MonoBehaviour
 
 	void OnCollisionEnter(Collision collision)
 	{
-		Debug.Log("障害物に衝突した" + collision.gameObject.tag);
-
 		if (collision.gameObject.CompareTag("Obstacle") == true)
 		{
+			Debug.Log("障害物に衝突した");
 			HapticFeedback.StopContinuous();
 			HapticFeedback.Play(HapticFeedback.Strength.VeryHeavy);
 			AdsManager.SingletonInstance.ShowAdsInterstitialCount();
