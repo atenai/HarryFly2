@@ -24,10 +24,10 @@ public class PlaneController : MonoBehaviour
 	float initForwordMoveSpeed;
 	[Tooltip("上下左右移動速度の初期値")]
 	float initVerticalAndHorizontalMoveSpeed;
-	[Tooltip("通常時と加速時の自動前進速度を徐々に変える値")]
-	float changeForwordMovepeed = 2f;
-	[Tooltip("通常時と加速時の上下左右移動速度を徐々に変える値")]
-	float changeVerticalAndHorizontalMoveSpeed = 1f;
+	[Tooltip("通常時と加速時の自動前進速度を徐々に変える値（1秒あたり）。60fpsで1フレームにつき2変えていたときと同じ速さになる値を入れてある")]
+	float changeForwordMoveSpeedPerSecond = 120f;
+	[Tooltip("通常時と加速時の上下左右移動速度を徐々に変える値（1秒あたり）。60fpsで1フレームにつき1変えていたときと同じ速さになる値を入れてある")]
+	float changeVerticalAndHorizontalMoveSpeedPerSecond = 60f;
 
 	[Tooltip("上下の移動制限範囲")]
 	float verticalMin = -50f;
@@ -50,28 +50,55 @@ public class PlaneController : MonoBehaviour
 	/// <summary> 燃料の最大値 </summary>
 	public static readonly float Max_Fuel = 100;
 
-	[Tooltip("燃料消費量")]
-	[SerializeField] float fuelConsumption = 1;
+	[Tooltip("1秒あたりの燃料消費量。60fpsで1フレームにつき1消費していたときと同じ速さになる値を入れてある")]
+	[SerializeField] float fuelConsumptionPerSecond = 60;
 
 	//加速/衝突効果
 	public GameObject paticlePrefab;
 
 	void Start()
 	{
-		ui.AccelerateButton.onClick.AddListener(Accelerate);
 		initForwordMoveSpeed = addForwordMoveSpeed;
 		initVerticalAndHorizontalMoveSpeed = addVerticalAndHorizontalMoveSpeed;
 		paticlePrefab.SetActive(false);
 		ChangePlaneModel();
 	}
 
+	/// <summary>
+	/// 指定番号の機体モデルが設定されているか。
+	/// ショップの枠は6個先に用意してあるので、モデル未設定のスロットを
+	/// 選ばせないための判定に使う
+	/// </summary>
+	/// <param name="index">機体スロット番号</param>
+	public bool HasModel(int index)
+	{
+		return 0 <= index && index < planePrefabs.Length && planePrefabs[index] != null;
+	}
+
+	/// <summary>ショップに並ぶ機体スロット数</summary>
+	public int ModelCount => planePrefabs.Length;
+
 	void ChangePlaneModel()
 	{
 		foreach (var model in planePrefabs)
 		{
-			model.SetActive(false);
+			// モデル未設定のスロットは空のままなので飛ばす
+			if (model != null)
+			{
+				model.SetActive(false);
+			}
 		}
-		planePrefabs[ShopManager.SingletonInstance.PlaneModelNumber].SetActive(true);
+
+		int index = ShopManager.SingletonInstance.PlaneModelNumber;
+		if (HasModel(index) == false)
+		{
+			// 念のため。未設定スロットが選ばれていたら0番に戻す
+			index = 0;
+		}
+		if (HasModel(index) == true)
+		{
+			planePrefabs[index].SetActive(true);
+		}
 	}
 
 	void Update()
@@ -175,23 +202,36 @@ public class PlaneController : MonoBehaviour
 	}
 
 	/// <summary>
-	/// 加速
+	/// 加速。
+	/// Update から毎フレーム呼ぶ。加速ボタンの onClick には登録しないこと。
+	/// onClick は指を離したときに発火するが、EventSystem は PointerUp を PointerClick より
+	/// 先に配信するので、その時点では既に ButtonDownFlag が false になっている。
+	/// つまり onClick 経由の呼び出しは必ず減速側の分岐に落ちて、そのフレームだけ減速が余分に1回走る
+	/// （EventSystem と本スクリプトの実行順は未定義なので、そのフレームが
+	/// 　「減速2回」になるか「加速1回＋減速1回」になるかは不定）
 	/// </summary>
 	void Accelerate()
 	{
 		if (ui.ButtonDownFlag == true && 0 < currentFuel)
 		{
 			paticlePrefab.SetActive(true);
-			ChangeForwordMoveSpeed(changeForwordMovepeed);
-			ChangeVerticalAndHorizontalMoveSpeed(changeVerticalAndHorizontalMoveSpeed);
-			currentFuel = currentFuel - fuelConsumption;
+			ChangeForwordMoveSpeed(changeForwordMoveSpeedPerSecond * Time.deltaTime);
+			ChangeVerticalAndHorizontalMoveSpeed(changeVerticalAndHorizontalMoveSpeedPerSecond * Time.deltaTime);
+			// フレームレートで燃費が変わらないように、経過時間で消費量を決める
+			currentFuel = currentFuel - fuelConsumptionPerSecond * Time.deltaTime;
+			// 処理落ちで1フレームが長くなると大きくマイナスに振れる。
+			// そのままだと次に燃料を拾ったときの回復量がマイナス分だけ目減りするので下限を切る
+			if (currentFuel < 0)
+			{
+				currentFuel = 0;
+			}
 			HapticFeedback.StartContinuous(HapticFeedback.Strength.VeryLight);
 		}
 		else
 		{
 			paticlePrefab.SetActive(false);
-			ChangeForwordMoveSpeed(changeForwordMovepeed * -0.5f);
-			ChangeVerticalAndHorizontalMoveSpeed(-changeVerticalAndHorizontalMoveSpeed);
+			ChangeForwordMoveSpeed(changeForwordMoveSpeedPerSecond * -0.5f * Time.deltaTime);
+			ChangeVerticalAndHorizontalMoveSpeed(-changeVerticalAndHorizontalMoveSpeedPerSecond * Time.deltaTime);
 			HapticFeedback.StopContinuous();
 		}
 	}
@@ -283,31 +323,36 @@ public class PlaneController : MonoBehaviour
 
 	void OnTriggerEnter(Collider collider)
 	{
-		if (collider.tag == "Coin")
+		if (collider.CompareTag("Coin") == true)
 		{
 			gameManager.AddCoin(collider.GetComponent<Coin>().Value);
 			HapticFeedback.Play(HapticFeedback.Strength.Light);
 		}
 
-		if (collider.tag == "Fuel")
+		if (collider.CompareTag("Fuel") == true)
 		{
 			AddFuel(collider.GetComponent<Fuel>().Value);
 			HapticFeedback.Play(HapticFeedback.Strength.Medium);
 		}
 
-		if (collider.tag == "Timer")
+		if (collider.CompareTag("Timer") == true)
 		{
 			gameManager.AddTimer(collider.GetComponent<Timer>().Value);
 			HapticFeedback.Play(HapticFeedback.Strength.Medium);
 		}
 
-		if (collider.tag == "Goal")
+		if (collider.CompareTag("Goal") == true)
 		{
 			Debug.Log("ゴール！");
 			HapticFeedback.StopContinuous();
 			HapticFeedback.Play(HapticFeedback.Strength.Heavy);
 			ui.ShowGoalText();
+			// ゴール報酬：このステージで拾ったコインを2倍にする
+			int bonusCoin = gameManager.ApplyGoalBonus();
+			Debug.Log("ゴールボーナス：+" + bonusCoin);
 			AdsManager.SingletonInstance.ShowAdsInterstitialCount();
+			// ステージが切り替わる前にコインを保存する
+			gameManager.SaveCoin();
 			// シーンを切り替える
 			StageManager.SingletonInstance.IsTriggered = true;
 			// 次ステージのロードが終わるまでシーンは切り替わらない。
@@ -318,14 +363,15 @@ public class PlaneController : MonoBehaviour
 
 	void OnCollisionEnter(Collision collision)
 	{
-		Debug.Log("障害物に衝突した" + collision.gameObject.tag);
-
 		if (collision.gameObject.CompareTag("Obstacle") == true)
 		{
+			Debug.Log("障害物に衝突した");
 			HapticFeedback.StopContinuous();
 			HapticFeedback.Play(HapticFeedback.Strength.VeryHeavy);
 			AdsManager.SingletonInstance.ShowAdsInterstitialCount();
 			ResetPlayerPosition();
+			// ステージが切り替わる前にコインを保存する
+			gameManager.SaveCoin();
 			// シーンを切り替える
 			StageManager.SingletonInstance.IsTriggered = true;
 			ui.FadeIn();

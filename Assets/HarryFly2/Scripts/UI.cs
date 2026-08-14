@@ -30,9 +30,9 @@ public class UI : MonoBehaviour
 	[SerializeField] Button gameStartButton;
 
 	[Header("UIに関する変数")]
-	[Tooltip("タイマーテキスト")]
-	[SerializeField] Text timerText;
-	public Text TimerText => timerText;
+	[Tooltip("タイマーテキスト（数値のみ。'TIME' のラベルは別オブジェクト）")]
+	[SerializeField] TextMeshProUGUI timerText;
+	public TextMeshProUGUI TimerText => timerText;
 
 	[Tooltip("燃料スライダー")]
 	[SerializeField] Slider fuelSlider;
@@ -69,9 +69,12 @@ public class UI : MonoBehaviour
 	[Tooltip("広告報酬ボタン")]
 	[SerializeField] Button adsRewardedButton;
 
+	/// <summary>リワード広告を最後まで見たときに貰えるコイン数</summary>
+	public const int Rewarded_Coin_Amount = 1000;
+
 	void Start()
 	{
-		timerText.text = "残り時間：" + gameManager.TotalTime.ToString("f1");
+		timerText.text = gameManager.TotalTime.ToString("f1");
 		fuelSlider.value = planeController.CurrentFuel / PlaneController.Max_Fuel;
 
 		tapText.transform.localScale = Vector3.one;
@@ -79,7 +82,8 @@ public class UI : MonoBehaviour
 
 		goalText.gameObject.SetActive(false);
 
-		adsRewardedButton.onClick.AddListener(AdsManager.SingletonInstance.AdsRewarded.ShowAd);
+		// ゲーム開始ボタンの登録を先に済ませる。
+		// 広告まわりで例外が出ても、最低限プレイを開始できる状態は保つ
 		gameStartButton.onClick.AddListener(() =>
 		{
 			openShopButton.gameObject.SetActive(false);
@@ -87,7 +91,52 @@ public class UI : MonoBehaviour
 			gameManager.IsPlay = true;
 		});
 
+		InitAdsRewarded();
 		InitShop();
+	}
+
+	/// <summary>
+	/// リワード広告ボタンの初期化。見終わったらコインを配る
+	/// </summary>
+	void InitAdsRewarded()
+	{
+		AdsRewarded rewarded = AdsManager.SingletonInstance != null ? AdsManager.SingletonInstance.AdsRewarded : null;
+		if (rewarded == null)
+		{
+			Debug.LogWarning("AdsRewarded が取得できないため、リワード広告ボタンを無効にする");
+			if (adsRewardedButton != null)
+			{
+				adsRewardedButton.interactable = false;
+			}
+			return;
+		}
+
+		adsRewardedButton.onClick.AddListener(rewarded.ShowAd);
+		rewarded.OnRewarded += OnAdsRewarded;
+	}
+
+	void OnDestroy()
+	{
+		// AdsRewarded は DontDestroyOnLoad で生き続けるのに対し、この UI はステージごとに
+		// 作り直される。解除しないとステージを進むたびに購読が積み上がり、
+		// 広告1回で何倍ものコインが入ってしまう
+		AdsRewarded rewarded = AdsManager.SingletonInstance != null ? AdsManager.SingletonInstance.AdsRewarded : null;
+		if (rewarded != null)
+		{
+			rewarded.OnRewarded -= OnAdsRewarded;
+		}
+	}
+
+	/// <summary>
+	/// リワード広告を最後まで見たときの報酬
+	/// </summary>
+	void OnAdsRewarded()
+	{
+		gameManager.AddRewardCoin(Rewarded_Coin_Amount);
+		coinText.text = gameManager.CoinCount.ToString();
+		// コインが増えて買えるようになったモデルがあるので表示を更新する
+		RefreshModelButtons();
+		Debug.Log("リワード広告の報酬：+" + Rewarded_Coin_Amount + "コイン");
 	}
 
 	void InitShop()
@@ -95,8 +144,17 @@ public class UI : MonoBehaviour
 		Panel_Shop.SetActive(false);
 		openShopButton.onClick.AddListener(OnClickShopOpen);
 		closeShopButton.onClick.AddListener(OnClickShopClose);
-		modelButton[0].onClick.AddListener(() => OnClickModel(0));
-		modelButton[1].onClick.AddListener(() => OnClickModel(1));
+		// 機体スロットは6個ある想定。増減してもコードを触らずに済むよう配列を回す
+		for (int i = 0; i < modelButton.Length; i++)
+		{
+			if (modelButton[i] == null)
+			{
+				continue;
+			}
+			// ラムダがループ変数を捕まえてしまわないよう、周回ごとにコピーする
+			int index = i;
+			modelButton[i].onClick.AddListener(() => OnClickModel(index));
+		}
 
 		RefreshModelButtons();
 	}
@@ -122,6 +180,14 @@ public class UI : MonoBehaviour
 			return;
 		}
 
+		// 3Dモデルがまだ入っていないスロットは選ばせない。
+		// 選ばせてしまうと機体が消えたまま飛ぶことになる
+		if (planeController != null && planeController.HasModel(index) == false)
+		{
+			Debug.Log("3Dモデルが未設定のスロットなので選択できない: " + index);
+			return;
+		}
+
 		bool result = ShopManager.SingletonInstance.SelectModel(index);
 		if (result)
 		{
@@ -135,31 +201,49 @@ public class UI : MonoBehaviour
 		if (modelButton == null || modelButton.Length == 0) return;
 		for (int i = 0; i < modelButton.Length; i++)
 		{
-			modelButton[i].interactable = true; // 押せるようにしておく
+			if (modelButton[i] == null)
+			{
+				continue;
+			}
+
+			// 3Dモデルが差し込まれているスロットだけ押せるようにする
+			bool hasModel = planeController != null && planeController.HasModel(i);
+			modelButton[i].interactable = hasModel;
 
 			// ボタンの子にある Text (Legacy) を探してラベルを更新
 			Text label = modelButton[i].GetComponentInChildren<Text>();
-			if (label != null)
+			if (label == null)
 			{
-				if (ShopManager.SingletonInstance != null)
-				{
-					bool unlocked = ShopManager.SingletonInstance.IsUnlocked(i);
-					int price = ShopManager.SingletonInstance.GetPrice(i);
-					if (!unlocked)
-					{
-						if (price >= 0)
-							label.text = "ロック\n必要:" + price.ToString() + "コイン";
-						else
-							label.text = "ロック";
-					}
-					else
-					{
-						if (ShopManager.SingletonInstance.PlaneModelNumber == i)
-							label.text = "選択中";
-						else
-							label.text = "使用可能";
-					}
-				}
+				continue;
+			}
+
+			if (hasModel == false)
+			{
+				// Plane プレハブの planePrefabs にモデルを入れれば、そのまま使えるようになる
+				label.text = "準備中";
+				continue;
+			}
+
+			if (ShopManager.SingletonInstance == null)
+			{
+				continue;
+			}
+
+			bool unlocked = ShopManager.SingletonInstance.IsUnlocked(i);
+			int price = ShopManager.SingletonInstance.GetPrice(i);
+			if (!unlocked)
+			{
+				if (price >= 0)
+					label.text = "ロック\n必要:" + price.ToString() + "コイン";
+				else
+					label.text = "ロック";
+			}
+			else
+			{
+				if (ShopManager.SingletonInstance.PlaneModelNumber == i)
+					label.text = "選択中";
+				else
+					label.text = "使用可能";
 			}
 		}
 	}
@@ -189,7 +273,7 @@ public class UI : MonoBehaviour
 			tapText.transform.localScale = Vector3.one;
 		}
 
-		timerText.text = "残り時間：" + gameManager.TotalTime.ToString("f1");
+		timerText.text = gameManager.TotalTime.ToString("f1");
 		coinText.text = gameManager.CoinCount.ToString();
 		fuelSlider.value = planeController.CurrentFuel / PlaneController.Max_Fuel;
 	}
@@ -197,14 +281,12 @@ public class UI : MonoBehaviour
 	// ボタンを押したときの処理
 	public void OnButtonDown()
 	{
-		Debug.Log("Down");
 		buttonDownFlag = true;
 	}
 
 	// ボタンを離したときの処理
 	public void OnButtonUp()
 	{
-		Debug.Log("Up");
 		buttonDownFlag = false;
 	}
 
@@ -240,18 +322,42 @@ public class UI : MonoBehaviour
 	{
 		if (fadeImage == null)
 		{
+			// フェード対象が無い場合でも操作不能で固まらせない
+			isFade = true;
 			return null;
 		}
 
-		return fadeImage.DOFade(0f, duration).OnComplete(() =>
+		// SetUpdate(true) で Time.timeScale に依存させない。
+		// 広告表示などで timeScale が 0 になるとフェードが途中で止まり、
+		// 半透明のまま操作不能になるため
+		return fadeImage.DOFade(0f, duration).SetUpdate(true).OnComplete(() =>
 		{
+			// isFade を最初に立てる。DOTween はセーフモードでコールバック内の例外を
+			// 握り潰すので、後ろに置くと代入だけ失われて永久に操作不能になる
+			isFade = true;
 			if (disableOnComplete)
 			{
 				fadeImage.gameObject.SetActive(false);
 			}
-			isFade = true;
 			onComplete?.Invoke();
 		});
+	}
+
+	/// <summary>
+	/// フェードを強制的に完了させる。
+	/// 何らかの理由でトゥイーンが進まなかったときに、半透明のまま操作不能で固まるのを防ぐ保険
+	/// </summary>
+	public void ForceFadeComplete()
+	{
+		if (fadeImage != null)
+		{
+			fadeImage.DOKill();
+			Color color = fadeImage.color;
+			color.a = 0f;
+			fadeImage.color = color;
+			fadeImage.gameObject.SetActive(false);
+		}
+		isFade = true;
 	}
 
 }

@@ -34,7 +34,14 @@ public class AdsManager : MonoBehaviour, IUnityAdsInitializationListener
 		}
 		else
 		{
+			// 重複したインスタンスは広告を初期化せずに破棄する。
+			// ここで InitializeAds() まで走ると Advertisement.Initialize が二重に呼ばれ、
+			// 初期化完了コールバックも二重に返ってくるため、バナーのロードが重なって
+			// 「A Banner is already in use」になる。
+			// ステージを先読みするたびに新しい AdsManager が生成されるので、
+			// return しないと切り替えのたびに再発する
 			Destroy(this.gameObject);//中身がすでに入っていた場合、自身のインスタンスがくっついているゲームオブジェクトを破棄します。
+			return;
 		}
 
 		InitializeAds();

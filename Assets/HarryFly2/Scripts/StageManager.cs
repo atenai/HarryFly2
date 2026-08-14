@@ -170,21 +170,21 @@ public class StageManager : MonoBehaviour
 
 	void ShowNextStage()
 	{
+		// ここは待機中も毎フレーム通る。以前はそれぞれ Debug.Log を出していたが、
+		// 1分で5000件を超えるログが出て実機のフレームレートを落としていたので出さない。
+		// （Debug.Log は文字列生成とlogcatへの書き出しが毎回発生する）
 		if (IsLoaded == false)
 		{
-			Debug.Log("シーンがまだ読み込まれていません。");
 			return;
 		}
 
 		if (IsTriggered == false)
 		{
-			Debug.Log("シーン切り替えのトリガーがまだ発生していません。");
 			return;
 		}
 
 		if (IsSceneSwitched == true)
 		{
-			Debug.Log("シーンはすでに切り替えられています。");
 			return;
 		}
 
