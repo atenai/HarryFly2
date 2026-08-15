@@ -1,14 +1,18 @@
 using UnityEngine;
 
 /// <summary>
-/// 端末を振動させる（Android実機のみ動作。エディタとその他のプラットフォームでは何もしない）
+/// 端末を振動させる（Android実機のみ動作。エディタとその他のプラットフォームでは何もしない）。
+///
+/// 単発の振動しか持たない。以前はブースト中に鳴らし続ける継続振動を持っていたが、
+/// 鳴っている最中に単発を割り込ませてもアイテム取得の振動を感じ取れなかったため、
+/// 継続振動そのものを廃止した。
 /// </summary>
 public static class HapticFeedback
 {
 	/// <summary> 振動の強さ（5段階） </summary>
 	public enum Strength
 	{
-		/// <summary> 1段階目：極弱（ブースト中の継続振動） </summary>
+		/// <summary> 1段階目：極弱 </summary>
 		VeryLight,
 		/// <summary> 2段階目：弱（コイン取得） </summary>
 		Light,
@@ -20,22 +24,8 @@ public static class HapticFeedback
 		VeryHeavy,
 	}
 
-	static bool isEnabled = true;
-
 	/// <summary> 振動のオン/オフ（設定画面から切り替える想定） </summary>
-	public static bool IsEnabled
-	{
-		get => isEnabled;
-		set
-		{
-			isEnabled = value;
-			if (isEnabled == false)
-			{
-				// 継続振動中にオフにされたら止める
-				StopContinuous();
-			}
-		}
-	}
+	public static bool IsEnabled { get; set; } = true;
 
 	/// <summary> 単発振動が連続しすぎないようにする最小間隔（秒） </summary>
 	const float Min_Interval = 0.05f;
@@ -43,7 +33,7 @@ public static class HapticFeedback
 	/// <summary> 間引きの対象にする最大の強さ（これより強いものは必ず振動させる） </summary>
 	const Strength Max_Throttled_Strength = Strength.Medium;
 
-	/// <summary> 最後に単発振動させた時刻 </summary>
+	/// <summary> 最後に振動させた時刻 </summary>
 	static float lastPlayedTime = -1f;
 
 	/// <summary>
@@ -73,69 +63,16 @@ public static class HapticFeedback
 #endif
 	}
 
-	/// <summary>
-	/// 振動を鳴らし続ける（ブースト中など）。
-	/// 毎フレーム呼んでよい（既に同じ強さで鳴っていれば何もしない）
-	/// </summary>
-	/// <param name="strength">振動の強さ</param>
-	public static void StartContinuous(Strength strength)
-	{
-		if (IsEnabled == false)
-		{
-			return;
-		}
-
-#if UNITY_ANDROID && !UNITY_EDITOR
-		StartContinuousOnAndroid(strength);
-#endif
-	}
-
-	/// <summary>
-	/// 鳴らし続けている振動を止める。
-	/// 毎フレーム呼んでよい（鳴っていなければ何もしない）
-	/// </summary>
-	public static void StopContinuous()
-	{
-#if UNITY_ANDROID && !UNITY_EDITOR
-		StopContinuousOnAndroid();
-#endif
-	}
-
-	/// <summary>
-	/// アプリが中断・終了したときに継続振動を止める。
-	/// 止め忘れると端末が鳴りっぱなしになるための保険
-	/// </summary>
-	[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-	static void RegisterLifecycleEvents()
-	{
-		Application.focusChanged += OnFocusChanged;
-		Application.quitting += StopContinuous;
-	}
-
-	static void OnFocusChanged(bool hasFocus)
-	{
-		if (hasFocus == false)
-		{
-			StopContinuous();
-		}
-	}
-
 #if UNITY_ANDROID && !UNITY_EDITOR
 
 	/// <summary> VibrationEffect が使えるようになった Android 8.0 のAPIレベル </summary>
 	const int Sdk_Version_Oreo = 26;
 
 	/// <summary> 5段階の振動時間（ミリ秒）。Strength の並び順と対応 </summary>
-	static readonly long[] Durations = { 10, 20, 35, 55, 80 };
+	static readonly long[] Durations = { 15, 30, 45, 60, 85 };
 
 	/// <summary> 5段階の振動の強さ（1〜255）。Strength の並び順と対応 </summary>
-	static readonly int[] Amplitudes = { 50, 90, 130, 190, 255 };
-
-	/// <summary> 継続振動の1周期の長さ（ミリ秒）。これを繰り返して鳴らし続ける </summary>
-	const long Continuous_Segment = 400;
-
-	/// <summary> 継続振動中に単発振動をはさむときの無振動の間（ミリ秒） </summary>
-	const long Continuous_Gap = 40;
+	static readonly int[] Amplitudes = { 90, 160, 200, 230, 255 };
 
 	/// <summary> 端末側で強さを指定できないときに使う既定値（VibrationEffect.DEFAULT_AMPLITUDE） </summary>
 	const int Default_Amplitude = -1;
@@ -152,11 +89,6 @@ public static class HapticFeedback
 	static bool canUseVibrationEffect;
 	/// <summary> 振動の強さを指定できる端末か </summary>
 	static bool hasAmplitudeControl;
-
-	/// <summary> 継続振動を鳴らしているか </summary>
-	static bool isContinuousPlaying;
-	/// <summary> 鳴らしている継続振動の強さ </summary>
-	static Strength continuousStrength;
 
 	/// <summary>
 	/// Vibrator を取得する（初回のみ）
@@ -221,14 +153,6 @@ public static class HapticFeedback
 
 		try
 		{
-			// 継続振動中に単発を鳴らすと継続側が上書きされて止まってしまうので、
-			// 「単発 → 少し空ける → 継続振動に戻る」という一本の波形として鳴らし直す
-			if (isContinuousPlaying == true)
-			{
-				VibrateContinuous(true, strength);
-				return;
-			}
-
 			if (canUseVibrationEffect == true)
 			{
 				int amplitude = ToAmplitude(Amplitudes[(int)strength]);
@@ -252,134 +176,11 @@ public static class HapticFeedback
 	}
 
 	/// <summary>
-	/// 継続振動を開始する
-	/// </summary>
-	/// <param name="strength">振動の強さ</param>
-	static void StartContinuousOnAndroid(Strength strength)
-	{
-		Initialize();
-
-		if (isAvailable == false)
-		{
-			return;
-		}
-
-		// 毎フレーム呼ばれるので、既に同じ強さで鳴っていれば鳴らし直さない
-		if (isContinuousPlaying == true && continuousStrength == strength)
-		{
-			return;
-		}
-
-		continuousStrength = strength;
-		isContinuousPlaying = true;
-
-		try
-		{
-			VibrateContinuous(false, Strength.VeryLight);
-		}
-		catch (System.Exception e)
-		{
-			Debug.LogWarning("継続振動に失敗した：" + e.Message);
-			isContinuousPlaying = false;
-			isAvailable = false;
-		}
-	}
-
-	/// <summary>
-	/// 継続振動を止める
-	/// </summary>
-	static void StopContinuousOnAndroid()
-	{
-		if (isContinuousPlaying == false)
-		{
-			return;
-		}
-		isContinuousPlaying = false;
-
-		if (isAvailable == false)
-		{
-			return;
-		}
-
-		try
-		{
-			vibrator.Call("cancel");
-		}
-		catch (System.Exception e)
-		{
-			Debug.LogWarning("振動の停止に失敗した：" + e.Message);
-			isAvailable = false;
-		}
-	}
-
-	/// <summary>
-	/// 繰り返し振動を鳴らす
-	/// </summary>
-	/// <param name="hasOneShot">先頭に単発の振動をはさむか</param>
-	/// <param name="oneShotStrength">はさむ単発振動の強さ</param>
-	static void VibrateContinuous(bool hasOneShot, Strength oneShotStrength)
-	{
-		int continuousAmplitude = ToAmplitude(Amplitudes[(int)continuousStrength]);
-
-		if (canUseVibrationEffect == true)
-		{
-			long[] timings;
-			int[] amplitudes;
-			int repeatIndex;
-
-			if (hasOneShot == true)
-			{
-				// 単発 → 無振動 → 継続。3つ目から先を繰り返す
-				timings = new long[] { Durations[(int)oneShotStrength], Continuous_Gap, Continuous_Segment };
-				amplitudes = new int[] { ToAmplitude(Amplitudes[(int)oneShotStrength]), 0, continuousAmplitude };
-				repeatIndex = 2;
-			}
-			else
-			{
-				timings = new long[] { Continuous_Segment };
-				amplitudes = new int[] { continuousAmplitude };
-				repeatIndex = 0;
-			}
-
-			using (AndroidJavaObject effect = vibrationEffectClass.CallStatic<AndroidJavaObject>("createWaveform", timings, amplitudes, repeatIndex))
-			{
-				vibrator.Call("vibrate", effect);
-			}
-		}
-		else
-		{
-			// Android 7.1以下は強さを指定できないので、時間のパターンだけで表現する。
-			// パターンは「無振動の長さ, 振動の長さ, ...」の交互指定
-			long[] pattern;
-			int repeatIndex;
-
-			if (hasOneShot == true)
-			{
-				pattern = new long[] { 0, Durations[(int)oneShotStrength], Continuous_Gap, Continuous_Segment };
-				repeatIndex = 2;
-			}
-			else
-			{
-				pattern = new long[] { 0, Continuous_Segment };
-				repeatIndex = 0;
-			}
-
-			vibrator.Call("vibrate", pattern, repeatIndex);
-		}
-	}
-
-	/// <summary>
 	/// 端末が強さの指定に対応していなければ既定値に落とす
 	/// </summary>
 	/// <param name="amplitude">指定したい強さ（1〜255）</param>
 	static int ToAmplitude(int amplitude)
 	{
-		// 0 は「振動させない区間」なのでそのまま返す
-		if (amplitude <= 0)
-		{
-			return 0;
-		}
-
 		if (hasAmplitudeControl == false)
 		{
 			return Default_Amplitude;

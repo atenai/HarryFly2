@@ -106,29 +106,24 @@ public class PlaneController : MonoBehaviour
 
 	void Update()
 	{
-		// 以下の中断条件では Accelerate() を通らないので、ブースト中の振動をここで止めておく
 		if (StageManager.SingletonInstance.IsSceneSwitched == true)
 		{
-			HapticFeedback.StopContinuous();
 			return;
 		}
 
 		if (ui.IsFade == false)
 		{
-			HapticFeedback.StopContinuous();
 			return;
 		}
 
 		if (ui.Panel_Shop.gameObject.activeSelf == true)
 		{
-			HapticFeedback.StopContinuous();
 			ChangePlaneModel();
 			return;
 		}
 
 		if (gameManager.IsPlay == false)
 		{
-			HapticFeedback.StopContinuous();
 			return;
 		}
 
@@ -228,19 +223,26 @@ public class PlaneController : MonoBehaviour
 			{
 				currentFuel = 0;
 			}
-			HapticFeedback.StartContinuous(HapticFeedback.Strength.VeryLight);
+			// ブースト中は振動させない。
+			// 鳴らし続けると、アイテムを取ったときの単発振動がその中に埋もれて感じ取れなくなる
 		}
 		else
 		{
 			paticlePrefab.SetActive(false);
 			ChangeForwordMoveSpeed(changeForwordMoveSpeedPerSecond * -0.5f * Time.deltaTime);
 			ChangeVerticalAndHorizontalMoveSpeed(-changeVerticalAndHorizontalMoveSpeedPerSecond * Time.deltaTime);
-			HapticFeedback.StopContinuous();
 		}
 	}
 
 	void FixedUpdate()
 	{
+		// ゴール後はキネマティックにして固定してある。
+		// ここで velocity を触ると「キネマティックな剛体に速度は設定できない」警告が毎フレーム出る
+		if (hasGoaled == true)
+		{
+			return;
+		}
+
 		if (StageManager.SingletonInstance.IsSceneSwitched == true)
 		{
 			rb.velocity = Vector3.zero;
@@ -354,7 +356,6 @@ public class PlaneController : MonoBehaviour
 			hasGoaled = true;
 
 			Debug.Log("ゴール！");
-			HapticFeedback.StopContinuous();
 			HapticFeedback.Play(HapticFeedback.Strength.Heavy);
 
 			// ゴール報酬：このステージで拾ったコインを2倍にする。
@@ -363,9 +364,13 @@ public class PlaneController : MonoBehaviour
 			int bonusCoin = gameManager.ApplyGoalBonus();
 			Debug.Log("ゴールボーナス：+" + bonusCoin);
 
+			// ブーストの炎はここで消す。IsPlay を false にすると Update が Accelerate() まで
+			// 到達しなくなるので、消灯処理が走らないまま出っぱなしになってしまう
+			paticlePrefab.SetActive(false);
+
 			// 操作と制限時間を止める。止めないとリザルトを見ている間に時間切れになる
 			gameManager.IsPlay = false;
-			rb.velocity = Vector3.zero;
+			FreezeForGoal();
 
 			// ステージが切り替わる前にコインを保存する
 			gameManager.SaveCoin();
@@ -375,6 +380,19 @@ public class PlaneController : MonoBehaviour
 			// シーンが変わってしまい、ゴール文字が映らないまま消えていた
 			ui.ShowResult(gameManager.PlayTime, stageCoin, bonusCoin, GoToNextStage);
 		}
+	}
+
+	/// <summary>
+	/// ゴール後に機体を完全に止める。
+	/// 速度を0にするだけでは足りない。ゴール枠や建物に接触した状態だと、
+	/// 物理側のめり込み解消で機体が押し出され続け、カメラの外まで飛んでいってしまう。
+	/// キネマティックにすると押し出しも回転も起きなくなる
+	/// </summary>
+	void FreezeForGoal()
+	{
+		rb.velocity = Vector3.zero;
+		rb.angularVelocity = Vector3.zero;
+		rb.isKinematic = true;
 	}
 
 	/// <summary>
@@ -406,7 +424,6 @@ public class PlaneController : MonoBehaviour
 		if (collision.gameObject.CompareTag("Obstacle") == true)
 		{
 			Debug.Log("障害物に衝突した");
-			HapticFeedback.StopContinuous();
 			HapticFeedback.Play(HapticFeedback.Strength.VeryHeavy);
 			AdsManager.SingletonInstance.ShowAdsInterstitialCount();
 			ResetPlayerPosition();
@@ -416,12 +433,6 @@ public class PlaneController : MonoBehaviour
 			StageManager.SingletonInstance.IsTriggered = true;
 			ui.FadeIn();
 		}
-	}
-
-	void OnDisable()
-	{
-		// シーン切り替えなどで消えるときに振動が鳴りっぱなしにならないようにする
-		HapticFeedback.StopContinuous();
 	}
 
 	/// <summary>
