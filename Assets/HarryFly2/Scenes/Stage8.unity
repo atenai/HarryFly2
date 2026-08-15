@@ -19115,26 +19115,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Canvas
       objectReference: {fileID: 0}
-    - target: {fileID: 7022485006891454316, guid: b807181cffb14ca4db2b4e9e143bfc3a,
-        type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7022485006891454316, guid: b807181cffb14ca4db2b4e9e143bfc3a,
-        type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7022485006891454316, guid: b807181cffb14ca4db2b4e9e143bfc3a,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7022485006891454316, guid: b807181cffb14ca4db2b4e9e143bfc3a,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 7365940278884193328, guid: b807181cffb14ca4db2b4e9e143bfc3a,
         type: 3}
       propertyPath: m_Pivot.x
@@ -19233,26 +19213,6 @@ PrefabInstance:
     - target: {fileID: 7365940278884193328, guid: b807181cffb14ca4db2b4e9e143bfc3a,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7404455948585115006, guid: b807181cffb14ca4db2b4e9e143bfc3a,
-        type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7404455948585115006, guid: b807181cffb14ca4db2b4e9e143bfc3a,
-        type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7404455948585115006, guid: b807181cffb14ca4db2b4e9e143bfc3a,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7404455948585115006, guid: b807181cffb14ca4db2b4e9e143bfc3a,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8652861033675301134, guid: b807181cffb14ca4db2b4e9e143bfc3a,
