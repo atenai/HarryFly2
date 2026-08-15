@@ -56,6 +56,9 @@ public class PlaneController : MonoBehaviour
 	//加速/衝突効果
 	public GameObject paticlePrefab;
 
+	/// <summary>ゴール済みかどうか。リザルトを二重に出さないための判定に使う</summary>
+	bool hasGoaled = false;
+
 	void Start()
 	{
 		initForwordMoveSpeed = addForwordMoveSpeed;
@@ -343,26 +346,63 @@ public class PlaneController : MonoBehaviour
 
 		if (collider.CompareTag("Goal") == true)
 		{
+			// ゴールの当たり判定が複数あっても、リザルトを二重に出さない
+			if (hasGoaled == true)
+			{
+				return;
+			}
+			hasGoaled = true;
+
 			Debug.Log("ゴール！");
 			HapticFeedback.StopContinuous();
 			HapticFeedback.Play(HapticFeedback.Strength.Heavy);
-			ui.ShowGoalText();
-			// ゴール報酬：このステージで拾ったコインを2倍にする
+
+			// ゴール報酬：このステージで拾ったコインを2倍にする。
+			// ApplyGoalBonus を呼ぶと加算後になるので、拾った数は先に控えておく
+			int stageCoin = gameManager.StageCoinCount;
 			int bonusCoin = gameManager.ApplyGoalBonus();
 			Debug.Log("ゴールボーナス：+" + bonusCoin);
-			AdsManager.SingletonInstance.ShowAdsInterstitialCount();
+
+			// 操作と制限時間を止める。止めないとリザルトを見ている間に時間切れになる
+			gameManager.IsPlay = false;
+			rb.velocity = Vector3.zero;
+
 			// ステージが切り替わる前にコインを保存する
 			gameManager.SaveCoin();
-			// シーンを切り替える
-			StageManager.SingletonInstance.IsTriggered = true;
-			// 次ステージのロードが終わるまでシーンは切り替わらない。
-			// その間プレイヤーが飛び続けるのが見えてしまうので、障害物に当たったときと同様に画面を隠す
-			ui.FadeIn();
+
+			// シーンの切り替えはリザルトの「NEXT」を押してから。
+			// ゴールした瞬間に切り替えると、次ステージは先読み済みなので次のフレームで
+			// シーンが変わってしまい、ゴール文字が映らないまま消えていた
+			ui.ShowResult(gameManager.PlayTime, stageCoin, bonusCoin, GoToNextStage);
 		}
+	}
+
+	/// <summary>
+	/// リザルトの「NEXT」から呼ばれる。ここで初めて次のステージへ切り替える
+	/// </summary>
+	void GoToNextStage()
+	{
+		if (AdsManager.SingletonInstance != null)
+		{
+			// リザルトを見せてから出す。ゴールと同時に出すとリザルトが広告で隠れてしまう
+			AdsManager.SingletonInstance.ShowAdsInterstitialCount();
+		}
+
+		ui.HideResult();
+		// 次ステージのロードが終わるまでシーンは切り替わらない。
+		// その間プレイヤーが映ってしまうので、障害物に当たったときと同様に画面を隠す
+		ui.FadeIn();
+		StageManager.SingletonInstance.IsTriggered = true;
 	}
 
 	void OnCollisionEnter(Collision collision)
 	{
+		// ゴール後はその場で止まっているだけなので、接触してもステージを切り替えない
+		if (hasGoaled == true)
+		{
+			return;
+		}
+
 		if (collision.gameObject.CompareTag("Obstacle") == true)
 		{
 			Debug.Log("障害物に衝突した");

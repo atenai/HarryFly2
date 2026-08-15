@@ -61,6 +61,13 @@ public class GameManager : MonoBehaviour
 	int stageCoinCount = 0;
 	public int StageCoinCount => stageCoinCount;
 
+	/// <summary>
+	/// ゲーム開始から実際にプレイしていた時間（秒）。リザルトのクリアタイムに使う。
+	/// 残り時間（totalTime）はアイテムで増えるので、経過時間の代わりには使えない
+	/// </summary>
+	float playTime = 0f;
+	public float PlayTime => playTime;
+
 	void Awake()
 	{
 		isPlay = false;
@@ -141,6 +148,7 @@ public class GameManager : MonoBehaviour
 	/// </summary>
 	void TimerSystem()
 	{
+		playTime = playTime + Time.deltaTime;
 		totalTime = totalTime - Time.deltaTime;
 		//Debug.Log("残り時間：" + totalTime);
 		if (totalTime <= 0)

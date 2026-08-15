@@ -89,6 +89,71 @@ public class UI : MonoBehaviour
 	[Tooltip("ゴール時に中央に出すテキスト")]
 	[SerializeField] TextMeshProUGUI goalText;
 
+	[Header("リザルト")]
+	[Tooltip("リザルトパネル")]
+	[SerializeField] GameObject panel_Result;
+	[Tooltip("クリアタイムの数値")]
+	[SerializeField] TextMeshProUGUI resultTimeText;
+	[Tooltip("このステージで取得したコインの数値（ボーナス込み）")]
+	[SerializeField] TextMeshProUGUI resultCoinText;
+	[Tooltip("ゴールボーナスの内訳")]
+	[SerializeField] TextMeshProUGUI resultBonusText;
+	[Tooltip("次のステージへ進むボタン")]
+	[SerializeField] Button nextStageButton;
+
+	/// <summary>リザルトを表示中かどうか</summary>
+	bool isResultShown = false;
+	public bool IsResultShown => isResultShown;
+
+	/// <summary>ゴール文字をリザルト表示時に移動させる高さ</summary>
+	const float Goal_Text_Result_PosY = 470f;
+
+	/// <summary>紙吹雪を出す親。UI の一番手前に実行時に作る</summary>
+	RectTransform confettiRoot;
+
+	/// <summary>
+	/// 降っている紙吹雪1枚分の状態。
+	/// 枚数を増やしたいので、DOTween ではなく毎フレームの計算で動かしている。
+	/// 1枚につきトゥイーンを3つ積むと、既定の同時実行数（Tweener 200 / Sequence 50）を
+	/// すぐ超えて、DOTween が内部配列を作り直すためゴールの瞬間に引っかかる
+	/// </summary>
+	class ConfettiPiece
+	{
+		public RectTransform Rect;
+		/// <summary>左右に揺れる中心のX座標</summary>
+		public float BaseX;
+		public float PositionY;
+		/// <summary>落下速度（1秒あたり）</summary>
+		public float FallSpeed;
+		/// <summary>左右の振れ幅</summary>
+		public float SwayAmplitude;
+		/// <summary>左右に揺れる速さ</summary>
+		public float SwayFrequency;
+		/// <summary>揺れの位相。全部の紙が同じ動きに揃わないようにする</summary>
+		public float SwayPhase;
+		/// <summary>回転速度（1秒あたりの角度）</summary>
+		public float SpinSpeed;
+		public float Angle;
+	}
+
+	/// <summary>出している紙吹雪</summary>
+	readonly List<ConfettiPiece> confettiPieces = new List<ConfettiPiece>();
+
+	/// <summary>この高さより下まで落ちた紙吹雪は消す</summary>
+	float confettiRemoveY = 0f;
+
+	/// <summary>1回のゴールで出す紙吹雪の枚数</summary>
+	const int Confetti_Count = 160;
+
+	/// <summary>紙吹雪の色。HUDと同じ配色で揃える</summary>
+	static readonly Color[] Confetti_Colors =
+	{
+		new Color32(0xFF, 0x7A, 0x1A, 0xFF),
+		new Color32(0xFF, 0xB0, 0x3A, 0xFF),
+		new Color32(0xE6, 0xEA, 0xEC, 0xFF),
+		new Color32(0x4F, 0xC3, 0xF7, 0xFF),
+	};
+
 	[Tooltip("広告報酬ボタン")]
 	[SerializeField] Button adsRewardedButton;
 
@@ -118,6 +183,10 @@ public class UI : MonoBehaviour
 		tapTween = tapText.transform.DOScale(new Vector3(1.5f, 1.5f, 1f), 0.6f).SetLoops(-1, LoopType.Yoyo).SetAutoKill(false).Pause();
 
 		goalText.gameObject.SetActive(false);
+		if (panel_Result != null)
+		{
+			panel_Result.SetActive(false);
+		}
 
 		// ゲーム開始ボタンの登録を先に済ませる。
 		// 広告まわりで例外が出ても、最低限プレイを開始できる状態は保つ
@@ -161,6 +230,21 @@ public class UI : MonoBehaviour
 		if (rewarded != null)
 		{
 			rewarded.OnRewarded -= OnAdsRewarded;
+		}
+
+		// シーンが切り替わると Canvas ごと消える。
+		// ここで Destroy を呼ぶとシーン破棄中の操作になるので、参照を手放すだけにする
+		confettiPieces.Clear();
+
+		// 待機中のリザルト演出は止める。
+		// 残しておくと破棄済みの RectTransform を触って DOTween が警告を出す
+		if (goalText != null)
+		{
+			goalText.rectTransform.DOKill();
+		}
+		if (panel_Result != null)
+		{
+			panel_Result.transform.DOKill();
 		}
 	}
 
@@ -296,6 +380,16 @@ public class UI : MonoBehaviour
 			return;
 		}
 
+		// リザルト中も降り続けてほしいので、下の早期リターンより先に進める
+		UpdateConfetti();
+
+		// リザルト中は IsPlay が false になる。
+		// 下の分岐に落とすと「TAP!」が出てきてリザルトに重なってしまう
+		if (isResultShown == true)
+		{
+			return;
+		}
+
 		if (gameManager.IsPlay == false)
 		{
 			tapText.gameObject.SetActive(true);
@@ -382,15 +476,250 @@ public class UI : MonoBehaviour
 	}
 
 	/// <summary>
-	/// ゴール時に「GOAL!!」を画面中央に表示します。
+	/// ゴール時に「GOAL」を画面中央に表示します。
 	/// フェード用の Image より手前に配置してあるので、暗転した上に重なって出ます。
 	/// </summary>
 	public void ShowGoalText()
 	{
 		goalText.gameObject.SetActive(true);
+
+		RectTransform goalRect = goalText.rectTransform;
+		goalRect.DOKill();
+		// 前のステージで上へ寄せた位置が残っていることがあるので、中央に戻してから出す
+		goalRect.anchoredPosition = new Vector2(goalRect.anchoredPosition.x, 0f);
 		// 小さい状態から弾むように出す
-		goalText.transform.localScale = Vector3.one * 0.5f;
-		goalText.transform.DOScale(Vector3.one, 0.4f).SetEase(Ease.OutBack);
+		goalRect.localScale = Vector3.one * 0.5f;
+		// 広告などで timeScale が 0 になっても止まらないように SetUpdate(true) にする
+		goalRect.DOScale(Vector3.one, 0.4f).SetEase(Ease.OutBack).SetUpdate(true);
+	}
+
+	/// <summary>
+	/// ゴール演出とリザルト画面を出す。
+	/// 以前はゴールした瞬間にシーンを切り替えていたので、ゴール文字が1フレームしか映らずに
+	/// 消えていた。ここではシーンを切り替えず、「NEXT」が押されるまで演出を見せきる
+	/// </summary>
+	/// <param name="clearTimeSeconds">クリアタイム（秒）</param>
+	/// <param name="stageCoin">このステージで拾ったコイン数</param>
+	/// <param name="bonusCoin">ゴールボーナスで上乗せしたコイン数</param>
+	/// <param name="onNext">「NEXT」が押されたときの処理</param>
+	public void ShowResult(float clearTimeSeconds, int stageCoin, int bonusCoin, UnityAction onNext)
+	{
+		isResultShown = true;
+
+		ShowGoalText();
+		PlayConfetti();
+
+		// ゴール文字はリザルトと重なるので、少し遅れて上へ寄せる
+		goalText.rectTransform.DOAnchorPosY(Goal_Text_Result_PosY, 0.45f).SetEase(Ease.OutCubic).SetUpdate(true).SetDelay(0.3f);
+
+		if (resultTimeText != null)
+		{
+			resultTimeText.text = FormatClearTime(clearTimeSeconds);
+		}
+
+		if (resultCoinText != null)
+		{
+			resultCoinText.text = (stageCoin + bonusCoin).ToString();
+		}
+
+		if (resultBonusText != null)
+		{
+			// 内訳を出しておかないと、拾った数と表示が合っていないように見える
+			resultBonusText.text = "BASE " + stageCoin + "   BONUS +" + bonusCoin;
+		}
+
+		if (nextStageButton != null)
+		{
+			// UI はステージごとに作り直されるが、押しっぱなしの登録が残らないよう毎回入れ替える
+			nextStageButton.onClick.RemoveAllListeners();
+			nextStageButton.onClick.AddListener(() =>
+			{
+				// 連打でシーン切り替えが二重に走らないようにする
+				nextStageButton.interactable = false;
+				if (onNext != null)
+				{
+					onNext.Invoke();
+				}
+			});
+			nextStageButton.interactable = true;
+		}
+
+		if (panel_Result == null)
+		{
+			Debug.LogWarning("リザルトパネルが設定されていないため、ゴール文字だけ表示する");
+			return;
+		}
+
+		panel_Result.SetActive(true);
+		// 拡大0から始めるので、遅らせている間は見えない。
+		// ゴール文字が上へ抜けるのを待ってから出す
+		Transform panelTransform = panel_Result.transform;
+		panelTransform.DOKill();
+		panelTransform.localScale = Vector3.zero;
+		panelTransform.DOScale(Vector3.one, 0.4f).SetEase(Ease.OutBack).SetUpdate(true).SetDelay(0.3f);
+	}
+
+	/// <summary>
+	/// リザルト画面を閉じる。次のステージへ切り替える直前に呼ぶ
+	/// </summary>
+	public void HideResult()
+	{
+		isResultShown = false;
+		ClearConfetti();
+
+		goalText.rectTransform.DOKill();
+		goalText.gameObject.SetActive(false);
+
+		if (panel_Result != null)
+		{
+			panel_Result.transform.DOKill();
+			panel_Result.SetActive(false);
+		}
+	}
+
+	/// <summary>
+	/// クリアタイムを 分:秒.小数 の形にする
+	/// </summary>
+	static string FormatClearTime(float seconds)
+	{
+		// 秒を四捨五入すると 59.999 秒が 60 秒として表示されてしまうので切り捨てる
+		int hundredths = Mathf.Max(0, Mathf.FloorToInt(seconds * 100f));
+		int minutePart = hundredths / 6000;
+		int secondPart = (hundredths / 100) % 60;
+		int fractionPart = hundredths % 100;
+		return string.Format("{0:00}:{1:00}.{2:00}", minutePart, secondPart, fractionPart);
+	}
+
+	/// <summary>
+	/// 紙吹雪を降らせる。専用のパーティクルやスプライトを用意せずに済むよう、
+	/// 単色の Image を実行時に作って落としている。
+	/// スプライトを持たせていないので全部が同じマテリアルになり、枚数を増やしてもまとめて描かれる
+	/// </summary>
+	void PlayConfetti()
+	{
+		EnsureConfettiRoot();
+		// 前回の分が残っていたら片付けてから出す
+		ClearConfetti();
+
+		float halfWidth = confettiRoot.rect.width * 0.5f;
+		float halfHeight = confettiRoot.rect.height * 0.5f;
+		confettiRemoveY = -halfHeight - 120f;
+
+		for (int i = 0; i < Confetti_Count; i++)
+		{
+			GameObject piece = new GameObject("Confetti", typeof(RectTransform), typeof(Image));
+			RectTransform pieceRect = (RectTransform)piece.transform;
+			pieceRect.SetParent(confettiRoot, false);
+			pieceRect.anchorMin = new Vector2(0.5f, 0.5f);
+			pieceRect.anchorMax = new Vector2(0.5f, 0.5f);
+			pieceRect.pivot = new Vector2(0.5f, 0.5f);
+			pieceRect.sizeDelta = new Vector2(Random.Range(12f, 22f), Random.Range(20f, 34f));
+
+			Image pieceImage = piece.GetComponent<Image>();
+			pieceImage.color = Confetti_Colors[Random.Range(0, Confetti_Colors.Length)];
+			// 「NEXT」ボタンを押せなくならないよう、当たり判定は切っておく
+			pieceImage.raycastTarget = false;
+
+			ConfettiPiece state = new ConfettiPiece();
+			state.Rect = pieceRect;
+			state.BaseX = Random.Range(-halfWidth, halfWidth);
+			// 画面の上に高く散らして置き、間を空けて降ってくるようにする
+			state.PositionY = halfHeight + Random.Range(40f, 1600f);
+			state.FallSpeed = Random.Range(420f, 900f);
+			state.SwayAmplitude = Random.Range(20f, 110f);
+			state.SwayFrequency = Random.Range(2.5f, 6f);
+			state.SwayPhase = Random.Range(0f, Mathf.PI * 2f);
+			state.SpinSpeed = Random.Range(-320f, 320f);
+			state.Angle = Random.Range(0f, 360f);
+
+			ApplyConfettiTransform(state);
+			confettiPieces.Add(state);
+		}
+	}
+
+	/// <summary>
+	/// 紙吹雪を1フレーム分進める。
+	/// リザルト中も降り続けてほしいので、Update の早期リターンより前から呼ぶ
+	/// </summary>
+	void UpdateConfetti()
+	{
+		if (confettiPieces.Count == 0)
+		{
+			return;
+		}
+
+		// 広告表示などで timeScale が 0 になっても止まらないように、時間の影響を受けない値を使う
+		float deltaTime = Time.unscaledDeltaTime;
+
+		// 落ちきった分を取り除くので、後ろから回す
+		for (int i = confettiPieces.Count - 1; i >= 0; i--)
+		{
+			ConfettiPiece piece = confettiPieces[i];
+			if (piece.Rect == null)
+			{
+				confettiPieces.RemoveAt(i);
+				continue;
+			}
+
+			piece.PositionY = piece.PositionY - piece.FallSpeed * deltaTime;
+			piece.SwayPhase = piece.SwayPhase + piece.SwayFrequency * deltaTime;
+			piece.Angle = piece.Angle + piece.SpinSpeed * deltaTime;
+
+			if (piece.PositionY < confettiRemoveY)
+			{
+				Destroy(piece.Rect.gameObject);
+				confettiPieces.RemoveAt(i);
+				continue;
+			}
+
+			ApplyConfettiTransform(piece);
+		}
+	}
+
+	static void ApplyConfettiTransform(ConfettiPiece piece)
+	{
+		float x = piece.BaseX + Mathf.Sin(piece.SwayPhase) * piece.SwayAmplitude;
+		piece.Rect.anchoredPosition = new Vector2(x, piece.PositionY);
+		piece.Rect.localEulerAngles = new Vector3(0f, 0f, piece.Angle);
+	}
+
+	/// <summary>
+	/// 紙吹雪の親を用意する。
+	/// ゴール文字と同じ親の一番手前に置くことで、リザルトより前に降らせる
+	/// </summary>
+	void EnsureConfettiRoot()
+	{
+		if (confettiRoot != null)
+		{
+			return;
+		}
+
+		GameObject root = new GameObject("Confetti_Root", typeof(RectTransform));
+		RectTransform rootRect = (RectTransform)root.transform;
+		rootRect.SetParent(goalText.rectTransform.parent, false);
+		rootRect.anchorMin = Vector2.zero;
+		rootRect.anchorMax = Vector2.one;
+		rootRect.offsetMin = Vector2.zero;
+		rootRect.offsetMax = Vector2.zero;
+		rootRect.SetAsLastSibling();
+		confettiRoot = rootRect;
+	}
+
+	/// <summary>
+	/// 出している紙吹雪をまとめて消す
+	/// </summary>
+	void ClearConfetti()
+	{
+		for (int i = 0; i < confettiPieces.Count; i++)
+		{
+			RectTransform piece = confettiPieces[i].Rect;
+			if (piece == null)
+			{
+				continue;
+			}
+			Destroy(piece.gameObject);
+		}
+		confettiPieces.Clear();
 	}
 
 	/// <summary>

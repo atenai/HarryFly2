@@ -5,8 +5,8 @@ using UnityEngine.Advertisements;
 //リワード広告スクリプト
 public class AdsRewarded : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowListener
 {
-	[SerializeField] Button _showAdButton = null;//ボタンの変数を作る理由が何かあるみたいこれ
-	[SerializeField] string _androidAuUnitId = "Rewarded_Android";
+	[SerializeField] Button _showAdButton = null;
+	[SerializeField] string _androidAdUnitId = "Rewarded_Android";
 	[SerializeField] string _iOSAdUnitId = "Rewarded_iOS";
 	string _adUnitId = null;
 
@@ -18,13 +18,9 @@ public class AdsRewarded : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowLi
 
 	void Awake()
 	{
-		//iOSかAndroidかの広告IDを取得する
-		//この場合はUnityのエディターもiOSかAndroidにスイッチしておく必要がある(じゃないと_adUnitIdが取得できずエラーになる)
-#if UNITY_IOS
-        _adUnitId = _iOSAdUnitId;
-#elif UNITY_ANDROID
-		_adUnitId = _androidAuUnitId;
-#endif
+		//iOSかAndroidのどちらのプラットフォームかを取得して広告IDを取得する
+		_adUnitId = (Application.platform == RuntimePlatform.IPhonePlayer) ? _iOSAdUnitId : _androidAdUnitId;
+
 		if (_showAdButton != null)
 		{
 			//リワード広告表示ボタンをオフにする

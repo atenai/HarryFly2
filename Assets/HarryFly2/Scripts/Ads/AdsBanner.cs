@@ -11,11 +11,8 @@ public class AdsBanner : MonoBehaviour
 
 	void Awake()
 	{
-#if UNITY_IOS
-        _adUnitId = _iOSAdUnitId;
-#elif UNITY_ANDROID
-		_adUnitId = _androidAdUnitId;
-#endif
+		//iOSかAndroidのどちらのプラットフォームかを取得して広告IDを取得する
+		_adUnitId = (Application.platform == RuntimePlatform.IPhonePlayer) ? _iOSAdUnitId : _androidAdUnitId;
 
 		//バナー広告の位置をセットする
 		Advertisement.Banner.SetPosition(BannerPosition.BOTTOM_CENTER);

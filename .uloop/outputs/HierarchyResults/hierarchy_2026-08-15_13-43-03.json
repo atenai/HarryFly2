@@ -1,0 +1,1671 @@
+{
+  "ExportTimestamp": "2026-08-15 13:43:03",
+  "Context": {
+    "sceneType": "editor",
+    "sceneName": "Stage0",
+    "nodeCount": 163,
+    "maxDepth": 4
+  },
+  "Hierarchy": [
+    {
+      "sceneName": "Stage0",
+      "stats": {
+        "rootCount": 1,
+        "nodeCount": 163,
+        "maxDepth": 4
+      },
+      "roots": [
+        {
+          "name": "Canvas",
+          "isActive": true,
+          "components": [],
+          "siblingIndex": 9,
+          "tag": "Untagged",
+          "layer": 5,
+          "path": "Canvas",
+          "children": [
+            {
+              "name": "UI",
+              "isActive": true,
+              "components": [],
+              "siblingIndex": 0,
+              "tag": "Untagged",
+              "layer": 5,
+              "path": "Canvas/UI",
+              "children": [
+                {
+                  "name": "HUD_TimerFrame",
+                  "isActive": true,
+                  "components": [],
+                  "siblingIndex": 0,
+                  "tag": "Untagged",
+                  "layer": 0,
+                  "path": "Canvas/UI/HUD_TimerFrame",
+                  "children": [
+                    {
+                      "name": "Frame_T",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 0,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/HUD_TimerFrame/Frame_T",
+                      "children": []
+                    },
+                    {
+                      "name": "Frame_B",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 1,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/HUD_TimerFrame/Frame_B",
+                      "children": []
+                    },
+                    {
+                      "name": "Frame_L",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 2,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/HUD_TimerFrame/Frame_L",
+                      "children": []
+                    },
+                    {
+                      "name": "Frame_R",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 3,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/HUD_TimerFrame/Frame_R",
+                      "children": []
+                    },
+                    {
+                      "name": "Bracket0_H",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 4,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/HUD_TimerFrame/Bracket0_H",
+                      "children": []
+                    },
+                    {
+                      "name": "Bracket0_V",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 5,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/HUD_TimerFrame/Bracket0_V",
+                      "children": []
+                    },
+                    {
+                      "name": "Bracket1_H",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 6,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/HUD_TimerFrame/Bracket1_H",
+                      "children": []
+                    },
+                    {
+                      "name": "Bracket1_V",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 7,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/HUD_TimerFrame/Bracket1_V",
+                      "children": []
+                    },
+                    {
+                      "name": "Label_TIME",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 8,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/HUD_TimerFrame/Label_TIME",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "name": "Text_Timer",
+                  "isActive": true,
+                  "components": [],
+                  "siblingIndex": 1,
+                  "tag": "Untagged",
+                  "layer": 5,
+                  "path": "Canvas/UI/Text_Timer",
+                  "children": []
+                },
+                {
+                  "name": "Image_CoinParent",
+                  "isActive": true,
+                  "components": [],
+                  "siblingIndex": 2,
+                  "tag": "Untagged",
+                  "layer": 5,
+                  "path": "Canvas/UI/Image_CoinParent",
+                  "children": [
+                    {
+                      "name": "Text (TMP)_Coin",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 0,
+                      "tag": "Untagged",
+                      "layer": 5,
+                      "path": "Canvas/UI/Image_CoinParent/Text (TMP)_Coin",
+                      "children": []
+                    },
+                    {
+                      "name": "Image_Coin",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 1,
+                      "tag": "Untagged",
+                      "layer": 5,
+                      "path": "Canvas/UI/Image_CoinParent/Image_Coin",
+                      "children": []
+                    },
+                    {
+                      "name": "Frame_T",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 2,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/Image_CoinParent/Frame_T",
+                      "children": []
+                    },
+                    {
+                      "name": "Frame_B",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 3,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/Image_CoinParent/Frame_B",
+                      "children": []
+                    },
+                    {
+                      "name": "Frame_L",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 4,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/Image_CoinParent/Frame_L",
+                      "children": []
+                    },
+                    {
+                      "name": "Frame_R",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 5,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/Image_CoinParent/Frame_R",
+                      "children": []
+                    },
+                    {
+                      "name": "Bracket0_H",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 6,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/Image_CoinParent/Bracket0_H",
+                      "children": []
+                    },
+                    {
+                      "name": "Bracket0_V",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 7,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/Image_CoinParent/Bracket0_V",
+                      "children": []
+                    },
+                    {
+                      "name": "Bracket1_H",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 8,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/Image_CoinParent/Bracket1_H",
+                      "children": []
+                    },
+                    {
+                      "name": "Bracket1_V",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 9,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/Image_CoinParent/Bracket1_V",
+                      "children": []
+                    },
+                    {
+                      "name": "Label_CREDITS",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 10,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/Image_CoinParent/Label_CREDITS",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "name": "Text (TMP)_Tap!",
+                  "isActive": true,
+                  "components": [],
+                  "siblingIndex": 3,
+                  "tag": "Untagged",
+                  "layer": 5,
+                  "path": "Canvas/UI/Text (TMP)_Tap!",
+                  "children": []
+                },
+                {
+                  "name": "Slider_Fuel",
+                  "isActive": true,
+                  "components": [],
+                  "siblingIndex": 4,
+                  "tag": "Untagged",
+                  "layer": 5,
+                  "path": "Canvas/UI/Slider_Fuel",
+                  "children": [
+                    {
+                      "name": "Background",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 0,
+                      "tag": "Untagged",
+                      "layer": 5,
+                      "path": "Canvas/UI/Slider_Fuel/Background",
+                      "children": []
+                    },
+                    {
+                      "name": "GhostFill",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 1,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/Slider_Fuel/GhostFill",
+                      "children": []
+                    },
+                    {
+                      "name": "Fill Area",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 2,
+                      "tag": "Untagged",
+                      "layer": 5,
+                      "path": "Canvas/UI/Slider_Fuel/Fill Area",
+                      "children": [
+                        {
+                          "name": "Fill",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 0,
+                          "tag": "Untagged",
+                          "layer": 5,
+                          "path": "Canvas/UI/Slider_Fuel/Fill Area/Fill",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "TickMinor1",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 3,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/Slider_Fuel/TickMinor1",
+                      "children": []
+                    },
+                    {
+                      "name": "TickMinor2",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 4,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/Slider_Fuel/TickMinor2",
+                      "children": []
+                    },
+                    {
+                      "name": "TickMinor3",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 5,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/Slider_Fuel/TickMinor3",
+                      "children": []
+                    },
+                    {
+                      "name": "TickMinor4",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 6,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/Slider_Fuel/TickMinor4",
+                      "children": []
+                    },
+                    {
+                      "name": "TickMinor5",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 7,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/Slider_Fuel/TickMinor5",
+                      "children": []
+                    },
+                    {
+                      "name": "TickMinor6",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 8,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/Slider_Fuel/TickMinor6",
+                      "children": []
+                    },
+                    {
+                      "name": "TickMinor7",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 9,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/Slider_Fuel/TickMinor7",
+                      "children": []
+                    },
+                    {
+                      "name": "TickMinor8",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 10,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/Slider_Fuel/TickMinor8",
+                      "children": []
+                    },
+                    {
+                      "name": "TickMinor9",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 11,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/Slider_Fuel/TickMinor9",
+                      "children": []
+                    },
+                    {
+                      "name": "TickMinor10",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 12,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/Slider_Fuel/TickMinor10",
+                      "children": []
+                    },
+                    {
+                      "name": "TickMinor11",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 13,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/Slider_Fuel/TickMinor11",
+                      "children": []
+                    },
+                    {
+                      "name": "TickMinor12",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 14,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/Slider_Fuel/TickMinor12",
+                      "children": []
+                    },
+                    {
+                      "name": "TickMinor13",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 15,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/Slider_Fuel/TickMinor13",
+                      "children": []
+                    },
+                    {
+                      "name": "TickMinor14",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 16,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/Slider_Fuel/TickMinor14",
+                      "children": []
+                    },
+                    {
+                      "name": "TickMinor15",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 17,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/Slider_Fuel/TickMinor15",
+                      "children": []
+                    },
+                    {
+                      "name": "TickMajor0",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 18,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/Slider_Fuel/TickMajor0",
+                      "children": []
+                    },
+                    {
+                      "name": "TickMajor1",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 19,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/Slider_Fuel/TickMajor1",
+                      "children": []
+                    },
+                    {
+                      "name": "TickMajor2",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 20,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/Slider_Fuel/TickMajor2",
+                      "children": []
+                    },
+                    {
+                      "name": "Label_FUEL",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 21,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/Slider_Fuel/Label_FUEL",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "name": "Floating Joystick",
+                  "isActive": true,
+                  "components": [],
+                  "siblingIndex": 5,
+                  "tag": "Untagged",
+                  "layer": 5,
+                  "path": "Canvas/UI/Floating Joystick",
+                  "children": [
+                    {
+                      "name": "Background",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 0,
+                      "tag": "Untagged",
+                      "layer": 5,
+                      "path": "Canvas/UI/Floating Joystick/Background",
+                      "children": [
+                        {
+                          "name": "Handle",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 0,
+                          "tag": "Untagged",
+                          "layer": 5,
+                          "path": "Canvas/UI/Floating Joystick/Background/Handle",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "Button_Accelerate",
+                  "isActive": true,
+                  "components": [],
+                  "siblingIndex": 6,
+                  "tag": "Untagged",
+                  "layer": 5,
+                  "path": "Canvas/UI/Button_Accelerate",
+                  "children": [
+                    {
+                      "name": "Text_Accelerate",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 0,
+                      "tag": "Untagged",
+                      "layer": 5,
+                      "path": "Canvas/UI/Button_Accelerate/Text_Accelerate",
+                      "children": []
+                    },
+                    {
+                      "name": "Frame_T",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 1,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/Button_Accelerate/Frame_T",
+                      "children": []
+                    },
+                    {
+                      "name": "Frame_B",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 2,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/Button_Accelerate/Frame_B",
+                      "children": []
+                    },
+                    {
+                      "name": "Frame_L",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 3,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/Button_Accelerate/Frame_L",
+                      "children": []
+                    },
+                    {
+                      "name": "Frame_R",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 4,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/Button_Accelerate/Frame_R",
+                      "children": []
+                    },
+                    {
+                      "name": "Bracket0_H",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 5,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/Button_Accelerate/Bracket0_H",
+                      "children": []
+                    },
+                    {
+                      "name": "Bracket0_V",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 6,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/Button_Accelerate/Bracket0_V",
+                      "children": []
+                    },
+                    {
+                      "name": "Bracket1_H",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 7,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/Button_Accelerate/Bracket1_H",
+                      "children": []
+                    },
+                    {
+                      "name": "Bracket1_V",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 8,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/Button_Accelerate/Bracket1_V",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "name": "Button_GameStart",
+                  "isActive": true,
+                  "components": [],
+                  "siblingIndex": 7,
+                  "tag": "Untagged",
+                  "layer": 5,
+                  "path": "Canvas/UI/Button_GameStart",
+                  "children": []
+                },
+                {
+                  "name": "Button_ShopOpen",
+                  "isActive": true,
+                  "components": [],
+                  "siblingIndex": 8,
+                  "tag": "Untagged",
+                  "layer": 5,
+                  "path": "Canvas/UI/Button_ShopOpen",
+                  "children": [
+                    {
+                      "name": "Text (Legacy)",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 0,
+                      "tag": "Untagged",
+                      "layer": 5,
+                      "path": "Canvas/UI/Button_ShopOpen/Text (Legacy)",
+                      "children": []
+                    },
+                    {
+                      "name": "Frame_T",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 1,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/Button_ShopOpen/Frame_T",
+                      "children": []
+                    },
+                    {
+                      "name": "Frame_B",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 2,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/Button_ShopOpen/Frame_B",
+                      "children": []
+                    },
+                    {
+                      "name": "Frame_L",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 3,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/Button_ShopOpen/Frame_L",
+                      "children": []
+                    },
+                    {
+                      "name": "Frame_R",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 4,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/Button_ShopOpen/Frame_R",
+                      "children": []
+                    },
+                    {
+                      "name": "Bracket0_H",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 5,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/Button_ShopOpen/Bracket0_H",
+                      "children": []
+                    },
+                    {
+                      "name": "Bracket0_V",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 6,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/Button_ShopOpen/Bracket0_V",
+                      "children": []
+                    },
+                    {
+                      "name": "Bracket1_H",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 7,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/Button_ShopOpen/Bracket1_H",
+                      "children": []
+                    },
+                    {
+                      "name": "Bracket1_V",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 8,
+                      "tag": "Untagged",
+                      "layer": 0,
+                      "path": "Canvas/UI/Button_ShopOpen/Bracket1_V",
+                      "children": []
+                    }
+                  ]
+                },
+                {
+                  "name": "Panel_Shop",
+                  "isActive": false,
+                  "components": [],
+                  "siblingIndex": 9,
+                  "tag": "Untagged",
+                  "layer": 5,
+                  "path": "Canvas/UI/Panel_Shop",
+                  "children": [
+                    {
+                      "name": "Image_Title",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 0,
+                      "tag": "Untagged",
+                      "layer": 5,
+                      "path": "Canvas/UI/Panel_Shop/Image_Title",
+                      "children": [
+                        {
+                          "name": "Text",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 0,
+                          "tag": "Untagged",
+                          "layer": 5,
+                          "path": "Canvas/UI/Panel_Shop/Image_Title/Text",
+                          "children": []
+                        },
+                        {
+                          "name": "Frame_T",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 1,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Image_Title/Frame_T",
+                          "children": []
+                        },
+                        {
+                          "name": "Frame_B",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 2,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Image_Title/Frame_B",
+                          "children": []
+                        },
+                        {
+                          "name": "Frame_L",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 3,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Image_Title/Frame_L",
+                          "children": []
+                        },
+                        {
+                          "name": "Frame_R",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 4,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Image_Title/Frame_R",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Button_AdsRewarded",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 1,
+                      "tag": "Untagged",
+                      "layer": 5,
+                      "path": "Canvas/UI/Panel_Shop/Button_AdsRewarded",
+                      "children": [
+                        {
+                          "name": "Text_Accelerate",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 0,
+                          "tag": "Untagged",
+                          "layer": 5,
+                          "path": "Canvas/UI/Panel_Shop/Button_AdsRewarded/Text_Accelerate",
+                          "children": []
+                        },
+                        {
+                          "name": "Frame_T",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 1,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_AdsRewarded/Frame_T",
+                          "children": []
+                        },
+                        {
+                          "name": "Frame_B",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 2,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_AdsRewarded/Frame_B",
+                          "children": []
+                        },
+                        {
+                          "name": "Frame_L",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 3,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_AdsRewarded/Frame_L",
+                          "children": []
+                        },
+                        {
+                          "name": "Frame_R",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 4,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_AdsRewarded/Frame_R",
+                          "children": []
+                        },
+                        {
+                          "name": "Bracket0_H",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 5,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_AdsRewarded/Bracket0_H",
+                          "children": []
+                        },
+                        {
+                          "name": "Bracket0_V",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 6,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_AdsRewarded/Bracket0_V",
+                          "children": []
+                        },
+                        {
+                          "name": "Bracket1_H",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 7,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_AdsRewarded/Bracket1_H",
+                          "children": []
+                        },
+                        {
+                          "name": "Bracket1_V",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 8,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_AdsRewarded/Bracket1_V",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Button_ShopClose",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 2,
+                      "tag": "Untagged",
+                      "layer": 5,
+                      "path": "Canvas/UI/Panel_Shop/Button_ShopClose",
+                      "children": [
+                        {
+                          "name": "Text (Legacy)",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 0,
+                          "tag": "Untagged",
+                          "layer": 5,
+                          "path": "Canvas/UI/Panel_Shop/Button_ShopClose/Text (Legacy)",
+                          "children": []
+                        },
+                        {
+                          "name": "Frame_T",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 1,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_ShopClose/Frame_T",
+                          "children": []
+                        },
+                        {
+                          "name": "Frame_B",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 2,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_ShopClose/Frame_B",
+                          "children": []
+                        },
+                        {
+                          "name": "Frame_L",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 3,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_ShopClose/Frame_L",
+                          "children": []
+                        },
+                        {
+                          "name": "Frame_R",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 4,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_ShopClose/Frame_R",
+                          "children": []
+                        },
+                        {
+                          "name": "Bracket0_H",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 5,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_ShopClose/Bracket0_H",
+                          "children": []
+                        },
+                        {
+                          "name": "Bracket0_V",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 6,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_ShopClose/Bracket0_V",
+                          "children": []
+                        },
+                        {
+                          "name": "Bracket1_H",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 7,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_ShopClose/Bracket1_H",
+                          "children": []
+                        },
+                        {
+                          "name": "Bracket1_V",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 8,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_ShopClose/Bracket1_V",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Button_Model0",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 3,
+                      "tag": "Untagged",
+                      "layer": 5,
+                      "path": "Canvas/UI/Panel_Shop/Button_Model0",
+                      "children": [
+                        {
+                          "name": "Text (Legacy)",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 0,
+                          "tag": "Untagged",
+                          "layer": 5,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model0/Text (Legacy)",
+                          "children": []
+                        },
+                        {
+                          "name": "Frame_T",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 1,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model0/Frame_T",
+                          "children": []
+                        },
+                        {
+                          "name": "Frame_B",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 2,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model0/Frame_B",
+                          "children": []
+                        },
+                        {
+                          "name": "Frame_L",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 3,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model0/Frame_L",
+                          "children": []
+                        },
+                        {
+                          "name": "Frame_R",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 4,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model0/Frame_R",
+                          "children": []
+                        },
+                        {
+                          "name": "Bracket0_H",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 5,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model0/Bracket0_H",
+                          "children": []
+                        },
+                        {
+                          "name": "Bracket0_V",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 6,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model0/Bracket0_V",
+                          "children": []
+                        },
+                        {
+                          "name": "Bracket1_H",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 7,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model0/Bracket1_H",
+                          "children": []
+                        },
+                        {
+                          "name": "Bracket1_V",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 8,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model0/Bracket1_V",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Button_Model1",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 4,
+                      "tag": "Untagged",
+                      "layer": 5,
+                      "path": "Canvas/UI/Panel_Shop/Button_Model1",
+                      "children": [
+                        {
+                          "name": "Text (Legacy)",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 0,
+                          "tag": "Untagged",
+                          "layer": 5,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model1/Text (Legacy)",
+                          "children": []
+                        },
+                        {
+                          "name": "Frame_T",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 1,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model1/Frame_T",
+                          "children": []
+                        },
+                        {
+                          "name": "Frame_B",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 2,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model1/Frame_B",
+                          "children": []
+                        },
+                        {
+                          "name": "Frame_L",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 3,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model1/Frame_L",
+                          "children": []
+                        },
+                        {
+                          "name": "Frame_R",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 4,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model1/Frame_R",
+                          "children": []
+                        },
+                        {
+                          "name": "Bracket0_H",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 5,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model1/Bracket0_H",
+                          "children": []
+                        },
+                        {
+                          "name": "Bracket0_V",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 6,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model1/Bracket0_V",
+                          "children": []
+                        },
+                        {
+                          "name": "Bracket1_H",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 7,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model1/Bracket1_H",
+                          "children": []
+                        },
+                        {
+                          "name": "Bracket1_V",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 8,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model1/Bracket1_V",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Button_Model2",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 5,
+                      "tag": "Untagged",
+                      "layer": 5,
+                      "path": "Canvas/UI/Panel_Shop/Button_Model2",
+                      "children": [
+                        {
+                          "name": "Text (Legacy)",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 0,
+                          "tag": "Untagged",
+                          "layer": 5,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model2/Text (Legacy)",
+                          "children": []
+                        },
+                        {
+                          "name": "Frame_T",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 1,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model2/Frame_T",
+                          "children": []
+                        },
+                        {
+                          "name": "Frame_B",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 2,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model2/Frame_B",
+                          "children": []
+                        },
+                        {
+                          "name": "Frame_L",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 3,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model2/Frame_L",
+                          "children": []
+                        },
+                        {
+                          "name": "Frame_R",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 4,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model2/Frame_R",
+                          "children": []
+                        },
+                        {
+                          "name": "Bracket0_H",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 5,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model2/Bracket0_H",
+                          "children": []
+                        },
+                        {
+                          "name": "Bracket0_V",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 6,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model2/Bracket0_V",
+                          "children": []
+                        },
+                        {
+                          "name": "Bracket1_H",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 7,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model2/Bracket1_H",
+                          "children": []
+                        },
+                        {
+                          "name": "Bracket1_V",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 8,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model2/Bracket1_V",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Button_Model3",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 6,
+                      "tag": "Untagged",
+                      "layer": 5,
+                      "path": "Canvas/UI/Panel_Shop/Button_Model3",
+                      "children": [
+                        {
+                          "name": "Text (Legacy)",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 0,
+                          "tag": "Untagged",
+                          "layer": 5,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model3/Text (Legacy)",
+                          "children": []
+                        },
+                        {
+                          "name": "Frame_T",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 1,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model3/Frame_T",
+                          "children": []
+                        },
+                        {
+                          "name": "Frame_B",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 2,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model3/Frame_B",
+                          "children": []
+                        },
+                        {
+                          "name": "Frame_L",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 3,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model3/Frame_L",
+                          "children": []
+                        },
+                        {
+                          "name": "Frame_R",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 4,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model3/Frame_R",
+                          "children": []
+                        },
+                        {
+                          "name": "Bracket0_H",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 5,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model3/Bracket0_H",
+                          "children": []
+                        },
+                        {
+                          "name": "Bracket0_V",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 6,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model3/Bracket0_V",
+                          "children": []
+                        },
+                        {
+                          "name": "Bracket1_H",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 7,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model3/Bracket1_H",
+                          "children": []
+                        },
+                        {
+                          "name": "Bracket1_V",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 8,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model3/Bracket1_V",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Button_Model4",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 7,
+                      "tag": "Untagged",
+                      "layer": 5,
+                      "path": "Canvas/UI/Panel_Shop/Button_Model4",
+                      "children": [
+                        {
+                          "name": "Text (Legacy)",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 0,
+                          "tag": "Untagged",
+                          "layer": 5,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model4/Text (Legacy)",
+                          "children": []
+                        },
+                        {
+                          "name": "Frame_T",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 1,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model4/Frame_T",
+                          "children": []
+                        },
+                        {
+                          "name": "Frame_B",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 2,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model4/Frame_B",
+                          "children": []
+                        },
+                        {
+                          "name": "Frame_L",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 3,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model4/Frame_L",
+                          "children": []
+                        },
+                        {
+                          "name": "Frame_R",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 4,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model4/Frame_R",
+                          "children": []
+                        },
+                        {
+                          "name": "Bracket0_H",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 5,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model4/Bracket0_H",
+                          "children": []
+                        },
+                        {
+                          "name": "Bracket0_V",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 6,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model4/Bracket0_V",
+                          "children": []
+                        },
+                        {
+                          "name": "Bracket1_H",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 7,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model4/Bracket1_H",
+                          "children": []
+                        },
+                        {
+                          "name": "Bracket1_V",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 8,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model4/Bracket1_V",
+                          "children": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Button_Model5",
+                      "isActive": true,
+                      "components": [],
+                      "siblingIndex": 8,
+                      "tag": "Untagged",
+                      "layer": 5,
+                      "path": "Canvas/UI/Panel_Shop/Button_Model5",
+                      "children": [
+                        {
+                          "name": "Text (Legacy)",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 0,
+                          "tag": "Untagged",
+                          "layer": 5,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model5/Text (Legacy)",
+                          "children": []
+                        },
+                        {
+                          "name": "Frame_T",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 1,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model5/Frame_T",
+                          "children": []
+                        },
+                        {
+                          "name": "Frame_B",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 2,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model5/Frame_B",
+                          "children": []
+                        },
+                        {
+                          "name": "Frame_L",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 3,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model5/Frame_L",
+                          "children": []
+                        },
+                        {
+                          "name": "Frame_R",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 4,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model5/Frame_R",
+                          "children": []
+                        },
+                        {
+                          "name": "Bracket0_H",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 5,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model5/Bracket0_H",
+                          "children": []
+                        },
+                        {
+                          "name": "Bracket0_V",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 6,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model5/Bracket0_V",
+                          "children": []
+                        },
+                        {
+                          "name": "Bracket1_H",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 7,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model5/Bracket1_H",
+                          "children": []
+                        },
+                        {
+                          "name": "Bracket1_V",
+                          "isActive": true,
+                          "components": [],
+                          "siblingIndex": 8,
+                          "tag": "Untagged",
+                          "layer": 0,
+                          "path": "Canvas/UI/Panel_Shop/Button_Model5/Bracket1_V",
+                          "children": []
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "Image_Fade",
+                  "isActive": true,
+                  "components": [],
+                  "siblingIndex": 10,
+                  "tag": "Untagged",
+                  "layer": 5,
+                  "path": "Canvas/UI/Image_Fade",
+                  "children": []
+                },
+                {
+                  "name": "Text (TMP)_GOAL!!",
+                  "isActive": true,
+                  "components": [],
+                  "siblingIndex": 11,
+                  "tag": "Untagged",
+                  "layer": 5,
+                  "path": "Canvas/UI/Text (TMP)_GOAL!!",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
