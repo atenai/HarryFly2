@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 /// <summary>
 /// 飛行機コントローラー
@@ -56,8 +57,24 @@ public class PlaneController : MonoBehaviour
 	//加速/衝突効果
 	public GameObject paticlePrefab;
 
+	[Header("障害物に衝突したときの爆発")]
+	[Tooltip("衝突地点に出す爆発エフェクト")]
+	[SerializeField] GameObject explosionPrefab;
+
+	[Tooltip("爆発の大きさ。衝突地点はカメラのすぐ前なので、大きすぎると画面を覆ってしまう")]
+	[SerializeField] float explosionScale = 2.5f;
+
+	[Tooltip("爆発を見せてから次のステージへ切り替えるまでの時間（秒）。長くするとテンポが悪くなる")]
+	[SerializeField] float explosionViewSeconds = 1.0f;
+
+	/// <summary>出した爆発を消すまでの時間（秒）。シーンが切り替われば一緒に消えるが、その保険</summary>
+	const float Explosion_Lifetime_Seconds = 5f;
+
 	/// <summary>ゴール済みかどうか。リザルトを二重に出さないための判定に使う</summary>
 	bool hasGoaled = false;
+
+	/// <summary>衝突済みかどうか。爆発とステージ切り替えを二重に走らせないための判定に使う</summary>
+	bool hasCrashed = false;
 
 	void Start()
 	{
@@ -236,9 +253,9 @@ public class PlaneController : MonoBehaviour
 
 	void FixedUpdate()
 	{
-		// ゴール後はキネマティックにして固定してある。
+		// ゴール後・衝突後はキネマティックにして固定してある。
 		// ここで velocity を触ると「キネマティックな剛体に速度は設定できない」警告が毎フレーム出る
-		if (hasGoaled == true)
+		if (hasGoaled == true || hasCrashed == true)
 		{
 			return;
 		}
@@ -370,7 +387,7 @@ public class PlaneController : MonoBehaviour
 
 			// 操作と制限時間を止める。止めないとリザルトを見ている間に時間切れになる
 			gameManager.IsPlay = false;
-			FreezeForGoal();
+			FreezePlane();
 
 			// ステージが切り替わる前にコインを保存する
 			gameManager.SaveCoin();
@@ -383,16 +400,65 @@ public class PlaneController : MonoBehaviour
 	}
 
 	/// <summary>
-	/// ゴール後に機体を完全に止める。
+	/// 機体を完全に止める。
 	/// 速度を0にするだけでは足りない。ゴール枠や建物に接触した状態だと、
 	/// 物理側のめり込み解消で機体が押し出され続け、カメラの外まで飛んでいってしまう。
 	/// キネマティックにすると押し出しも回転も起きなくなる
 	/// </summary>
-	void FreezeForGoal()
+	void FreezePlane()
 	{
 		rb.velocity = Vector3.zero;
 		rb.angularVelocity = Vector3.zero;
 		rb.isKinematic = true;
+	}
+
+	/// <summary>
+	/// 機体の見た目を消す。爆発したのに機体がそのまま浮いていると違和感が出る
+	/// </summary>
+	void HidePlaneModel()
+	{
+		for (int i = 0; i < planePrefabs.Length; i++)
+		{
+			if (planePrefabs[i] != null)
+			{
+				planePrefabs[i].SetActive(false);
+			}
+		}
+	}
+
+	/// <summary>
+	/// 機体の位置に爆発を出す。
+	/// 接触点を使うとカメラの後ろに出てしまう。機体は毎秒300ユニット進むので、
+	/// 衝突を検知してから止まるまでの1物理ステップ（約6ユニット）で機体が前に出てしまい、
+	/// 機体の2.5ユニット後ろにいるカメラが接触点を追い越すため
+	/// </summary>
+	void SpawnExplosion()
+	{
+		if (explosionPrefab == null)
+		{
+			return;
+		}
+
+		GameObject explosion = Instantiate(explosionPrefab, this.transform.position, Quaternion.identity);
+		explosion.transform.localScale = Vector3.one * explosionScale;
+		Destroy(explosion, Explosion_Lifetime_Seconds);
+	}
+
+	/// <summary>
+	/// 爆発を見せてから次のステージへ切り替える。
+	/// 衝突と同時に切り替えると、暗転が入って爆発が1フレームも見えない
+	/// </summary>
+	IEnumerator SwitchStageAfterExplosion()
+	{
+		yield return new WaitForSeconds(explosionViewSeconds);
+
+		if (AdsManager.SingletonInstance != null)
+		{
+			AdsManager.SingletonInstance.ShowAdsInterstitialCount();
+		}
+
+		ui.FadeIn();
+		StageManager.SingletonInstance.IsTriggered = true;
 	}
 
 	/// <summary>
@@ -423,27 +489,33 @@ public class PlaneController : MonoBehaviour
 
 		if (collision.gameObject.CompareTag("Obstacle") == true)
 		{
+			// 複数の面に同時に当たっても、爆発とステージ切り替えを二重に走らせない
+			if (hasCrashed == true)
+			{
+				return;
+			}
+			hasCrashed = true;
+
 			Debug.Log("障害物に衝突した");
 			HapticFeedback.Play(HapticFeedback.Strength.VeryHeavy);
-			AdsManager.SingletonInstance.ShowAdsInterstitialCount();
-			ResetPlayerPosition();
+
+			SpawnExplosion();
+
+			// ブーストの炎を消し、機体を止めて見た目も消す
+			paticlePrefab.SetActive(false);
+			FreezePlane();
+			HidePlaneModel();
+
+			// 爆発を見せている間に時間切れにならないよう止める。
+			// IsPlay が false になると UI が「TAP!」を出そうとするので、先に知らせておく
+			ui.ShowCrash();
+			gameManager.IsPlay = false;
 			// ステージが切り替わる前にコインを保存する
 			gameManager.SaveCoin();
-			// シーンを切り替える
-			StageManager.SingletonInstance.IsTriggered = true;
-			ui.FadeIn();
-		}
-	}
 
-	/// <summary>
-	/// プレイヤーの位置をリセットする
-	/// </summary>
-	void ResetPlayerPosition()
-	{
-		rb.velocity = Vector3.zero;
-		this.transform.position = Vector3.zero;
-		this.transform.rotation = Quaternion.identity;
-		planePrefabs[ShopManager.SingletonInstance.PlaneModelNumber].transform.localRotation = Quaternion.identity;
+			// 暗転とシーン切り替えは爆発を見せてから
+			StartCoroutine(SwitchStageAfterExplosion());
+		}
 	}
 
 	void OnGUI()

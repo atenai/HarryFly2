@@ -2688,7 +2688,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28d95038b744a1d4f8c9e1f0d3568a99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  visibleIntensity: 1.1
+  visibleIntensity: 0.3
   fadeSpeed: 5
   blockingLayers:
     serializedVersion: 2
@@ -2705,8 +2705,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc4d76f733087744991913c9d19d5274, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_LensFlareData: {fileID: 11400000, guid: eb9c3e4029c055a4cb95100e495a0e64, type: 2}
-  intensity: 1.1
+  m_LensFlareData: {fileID: 11400000, guid: cae6987809c33d84f8ab2648362684a7, type: 2}
+  intensity: 0.3
   maxAttenuationDistance: 100000
   maxAttenuationScale: 100000
   distanceAttenuationCurve:
@@ -2787,7 +2787,7 @@ MonoBehaviour:
   useBackgroundCloudOcclusion: 0
   sampleCount: 32
   occlusionOffset: 0.05
-  scale: 0.9
+  scale: 0.4
   allowOffScreen: 0
   volumetricCloudOcclusion: 0
   occlusionRemapCurve:

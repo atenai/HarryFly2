@@ -105,6 +105,19 @@ public class UI : MonoBehaviour
 	bool isResultShown = false;
 	public bool IsResultShown => isResultShown;
 
+	/// <summary>衝突して爆発を見せている最中かどうか</summary>
+	bool isCrashShown = false;
+
+	/// <summary>
+	/// 障害物に衝突したことを知らせる。
+	/// 衝突すると IsPlay が false になるが、そのままだと「TAP!」が出て爆発に重なってしまう
+	/// </summary>
+	public void ShowCrash()
+	{
+		isCrashShown = true;
+		tapText.gameObject.SetActive(false);
+	}
+
 	/// <summary>ゴール文字をリザルト表示時に移動させる高さ</summary>
 	const float Goal_Text_Result_PosY = 470f;
 
@@ -383,9 +396,9 @@ public class UI : MonoBehaviour
 		// リザルト中も降り続けてほしいので、下の早期リターンより先に進める
 		UpdateConfetti();
 
-		// リザルト中は IsPlay が false になる。
-		// 下の分岐に落とすと「TAP!」が出てきてリザルトに重なってしまう
-		if (isResultShown == true)
+		// リザルト中と衝突後は IsPlay が false になる。
+		// 下の分岐に落とすと「TAP!」が出てきて演出に重なってしまう
+		if (isResultShown == true || isCrashShown == true)
 		{
 			return;
 		}
