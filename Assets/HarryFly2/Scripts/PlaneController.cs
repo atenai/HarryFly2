@@ -67,6 +67,12 @@ public class PlaneController : MonoBehaviour
 	[Tooltip("爆発を見せてから次のステージへ切り替えるまでの時間（秒）。長くするとテンポが悪くなる")]
 	[SerializeField] float explosionViewSeconds = 1.0f;
 
+	[Tooltip("衝突時の爆発音")]
+	[SerializeField] AudioClip explosionSound;
+
+	[Tooltip("爆発音の音量")]
+	[SerializeField, Range(0f, 1f)] float explosionVolume = 0.8f;
+
 	/// <summary>出した爆発を消すまでの時間（秒）。シーンが切り替われば一緒に消えるが、その保険</summary>
 	const float Explosion_Lifetime_Seconds = 5f;
 
@@ -445,6 +451,31 @@ public class PlaneController : MonoBehaviour
 	}
 
 	/// <summary>
+	/// 爆発音を鳴らす。
+	/// 1秒後にステージが切り替わると、このシーンにある音源は破棄されて音が途中で切れる。
+	/// シーンに属さない一時オブジェクトから鳴らすことで、暗転をまたいで最後まで聞こえるようにする
+	/// </summary>
+	void PlayExplosionSound()
+	{
+		if (explosionSound == null)
+		{
+			return;
+		}
+
+		GameObject soundObject = new GameObject("ExplosionSound");
+		DontDestroyOnLoad(soundObject);
+
+		AudioSource source = soundObject.AddComponent<AudioSource>();
+		source.clip = explosionSound;
+		source.volume = explosionVolume;
+		// 衝突地点はカメラのすぐ前なので、距離減衰を掛けずに2Dで鳴らす
+		source.spatialBlend = 0f;
+		source.Play();
+
+		Destroy(soundObject, explosionSound.length + 0.1f);
+	}
+
+	/// <summary>
 	/// 爆発を見せてから次のステージへ切り替える。
 	/// 衝突と同時に切り替えると、暗転が入って爆発が1フレームも見えない
 	/// </summary>
@@ -500,6 +531,7 @@ public class PlaneController : MonoBehaviour
 			HapticFeedback.Play(HapticFeedback.Strength.VeryHeavy);
 
 			SpawnExplosion();
+			PlayExplosionSound();
 
 			// ブーストの炎を消し、機体を止めて見た目も消す
 			paticlePrefab.SetActive(false);

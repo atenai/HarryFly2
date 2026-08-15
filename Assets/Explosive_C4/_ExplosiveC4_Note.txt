@@ -1,0 +1,46 @@
+Weapon Sound Pack - Explosive: C4
+
+This note is used to help you integrate the sound in your game.
+All the sounds are in different part to let you adapt them to any animation.
+I hope it will help! :)
+
+There is the sound integration in logical order.
+
+A) Explosive_C4_handling_###
+Handling is used for character movement with the C4 in his hand.
+
+B) Explosive_C4_Throw_###
+-This sounds are used for the character trowing the C4.
+-It could be combine with the Explosive_C4_handling_###, regarding your animation.
+
+C) Explosive_C4_Impact_### / Explosive_C4_StickImpact###
+-It's used for C4 stick impact on a surface.
+-It's used for C4 impact on a ground.
+
+D) Explosive_C4_Initialize_Beep_### / Explosive_C4_Beep_###
+-Beeps are used for:
+	-C4 initialization
+	-C4 looping beep when charge is placed
+
+E) Explosive_C4_Explosion_###
+For the explosion, you have 3 types:
+-Explosive_C4_Explosion_###: The explosion with a generic low reverb (you can use engine reverb with it)
+-Explosive_C4_Explosion_Inside_###: It is used for inside explosion.
+-Explosive_C4_Explosion_Outside_###: It is used for outside explosion.
+
+F) Optional: Explosive_C4_Debrit_###
+-Debris sounds are use at the end of the explosion to increase destruction impact
+-It is optional because explosions already have a debris layer embedded.
+
+G) C4 Detonator
+You can use detonator sound for:
+ -Detonator Handling: Explosive_C4_Detonator_handling_###
+ -Detonator Click to trigger C4: Explosive_C4_Detonator_click_###
+ -Detonator Beep for C4 initialization: Explosive_C4_Detonator_beep_###
+
+
+If you have any problem to integrate them or you think something is missing, feel free to contact me, or use the unity asset comment section.
+
+Thanks for purchasing this asset, and see you for new one!
+
+Catastic ^_^
