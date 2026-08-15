@@ -433,21 +433,43 @@ public class PlaneController : MonoBehaviour
 	}
 
 	/// <summary>
-	/// 機体の位置に爆発を出す。
-	/// 接触点を使うとカメラの後ろに出てしまう。機体は毎秒300ユニット進むので、
-	/// 衝突を検知してから止まるまでの1物理ステップ（約6ユニット）で機体が前に出てしまい、
-	/// 機体の2.5ユニット後ろにいるカメラが接触点を追い越すため
+	/// 指定した位置に爆発を出す
 	/// </summary>
-	void SpawnExplosion()
+	/// <param name="position">爆発を出す位置</param>
+	void SpawnExplosion(Vector3 position)
 	{
 		if (explosionPrefab == null)
 		{
 			return;
 		}
 
-		GameObject explosion = Instantiate(explosionPrefab, this.transform.position, Quaternion.identity);
+		GameObject explosion = Instantiate(explosionPrefab, position, Quaternion.identity);
 		explosion.transform.localScale = Vector3.one * explosionScale;
 		Destroy(explosion, Explosion_Lifetime_Seconds);
+	}
+
+	/// <summary>
+	/// 衝突した地点を返し、機体もそこへ戻す。
+	///
+	/// 機体は毎秒300ユニット進むので、衝突を検知した時点では1物理ステップぶん
+	/// （約6ユニット）建物にめり込んだ先まで進んでいる。そのまま止めると、
+	/// 機体の2.5ユニット後ろにいるカメラが接触点を追い越してしまい、
+	/// 爆発が建物の中や画面の外に出てしまう。
+	/// 接触点まで戻してから止めることで、爆発がカメラの正面に出る
+	/// </summary>
+	/// <param name="collision">衝突情報</param>
+	/// <returns>爆発を出す位置</returns>
+	Vector3 MoveBackToImpactPoint(Collision collision)
+	{
+		if (collision.contactCount <= 0)
+		{
+			return this.transform.position;
+		}
+
+		Vector3 impactPoint = collision.GetContact(0).point;
+		this.transform.position = impactPoint;
+		rb.position = impactPoint;
+		return impactPoint;
 	}
 
 	/// <summary>
@@ -530,7 +552,9 @@ public class PlaneController : MonoBehaviour
 			Debug.Log("障害物に衝突した");
 			HapticFeedback.Play(HapticFeedback.Strength.VeryHeavy);
 
-			SpawnExplosion();
+			// めり込んだ先まで進んでいるので、接触点まで戻してから爆発を出す
+			Vector3 impactPoint = MoveBackToImpactPoint(collision);
+			SpawnExplosion(impactPoint);
 			PlayExplosionSound();
 
 			// ブーストの炎を消し、機体を止めて見た目も消す
