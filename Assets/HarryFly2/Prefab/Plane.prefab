@@ -91,6 +91,31 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   rb: {fileID: 3658238267189483658}
+  planeSpecs:
+  - displayName: SCOUT
+    moveSpeedMultiplier: 1
+    fuelCapacityMultiplier: 1
+    colliderScaleMultiplier: 1
+  - displayName: STRIKER
+    moveSpeedMultiplier: 1.15
+    fuelCapacityMultiplier: 1.1
+    colliderScaleMultiplier: 1
+  - displayName: NEEDLE
+    moveSpeedMultiplier: 1.3
+    fuelCapacityMultiplier: 0.85
+    colliderScaleMultiplier: 0.75
+  - displayName: TANKER
+    moveSpeedMultiplier: 0.9
+    fuelCapacityMultiplier: 1.5
+    colliderScaleMultiplier: 1.15
+  - displayName: PHANTOM
+    moveSpeedMultiplier: 1.2
+    fuelCapacityMultiplier: 1.15
+    colliderScaleMultiplier: 0.8
+  - displayName: APEX
+    moveSpeedMultiplier: 1.35
+    fuelCapacityMultiplier: 1.3
+    colliderScaleMultiplier: 0.7
   fuelConsumptionPerSecond: 60
   paticlePrefab: {fileID: 8758644627125908185}
   explosionPrefab: {fileID: 1338017871918850, guid: b93e4ddba4baebf47b7fb121d99b4a1e,

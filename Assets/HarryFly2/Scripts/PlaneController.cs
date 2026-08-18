@@ -21,6 +21,9 @@ public class PlaneController : MonoBehaviour
 	float addForwordMoveSpeed = 300f;
 	[Tooltip("追加の上下左右移動速度")]
 	float addVerticalAndHorizontalMoveSpeed = 200f;
+
+	/// <summary>上下左右の移動速度の基準。機体ごとの倍率はここに掛ける</summary>
+	public const float Base_VerticalAndHorizontal_MoveSpeed = 200f;
 	[Tooltip("自動前進速度の初期値")]
 	float initForwordMoveSpeed;
 	[Tooltip("上下左右移動速度の初期値")]
@@ -48,8 +51,45 @@ public class PlaneController : MonoBehaviour
 	float currentFuel = 100f;
 	public float CurrentFuel => currentFuel;
 
+	/// <summary>
+	/// 機体1体分の性能。ショップで選んだ機体によって操作感を変える
+	/// </summary>
+	[System.Serializable]
+	public class PlaneSpec
+	{
+		[Tooltip("機体の呼び名（ショップの表示や識別用）")]
+		public string displayName = "UAV";
+
+		[Tooltip("上下左右の移動速度の倍率。大きいほど機敏に動く")]
+		public float moveSpeedMultiplier = 1f;
+
+		[Tooltip("ブースト容量（燃料の最大値）の倍率。大きいほど長くブーストできる")]
+		public float fuelCapacityMultiplier = 1f;
+
+		[Tooltip("当たり判定の大きさの倍率。小さいほど障害物に当たりにくい")]
+		public float colliderScaleMultiplier = 1f;
+	}
+
+	[Header("機体ごとの性能")]
+	[Tooltip("planePrefabs と同じ並び順で、機体ごとの性能を設定する")]
+	[SerializeField]
+	PlaneSpec[] planeSpecs = new PlaneSpec[6];
+
+	/// <summary>この機体の燃料の最大値。機体ごとに変わるので定数ではなく実行時の値を持つ</summary>
+	float maxFuel = Base_Max_Fuel;
+	public float MaxFuel => maxFuel;
+
+	/// <summary>燃料の最大値の基準。ここに機体ごとの倍率を掛ける</summary>
+	public const float Base_Max_Fuel = 100f;
+
+	/// <summary>性能を適用済みの機体番号。毎フレーム適用し直さないための比較用</summary>
+	int appliedSpecIndex = -1;
+
+	/// <summary>当たり判定の元の大きさ。倍率はここに掛ける</summary>
+	Vector3 baseColliderSize = Vector3.one;
+	bool hasBaseColliderSize = false;
+
 	/// <summary> 燃料の最大値 </summary>
-	public static readonly float Max_Fuel = 100;
 
 	[Tooltip("1秒あたりの燃料消費量。60fpsで1フレームにつき1消費していたときと同じ速さになる値を入れてある")]
 	[SerializeField] float fuelConsumptionPerSecond = 60;
@@ -125,6 +165,69 @@ public class PlaneController : MonoBehaviour
 		{
 			planePrefabs[index].SetActive(true);
 		}
+
+		ApplyPlaneSpec(index);
+	}
+
+	/// <summary>
+	/// 選んだ機体の性能を反映する。
+	/// ショップを開いている間は毎フレーム呼ばれるので、
+	/// 機体が変わったときだけ処理する（毎回燃料を満タンに戻してしまわないため）
+	/// </summary>
+	/// <param name="index">機体スロット番号</param>
+	void ApplyPlaneSpec(int index)
+	{
+		if (appliedSpecIndex == index)
+		{
+			return;
+		}
+		appliedSpecIndex = index;
+
+		PlaneSpec spec = GetPlaneSpec(index);
+
+		// 上下左右の速度。ブースト中の加速はこの値を基準に増減するので、基準値ごと差し替える
+		initVerticalAndHorizontalMoveSpeed = Base_VerticalAndHorizontal_MoveSpeed * spec.moveSpeedMultiplier;
+		addVerticalAndHorizontalMoveSpeed = initVerticalAndHorizontalMoveSpeed;
+
+		// ブースト容量。機体を変えた時点で満タンにする
+		maxFuel = Base_Max_Fuel * spec.fuelCapacityMultiplier;
+		currentFuel = maxFuel;
+
+		ApplyColliderScale(spec.colliderScaleMultiplier);
+	}
+
+	/// <summary>
+	/// 当たり判定の大きさを変える。見た目の大きさは変えず、判定だけを変える
+	/// </summary>
+	/// <param name="multiplier">元の大きさに対する倍率</param>
+	void ApplyColliderScale(float multiplier)
+	{
+		BoxCollider box = GetComponent<BoxCollider>();
+		if (box == null)
+		{
+			return;
+		}
+
+		if (hasBaseColliderSize == false)
+		{
+			baseColliderSize = box.size;
+			hasBaseColliderSize = true;
+		}
+
+		box.size = baseColliderSize * multiplier;
+	}
+
+	/// <summary>
+	/// 機体の性能を取得する。未設定なら既定値（すべて等倍）を返す
+	/// </summary>
+	/// <param name="index">機体スロット番号</param>
+	public PlaneSpec GetPlaneSpec(int index)
+	{
+		if (planeSpecs != null && 0 <= index && index < planeSpecs.Length && planeSpecs[index] != null)
+		{
+			return planeSpecs[index];
+		}
+		return new PlaneSpec();
 	}
 
 	void Update()
@@ -343,9 +446,9 @@ public class PlaneController : MonoBehaviour
 	void AddFuel(float value)
 	{
 		currentFuel = currentFuel + value;
-		if (Max_Fuel <= currentFuel)
+		if (maxFuel <= currentFuel)
 		{
-			currentFuel = Max_Fuel;
+			currentFuel = maxFuel;
 		}
 	}
 
@@ -547,31 +650,48 @@ public class PlaneController : MonoBehaviour
 			{
 				return;
 			}
-			hasCrashed = true;
 
 			Debug.Log("障害物に衝突した");
-			HapticFeedback.Play(HapticFeedback.Strength.VeryHeavy);
 
 			// めり込んだ先まで進んでいるので、接触点まで戻してから爆発を出す
 			Vector3 impactPoint = MoveBackToImpactPoint(collision);
-			SpawnExplosion(impactPoint);
-			PlayExplosionSound();
-
-			// ブーストの炎を消し、機体を止めて見た目も消す
-			paticlePrefab.SetActive(false);
-			FreezePlane();
-			HidePlaneModel();
-
-			// 爆発を見せている間に時間切れにならないよう止める。
-			// IsPlay が false になると UI が「TAP!」を出そうとするので、先に知らせておく
-			ui.ShowCrash();
-			gameManager.IsPlay = false;
-			// ステージが切り替わる前にコインを保存する
-			gameManager.SaveCoin();
-
-			// 暗転とシーン切り替えは爆発を見せてから
-			StartCoroutine(SwitchStageAfterExplosion());
+			CrashAndAdvanceStage(impactPoint);
 		}
+	}
+
+	/// <summary>
+	/// 撃墜・衝突でステージを終わらせる。
+	/// 爆発を見せてから次のステージへ切り替える。
+	/// 障害物への衝突と対空砲の被弾で、同じ演出と流れを使う
+	/// </summary>
+	/// <param name="explosionPosition">爆発を出す位置</param>
+	public void CrashAndAdvanceStage(Vector3 explosionPosition)
+	{
+		if (hasCrashed == true || hasGoaled == true)
+		{
+			return;
+		}
+		hasCrashed = true;
+
+		HapticFeedback.Play(HapticFeedback.Strength.VeryHeavy);
+
+		SpawnExplosion(explosionPosition);
+		PlayExplosionSound();
+
+		// ブーストの炎を消し、機体を止めて見た目も消す
+		paticlePrefab.SetActive(false);
+		FreezePlane();
+		HidePlaneModel();
+
+		// 爆発を見せている間に時間切れにならないよう止める。
+		// IsPlay が false になると UI が「TAP!」を出そうとするので、先に知らせておく
+		ui.ShowCrash();
+		gameManager.IsPlay = false;
+		// ステージが切り替わる前にコインを保存する
+		gameManager.SaveCoin();
+
+		// 暗転とシーン切り替えは爆発を見せてから
+		StartCoroutine(SwitchStageAfterExplosion());
 	}
 
 	void OnGUI()
