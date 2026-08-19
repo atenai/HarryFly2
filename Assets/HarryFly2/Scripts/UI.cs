@@ -183,14 +183,14 @@ public class UI : MonoBehaviour
 	void Start()
 	{
 		timerText.text = gameManager.TotalTime.ToString("f1");
-		fuelSlider.value = planeController.CurrentFuel / PlaneController.Max_Fuel;
+		fuelSlider.value = planeController.CurrentFuel / planeController.MaxFuel;
 
 		// 色を変えるために Slider の塗りを取り出しておく
 		if (fuelSlider.fillRect != null)
 		{
 			fuelFillImage = fuelSlider.fillRect.GetComponent<Image>();
 		}
-		fuelGhostRatio = planeController.CurrentFuel / PlaneController.Max_Fuel;
+		fuelGhostRatio = planeController.CurrentFuel / planeController.MaxFuel;
 
 		tapText.transform.localScale = Vector3.one;
 		tapTween = tapText.transform.DOScale(new Vector3(1.5f, 1.5f, 1f), 0.6f).SetLoops(-1, LoopType.Yoyo).SetAutoKill(false).Pause();
@@ -419,7 +419,7 @@ public class UI : MonoBehaviour
 		timerText.text = gameManager.TotalTime.ToString("f1");
 		coinText.text = gameManager.CoinCount.ToString();
 
-		float fuelRatio = planeController.CurrentFuel / PlaneController.Max_Fuel;
+		float fuelRatio = planeController.CurrentFuel / planeController.MaxFuel;
 		fuelSlider.value = fuelRatio;
 		UpdateFuelVisual(fuelRatio);
 		UpdateTimerVisual();

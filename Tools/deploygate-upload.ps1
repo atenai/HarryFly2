@@ -44,7 +44,7 @@
 param(
 	[string]$ApkPath = "",
 	[string]$Message = "",
-	[string]$DistributionName = $null,
+	[string]$DistributionName = "",
 	[string]$ReleaseNote = "",
 	[string]$BuildDir = ""
 )
@@ -157,8 +157,11 @@ if ([string]::IsNullOrWhiteSpace($Message)) {
 	}
 }
 
-# $null のままなら既定でブランチ名を使う。"" を明示された場合は配布ページを作らない
-if ($null -eq $DistributionName) {
+# 省略時は既定でブランチ名を使う。"" を明示された場合は配布ページを作らない。
+# [string] 型の引数は $null を代入しても空文字になるため、既定値との比較では
+# 「省略された」のか「空文字を明示された」のかを区別できない。
+# 引数が渡されたかどうかで判定する
+if (-not $PSBoundParameters.ContainsKey("DistributionName")) {
 	$DistributionName = $gitBranch
 }
 
