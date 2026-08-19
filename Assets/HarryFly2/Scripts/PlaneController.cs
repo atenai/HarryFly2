@@ -116,6 +116,45 @@ public class PlaneController : MonoBehaviour
 	/// <summary>出した爆発を消すまでの時間（秒）。シーンが切り替われば一緒に消えるが、その保険</summary>
 	const float Explosion_Lifetime_Seconds = 5f;
 
+	[Header("アイテム取得エフェクト")]
+	[Tooltip("コインを取ったときに出すエフェクト")]
+	[SerializeField] GameObject coinPickupEffect;
+
+	[Tooltip("燃料を取ったときに出すエフェクト")]
+	[SerializeField] GameObject fuelPickupEffect;
+
+	[Tooltip("時間を取ったときに出すエフェクト")]
+	[SerializeField] GameObject timerPickupEffect;
+
+	/// <summary>
+	/// 取得エフェクトの大きさはアイテムごとに分ける。
+	/// エフェクトによって元の作りの大きさが違い、同じ倍率だと
+	/// コインの閃光は映えるのに燃料と時間は埋もれてしまう
+	/// </summary>
+	[Tooltip("コイン取得エフェクトの大きさ")]
+	[SerializeField] float coinPickupEffectScale = 0.2f;
+
+	[Tooltip("燃料取得エフェクトの大きさ")]
+	[SerializeField] float fuelPickupEffectScale = 0.5f;
+
+	[Tooltip("時間取得エフェクトの大きさ")]
+	[SerializeField] float timerPickupEffectScale = 0.5f;
+
+	/// <summary>
+	/// 取得エフェクトを消すまでの時間（秒）。
+	/// エフェクト側にも自動消滅の設定があるが、取り切れなかったときの保険
+	/// </summary>
+	const float Pickup_Effect_Lifetime_Seconds = 3f;
+
+	/// <summary>
+	/// ブースト中かどうか。
+	/// 判定は Accelerate() の中にしかなく、噴射トレイルなど外の演出から参照できなかったので公開する。
+	/// ゴール後・衝突後は Update が Accelerate() まで到達しないため、
+	/// その場合は最後に立てた値のまま残る。演出を止める側で別途止めること
+	/// </summary>
+	bool isBoosting = false;
+	public bool IsBoosting => isBoosting;
+
 	/// <summary>ゴール済みかどうか。リザルトを二重に出さないための判定に使う</summary>
 	bool hasGoaled = false;
 
@@ -338,6 +377,7 @@ public class PlaneController : MonoBehaviour
 	{
 		if (ui.ButtonDownFlag == true && 0 < currentFuel)
 		{
+			isBoosting = true;
 			paticlePrefab.SetActive(true);
 			ChangeForwordMoveSpeed(changeForwordMoveSpeedPerSecond * Time.deltaTime);
 			ChangeVerticalAndHorizontalMoveSpeed(changeVerticalAndHorizontalMoveSpeedPerSecond * Time.deltaTime);
@@ -354,6 +394,7 @@ public class PlaneController : MonoBehaviour
 		}
 		else
 		{
+			isBoosting = false;
 			paticlePrefab.SetActive(false);
 			ChangeForwordMoveSpeed(changeForwordMoveSpeedPerSecond * -0.5f * Time.deltaTime);
 			ChangeVerticalAndHorizontalMoveSpeed(-changeVerticalAndHorizontalMoveSpeedPerSecond * Time.deltaTime);
@@ -458,18 +499,21 @@ public class PlaneController : MonoBehaviour
 		{
 			gameManager.AddCoin(collider.GetComponent<Coin>().Value);
 			HapticFeedback.Play(HapticFeedback.Strength.Light);
+			SpawnPickupEffect(coinPickupEffect, collider.transform.position, coinPickupEffectScale);
 		}
 
 		if (collider.CompareTag("Fuel") == true)
 		{
 			AddFuel(collider.GetComponent<Fuel>().Value);
 			HapticFeedback.Play(HapticFeedback.Strength.Medium);
+			SpawnPickupEffect(fuelPickupEffect, collider.transform.position, fuelPickupEffectScale);
 		}
 
 		if (collider.CompareTag("Timer") == true)
 		{
 			gameManager.AddTimer(collider.GetComponent<Timer>().Value);
 			HapticFeedback.Play(HapticFeedback.Strength.Medium);
+			SpawnPickupEffect(timerPickupEffect, collider.transform.position, timerPickupEffectScale);
 		}
 
 		if (collider.CompareTag("Goal") == true)
@@ -490,8 +534,9 @@ public class PlaneController : MonoBehaviour
 			int bonusCoin = gameManager.ApplyGoalBonus();
 			Debug.Log("ゴールボーナス：+" + bonusCoin);
 
-			// ブーストの炎はここで消す。IsPlay を false にすると Update が Accelerate() まで
+			// ブーストの炎と軌跡はここで消す。IsPlay を false にすると Update が Accelerate() まで
 			// 到達しなくなるので、消灯処理が走らないまま出っぱなしになってしまう
+			isBoosting = false;
 			paticlePrefab.SetActive(false);
 
 			// 操作と制限時間を止める。止めないとリザルトを見ている間に時間切れになる
@@ -506,6 +551,29 @@ public class PlaneController : MonoBehaviour
 			// シーンが変わってしまい、ゴール文字が映らないまま消えていた
 			ui.ShowResult(gameManager.PlayTime, stageCoin, bonusCoin, GoToNextStage);
 		}
+	}
+
+	/// <summary>
+	/// アイテムを取った位置にエフェクトを出す。
+	///
+	/// 機体の子にして追従させる。
+	/// 当初はワールド座標に置き去りにしていたが、機体は毎秒300で前進するので
+	/// 0.25秒後にはカメラの72ユニット後方まで流れてしまい、実測では1〜2フレームしか映らなかった。
+	/// 追従させることで、エフェクトが再生し終わるまで画面に残る
+	/// </summary>
+	/// <param name="prefab">出すエフェクト。未設定なら何もしない</param>
+	/// <param name="position">出す位置</param>
+	/// <param name="scale">エフェクトの大きさ</param>
+	void SpawnPickupEffect(GameObject prefab, Vector3 position, float scale)
+	{
+		if (prefab == null)
+		{
+			return;
+		}
+
+		GameObject effect = Instantiate(prefab, position, Quaternion.identity, this.transform);
+		effect.transform.localScale = Vector3.one * scale;
+		Destroy(effect, Pickup_Effect_Lifetime_Seconds);
 	}
 
 	/// <summary>
@@ -678,7 +746,10 @@ public class PlaneController : MonoBehaviour
 		SpawnExplosion(explosionPosition);
 		PlayExplosionSound();
 
-		// ブーストの炎を消し、機体を止めて見た目も消す
+		// ブーストの炎と軌跡を消し、機体を止めて見た目も消す。
+		// 衝突後は Update が Accelerate() まで到達しないので、ここで下ろさないと
+		// 撃墜されたのに軌跡が伸び続ける
+		isBoosting = false;
 		paticlePrefab.SetActive(false);
 		FreezePlane();
 		HidePlaneModel();
