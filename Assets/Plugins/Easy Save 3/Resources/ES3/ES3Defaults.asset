@@ -37,7 +37,10 @@ MonoBehaviour:
     assemblyNames:
     - Assembly-CSharp
     - Assembly-CSharp-firstpass
+    - CFXRDemo
+    - CFXRRuntime
     - Cinemachine
+    - KinoBloom.Runtime
     - Purchasing.Common
     - SingularityGroup.HotReload.Runtime
     - SingularityGroup.HotReload.Runtime.Public
