@@ -113,6 +113,12 @@ public class PlaneController : MonoBehaviour
 	[Tooltip("爆発音の音量")]
 	[SerializeField, Range(0f, 1f)] float explosionVolume = 0.8f;
 
+	[Tooltip("衝突地点に出す衝撃波のリング。爆発だけだと衝撃の広がりが出ない")]
+	[SerializeField] GameObject shockwavePrefab;
+
+	[Tooltip("衝撃波の大きさ。爆発より大きく開かないと衝撃波に見えない")]
+	[SerializeField] float shockwaveScale = 1.5f;
+
 	/// <summary>出した爆発を消すまでの時間（秒）。シーンが切り替われば一緒に消えるが、その保険</summary>
 	const float Explosion_Lifetime_Seconds = 5f;
 
@@ -139,6 +145,9 @@ public class PlaneController : MonoBehaviour
 
 	[Tooltip("時間取得エフェクトの大きさ")]
 	[SerializeField] float timerPickupEffectScale = 0.5f;
+
+	[Tooltip("取得エフェクトを出す位置（機体から見た相対位置）。機体の中に埋めると自機に隠れて見えない")]
+	[SerializeField] Vector3 pickupEffectOffset = new Vector3(0f, 0f, 1.5f);
 
 	/// <summary>
 	/// 取得エフェクトを消すまでの時間（秒）。
@@ -499,21 +508,21 @@ public class PlaneController : MonoBehaviour
 		{
 			gameManager.AddCoin(collider.GetComponent<Coin>().Value);
 			HapticFeedback.Play(HapticFeedback.Strength.Light);
-			SpawnPickupEffect(coinPickupEffect, collider.transform.position, coinPickupEffectScale);
+			SpawnPickupEffect(coinPickupEffect, coinPickupEffectScale);
 		}
 
 		if (collider.CompareTag("Fuel") == true)
 		{
 			AddFuel(collider.GetComponent<Fuel>().Value);
 			HapticFeedback.Play(HapticFeedback.Strength.Medium);
-			SpawnPickupEffect(fuelPickupEffect, collider.transform.position, fuelPickupEffectScale);
+			SpawnPickupEffect(fuelPickupEffect, fuelPickupEffectScale);
 		}
 
 		if (collider.CompareTag("Timer") == true)
 		{
 			gameManager.AddTimer(collider.GetComponent<Timer>().Value);
 			HapticFeedback.Play(HapticFeedback.Strength.Medium);
-			SpawnPickupEffect(timerPickupEffect, collider.transform.position, timerPickupEffectScale);
+			SpawnPickupEffect(timerPickupEffect, timerPickupEffectScale);
 		}
 
 		if (collider.CompareTag("Goal") == true)
@@ -554,24 +563,28 @@ public class PlaneController : MonoBehaviour
 	}
 
 	/// <summary>
-	/// アイテムを取った位置にエフェクトを出す。
+	/// アイテムを取ったことを知らせるエフェクトを、機体の定位置に出す。
 	///
 	/// 機体の子にして追従させる。
-	/// 当初はワールド座標に置き去りにしていたが、機体は毎秒300で前進するので
-	/// 0.25秒後にはカメラの72ユニット後方まで流れてしまい、実測では1〜2フレームしか映らなかった。
-	/// 追従させることで、エフェクトが再生し終わるまで画面に残る
+	/// ワールド座標に置き去りにすると、機体は毎秒300で前進するので0.25秒後には
+	/// カメラの72ユニット後方まで流れてしまい、実測では1〜2フレームしか映らなかった。
+	///
+	/// 位置は「拾ったアイテムの座標」ではなく機体基準の定位置にする。
+	/// アイテム座標のまま子にすると、拾った瞬間の機体とアイテムのずれを保ったまま
+	/// 追従するので、機体の横に浮いたエフェクトが並走することになる
 	/// </summary>
 	/// <param name="prefab">出すエフェクト。未設定なら何もしない</param>
-	/// <param name="position">出す位置</param>
 	/// <param name="scale">エフェクトの大きさ</param>
-	void SpawnPickupEffect(GameObject prefab, Vector3 position, float scale)
+	void SpawnPickupEffect(GameObject prefab, float scale)
 	{
 		if (prefab == null)
 		{
 			return;
 		}
 
-		GameObject effect = Instantiate(prefab, position, Quaternion.identity, this.transform);
+		GameObject effect = Instantiate(prefab, this.transform);
+		effect.transform.localPosition = pickupEffectOffset;
+		effect.transform.localRotation = Quaternion.identity;
 		effect.transform.localScale = Vector3.one * scale;
 		Destroy(effect, Pickup_Effect_Lifetime_Seconds);
 	}
@@ -617,6 +630,34 @@ public class PlaneController : MonoBehaviour
 		GameObject explosion = Instantiate(explosionPrefab, position, Quaternion.identity);
 		explosion.transform.localScale = Vector3.one * explosionScale;
 		Destroy(explosion, Explosion_Lifetime_Seconds);
+
+		SpawnShockwave(position);
+	}
+
+	/// <summary>
+	/// 衝突地点に衝撃波のリングを出す。
+	///
+	/// リングはカメラの方を向かせる。板ポリなので、真横から見ると線にしか見えない。
+	/// 衝突地点はカメラのすぐ前なので、向きを合わせないと衝撃波として認識できない
+	/// </summary>
+	/// <param name="position">出す位置</param>
+	void SpawnShockwave(Vector3 position)
+	{
+		if (shockwavePrefab == null)
+		{
+			return;
+		}
+
+		Quaternion rotation = Quaternion.identity;
+		Camera camera = Camera.main;
+		if (camera != null)
+		{
+			rotation = Quaternion.LookRotation(position - camera.transform.position);
+		}
+
+		GameObject shockwave = Instantiate(shockwavePrefab, position, rotation);
+		shockwave.transform.localScale = Vector3.one * shockwaveScale;
+		Destroy(shockwave, Explosion_Lifetime_Seconds);
 	}
 
 	/// <summary>

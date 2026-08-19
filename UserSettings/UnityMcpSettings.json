@@ -1,7 +1,7 @@
 {
     "customPort": 8704,
     "projectRootPath": "C:\\Users\\alfam\\Documents\\HarryFly2_Git",
-    "serverSessionId": "e5a5a22f40114051a834e668f6dc8785",
+    "serverSessionId": "",
     "showDeveloperTools": false,
     "enableMcpLogs": false,
     "enableCommunicationLogs": false,
@@ -13,7 +13,7 @@
     "showToolSettings": true,
     "addRepositoryRoot": false,
     "installSkillsFlat": true,
-    "isServerRunning": true,
+    "isServerRunning": false,
     "isAfterCompile": false,
     "isDomainReloadInProgress": false,
     "isReconnecting": false,
