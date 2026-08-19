@@ -190,7 +190,7 @@ MonoBehaviour:
   useBackgroundCloudOcclusion: 0
   sampleCount: 32
   occlusionOffset: 0.05
-  scale: 0.08
+  scale: 0.35
   allowOffScreen: 0
   volumetricCloudOcclusion: 0
   occlusionRemapCurve:
