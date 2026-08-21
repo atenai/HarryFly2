@@ -661,27 +661,25 @@ public class PlaneController : MonoBehaviour
 	}
 
 	/// <summary>
-	/// 衝突した地点を返し、機体もそこへ戻す。
+	/// 機体を接触した地点まで戻す。
 	///
 	/// 機体は毎秒300ユニット進むので、衝突を検知した時点では1物理ステップぶん
 	/// （約6ユニット）建物にめり込んだ先まで進んでいる。そのまま止めると、
 	/// 機体の2.5ユニット後ろにいるカメラが接触点を追い越してしまい、
 	/// 爆発が建物の中や画面の外に出てしまう。
-	/// 接触点まで戻してから止めることで、爆発がカメラの正面に出る
+	/// 接触点まで戻してから止めることで、機体の位置に出す爆発がカメラの正面に来る
 	/// </summary>
 	/// <param name="collision">衝突情報</param>
-	/// <returns>爆発を出す位置</returns>
-	Vector3 MoveBackToImpactPoint(Collision collision)
+	void MoveBackToImpactPoint(Collision collision)
 	{
 		if (collision.contactCount <= 0)
 		{
-			return this.transform.position;
+			return;
 		}
 
 		Vector3 impactPoint = collision.GetContact(0).point;
 		this.transform.position = impactPoint;
 		rb.position = impactPoint;
-		return impactPoint;
 	}
 
 	/// <summary>
@@ -762,19 +760,22 @@ public class PlaneController : MonoBehaviour
 
 			Debug.Log("障害物に衝突した");
 
-			// めり込んだ先まで進んでいるので、接触点まで戻してから爆発を出す
-			Vector3 impactPoint = MoveBackToImpactPoint(collision);
-			CrashAndAdvanceStage(impactPoint);
+			// めり込んだ先まで進んでいるので、接触点まで機体を戻してから爆発を出す
+			MoveBackToImpactPoint(collision);
+			CrashAndAdvanceStage();
 		}
 	}
 
 	/// <summary>
 	/// 撃墜・衝突でステージを終わらせる。
 	/// 爆発を見せてから次のステージへ切り替える。
-	/// 障害物への衝突と対空砲の被弾で、同じ演出と流れを使う
+	/// 障害物への衝突と対空砲の被弾で、同じ演出と流れを使う。
+	///
+	/// 爆発は必ず機体の位置に出す。接触点や弾の当たり判定の位置を渡していたときは、
+	/// 判定の取り方しだいで機体から離れた場所に爆発が出てしまっていた
+	/// （対空砲の弾は半径4ユニットの球で当たりを取るので、その半径ぶんずれる）
 	/// </summary>
-	/// <param name="explosionPosition">爆発を出す位置</param>
-	public void CrashAndAdvanceStage(Vector3 explosionPosition)
+	public void CrashAndAdvanceStage()
 	{
 		if (hasCrashed == true || hasGoaled == true)
 		{
@@ -784,7 +785,8 @@ public class PlaneController : MonoBehaviour
 
 		HapticFeedback.Play(HapticFeedback.Strength.VeryHeavy);
 
-		SpawnExplosion(explosionPosition);
+		// 機体の位置に出す。衝突なら直前に接触点まで戻してあるので、機体も爆発も接触点に来る
+		SpawnExplosion(this.transform.position);
 		PlayExplosionSound();
 
 		// ブーストの炎と軌跡を消し、機体を止めて見た目も消す。

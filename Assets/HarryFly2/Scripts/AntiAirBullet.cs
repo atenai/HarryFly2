@@ -69,8 +69,11 @@ public class AntiAirBullet : MonoBehaviour
 
 			hasHit = true;
 			Debug.Log("対空砲の弾に被弾した");
-			// 被弾したらその場でステージ終了。障害物への衝突と同じ流れに乗せる
-			plane.CrashAndAdvanceStage(hits[i].point);
+			// 被弾したらその場でステージ終了。障害物への衝突と同じ流れに乗せる。
+			// 爆発の位置は機体側で機体の位置に合わせる。
+			// ここで hits[i].point を渡すと、半径4ユニットの球で取った当たり判定の点が
+			// そのまま爆発の位置になり、機体から離れた場所で爆発してしまう
+			plane.CrashAndAdvanceStage();
 			Destroy(this.gameObject);
 			return;
 		}

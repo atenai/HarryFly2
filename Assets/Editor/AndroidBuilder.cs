@@ -52,6 +52,12 @@ public static class AndroidBuilder
 			return;
 		}
 
+		// 必ずAPKで出す。エディターでApp Bundle（.aab）に切り替えたまま実行すると、
+		// 出力パスの拡張子が.apkでも中身はAABになる。
+		// AABは端末に直接インストールできず、Tools/deploygate-upload.ps1 も *.apk しか探さないため、
+		// 配信まで通らない。ここで明示的に戻す
+		EditorUserBuildSettings.buildAppBundle = false;
+
 		BuildPlayerOptions options = new BuildPlayerOptions();
 		options.scenes = scenes.ToArray();
 		options.locationPathName = outputPath;

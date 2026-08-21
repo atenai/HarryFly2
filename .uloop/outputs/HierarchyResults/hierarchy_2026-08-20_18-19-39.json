@@ -1,0 +1,1402 @@
+{
+  "ExportTimestamp": "2026-08-20 18:19:39",
+  "Context": {
+    "sceneType": "editor",
+    "sceneName": "Stage0",
+    "nodeCount": 97,
+    "maxDepth": 1
+  },
+  "Hierarchy": [
+    {
+      "sceneName": "Stage0",
+      "stats": {
+        "rootCount": 17,
+        "nodeCount": 97,
+        "maxDepth": 1
+      },
+      "componentsLut": [
+        "Transform",
+        "Light",
+        "UniversalAdditionalLightData",
+        "AdsManager",
+        "AdsBanner",
+        "AdsRewarded",
+        "AdsInterstitial",
+        "StageManager",
+        "StageDebugLabel",
+        "ShopManager",
+        "GameManager",
+        "ScreenSetting",
+        "Camera",
+        "AudioListener",
+        "CinemachineBrain",
+        "UniversalAdditionalCameraData",
+        "PlaneCamera",
+        "CinemachineVirtualCamera",
+        "PlaneController",
+        "Rigidbody",
+        "BoxCollider",
+        "ParticleSystem",
+        "ParticleSystemRenderer",
+        "TrailRenderer",
+        "BoostTrail",
+        "MeshFilter",
+        "MeshRenderer",
+        "RectTransform",
+        "Canvas",
+        "CanvasScaler",
+        "GraphicRaycaster",
+        "UI",
+        "EventSystem",
+        "StandaloneInputModule",
+        "SphereCollider",
+        "Coin",
+        "Fuel",
+        "Timer",
+        "MeshCollider",
+        "LensFlareComponentSRP",
+        "SunLensFlareOcclusion",
+        "ObstacleMover",
+        "AntiAirGun"
+      ],
+      "roots": [
+        {
+          "name": "Directional Light",
+          "isActive": true,
+          "componentsIdx": [
+            0,
+            1,
+            2
+          ],
+          "siblingIndex": 0,
+          "tag": "Untagged",
+          "layer": 0,
+          "children": []
+        },
+        {
+          "name": "AdsManager",
+          "isActive": true,
+          "componentsIdx": [
+            0,
+            3,
+            4,
+            5,
+            6
+          ],
+          "siblingIndex": 1,
+          "tag": "Untagged",
+          "layer": 0,
+          "children": []
+        },
+        {
+          "name": "StageManager",
+          "isActive": true,
+          "componentsIdx": [
+            0,
+            7,
+            8
+          ],
+          "siblingIndex": 2,
+          "tag": "Untagged",
+          "layer": 0,
+          "children": []
+        },
+        {
+          "name": "ShopManager",
+          "isActive": true,
+          "componentsIdx": [
+            0,
+            9
+          ],
+          "siblingIndex": 3,
+          "tag": "Untagged",
+          "layer": 0,
+          "children": []
+        },
+        {
+          "name": "GameManager",
+          "isActive": true,
+          "componentsIdx": [
+            0,
+            10,
+            11
+          ],
+          "siblingIndex": 4,
+          "tag": "Untagged",
+          "layer": 0,
+          "children": []
+        },
+        {
+          "name": "Main Camera",
+          "isActive": true,
+          "componentsIdx": [
+            0,
+            12,
+            13,
+            14,
+            15
+          ],
+          "siblingIndex": 5,
+          "tag": "MainCamera",
+          "layer": 0,
+          "children": []
+        },
+        {
+          "name": "CameraParent",
+          "isActive": true,
+          "componentsIdx": [
+            0,
+            16
+          ],
+          "siblingIndex": 6,
+          "tag": "Untagged",
+          "layer": 0,
+          "children": [
+            {
+              "name": "Main Normal Move Virtual Camera",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                17
+              ],
+              "siblingIndex": 0,
+              "tag": "Untagged",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Main Dash Move Virtual Camera",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                17
+              ],
+              "siblingIndex": 1,
+              "tag": "Untagged",
+              "layer": 0,
+              "children": []
+            }
+          ]
+        },
+        {
+          "name": "Plane",
+          "isActive": true,
+          "componentsIdx": [
+            0,
+            18,
+            19,
+            20
+          ],
+          "siblingIndex": 7,
+          "tag": "Player",
+          "layer": 0,
+          "children": [
+            {
+              "name": "Particle System",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                21,
+                22
+              ],
+              "siblingIndex": 0,
+              "tag": "Untagged",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "PlaneModel1",
+              "isActive": true,
+              "componentsIdx": [
+                0
+              ],
+              "siblingIndex": 1,
+              "tag": "Untagged",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "PlaneModel2",
+              "isActive": true,
+              "componentsIdx": [
+                0
+              ],
+              "siblingIndex": 2,
+              "tag": "Untagged",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "BoostTrail_L",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                23,
+                24
+              ],
+              "siblingIndex": 3,
+              "tag": "Untagged",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "BoostTrail_R",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                23,
+                24
+              ],
+              "siblingIndex": 4,
+              "tag": "Untagged",
+              "layer": 0,
+              "children": []
+            }
+          ]
+        },
+        {
+          "name": "Goal",
+          "isActive": true,
+          "componentsIdx": [
+            0,
+            25,
+            26,
+            19,
+            20
+          ],
+          "siblingIndex": 8,
+          "tag": "Goal",
+          "layer": 0,
+          "children": []
+        },
+        {
+          "name": "Canvas",
+          "isActive": true,
+          "componentsIdx": [
+            27,
+            28,
+            29,
+            30,
+            31
+          ],
+          "siblingIndex": 9,
+          "tag": "Untagged",
+          "layer": 5,
+          "children": [
+            {
+              "name": "UI",
+              "isActive": true,
+              "componentsIdx": [
+                27
+              ],
+              "siblingIndex": 0,
+              "tag": "Untagged",
+              "layer": 5,
+              "children": []
+            }
+          ]
+        },
+        {
+          "name": "EventSystem",
+          "isActive": true,
+          "componentsIdx": [
+            0,
+            32,
+            33
+          ],
+          "siblingIndex": 10,
+          "tag": "Untagged",
+          "layer": 0,
+          "children": []
+        },
+        {
+          "name": "-----------------",
+          "isActive": true,
+          "componentsIdx": [
+            0
+          ],
+          "siblingIndex": 11,
+          "tag": "Untagged",
+          "layer": 0,
+          "children": []
+        },
+        {
+          "name": "Item",
+          "isActive": true,
+          "componentsIdx": [
+            0
+          ],
+          "siblingIndex": 12,
+          "tag": "Untagged",
+          "layer": 0,
+          "children": [
+            {
+              "name": "Coin_1",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                34,
+                19,
+                35
+              ],
+              "siblingIndex": 0,
+              "tag": "Coin",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Coin_2",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                34,
+                19,
+                35
+              ],
+              "siblingIndex": 1,
+              "tag": "Coin",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Coin_3",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                34,
+                19,
+                35
+              ],
+              "siblingIndex": 2,
+              "tag": "Coin",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Coin_4",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                34,
+                19,
+                35
+              ],
+              "siblingIndex": 3,
+              "tag": "Coin",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Coin_5",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                34,
+                19,
+                35
+              ],
+              "siblingIndex": 4,
+              "tag": "Coin",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Coin_6",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                34,
+                19,
+                35
+              ],
+              "siblingIndex": 5,
+              "tag": "Coin",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Coin_7",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                34,
+                19,
+                35
+              ],
+              "siblingIndex": 6,
+              "tag": "Coin",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Coin_8",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                34,
+                19,
+                35
+              ],
+              "siblingIndex": 7,
+              "tag": "Coin",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Coin_9",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                34,
+                19,
+                35
+              ],
+              "siblingIndex": 8,
+              "tag": "Coin",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Coin_10",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                34,
+                19,
+                35
+              ],
+              "siblingIndex": 9,
+              "tag": "Coin",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Coin_11",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                34,
+                19,
+                35
+              ],
+              "siblingIndex": 10,
+              "tag": "Coin",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Coin_12",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                34,
+                19,
+                35
+              ],
+              "siblingIndex": 11,
+              "tag": "Coin",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Coin_13",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                34,
+                19,
+                35
+              ],
+              "siblingIndex": 12,
+              "tag": "Coin",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Coin_14",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                34,
+                19,
+                35
+              ],
+              "siblingIndex": 13,
+              "tag": "Coin",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Coin_15",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                34,
+                19,
+                35
+              ],
+              "siblingIndex": 14,
+              "tag": "Coin",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Coin_16",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                34,
+                19,
+                35
+              ],
+              "siblingIndex": 15,
+              "tag": "Coin",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Coin_17",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                34,
+                19,
+                35
+              ],
+              "siblingIndex": 16,
+              "tag": "Coin",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Coin_18",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                34,
+                19,
+                35
+              ],
+              "siblingIndex": 17,
+              "tag": "Coin",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Coin_19",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                34,
+                19,
+                35
+              ],
+              "siblingIndex": 18,
+              "tag": "Coin",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Coin_20",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                34,
+                19,
+                35
+              ],
+              "siblingIndex": 19,
+              "tag": "Coin",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Coin_21",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                34,
+                19,
+                35
+              ],
+              "siblingIndex": 20,
+              "tag": "Coin",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Coin_22",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                34,
+                19,
+                35
+              ],
+              "siblingIndex": 21,
+              "tag": "Coin",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Coin_23",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                34,
+                19,
+                35
+              ],
+              "siblingIndex": 22,
+              "tag": "Coin",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Coin_24",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                34,
+                19,
+                35
+              ],
+              "siblingIndex": 23,
+              "tag": "Coin",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Coin_25",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                34,
+                19,
+                35
+              ],
+              "siblingIndex": 24,
+              "tag": "Coin",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Coin_26",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                34,
+                19,
+                35
+              ],
+              "siblingIndex": 25,
+              "tag": "Coin",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Coin_27",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                34,
+                19,
+                35
+              ],
+              "siblingIndex": 26,
+              "tag": "Coin",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Coin_28",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                34,
+                19,
+                35
+              ],
+              "siblingIndex": 27,
+              "tag": "Coin",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Coin_29",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                34,
+                19,
+                35
+              ],
+              "siblingIndex": 28,
+              "tag": "Coin",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Coin_30",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                34,
+                19,
+                35
+              ],
+              "siblingIndex": 29,
+              "tag": "Coin",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Coin_31",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                34,
+                19,
+                35
+              ],
+              "siblingIndex": 30,
+              "tag": "Coin",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Coin_32",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                34,
+                19,
+                35
+              ],
+              "siblingIndex": 31,
+              "tag": "Coin",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Coin_33",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                34,
+                19,
+                35
+              ],
+              "siblingIndex": 32,
+              "tag": "Coin",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Coin_34",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                34,
+                19,
+                35
+              ],
+              "siblingIndex": 33,
+              "tag": "Coin",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Coin_35",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                34,
+                19,
+                35
+              ],
+              "siblingIndex": 34,
+              "tag": "Coin",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Coin_36",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                34,
+                19,
+                35
+              ],
+              "siblingIndex": 35,
+              "tag": "Coin",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Coin_37",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                34,
+                19,
+                35
+              ],
+              "siblingIndex": 36,
+              "tag": "Coin",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Coin_38",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                34,
+                19,
+                35
+              ],
+              "siblingIndex": 37,
+              "tag": "Coin",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Coin_39",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                34,
+                19,
+                35
+              ],
+              "siblingIndex": 38,
+              "tag": "Coin",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Coin_40",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                34,
+                19,
+                35
+              ],
+              "siblingIndex": 39,
+              "tag": "Coin",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Fuel_1",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                25,
+                26,
+                34,
+                19,
+                36
+              ],
+              "siblingIndex": 40,
+              "tag": "Fuel",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Timer_1",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                25,
+                26,
+                34,
+                19,
+                37
+              ],
+              "siblingIndex": 41,
+              "tag": "Timer",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Fuel_2",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                25,
+                26,
+                34,
+                19,
+                36
+              ],
+              "siblingIndex": 42,
+              "tag": "Fuel",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Timer_2",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                25,
+                26,
+                34,
+                19,
+                37
+              ],
+              "siblingIndex": 43,
+              "tag": "Timer",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Coin_41",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                34,
+                19,
+                35
+              ],
+              "siblingIndex": 44,
+              "tag": "Coin",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Coin_42",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                34,
+                19,
+                35
+              ],
+              "siblingIndex": 45,
+              "tag": "Coin",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Coin_43",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                34,
+                19,
+                35
+              ],
+              "siblingIndex": 46,
+              "tag": "Coin",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Coin_44",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                34,
+                19,
+                35
+              ],
+              "siblingIndex": 47,
+              "tag": "Coin",
+              "layer": 0,
+              "children": []
+            }
+          ]
+        },
+        {
+          "name": "Environment",
+          "isActive": true,
+          "componentsIdx": [
+            0
+          ],
+          "siblingIndex": 13,
+          "tag": "Untagged",
+          "layer": 0,
+          "children": [
+            {
+              "name": "地面",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                25,
+                26,
+                38
+              ],
+              "siblingIndex": 0,
+              "tag": "Obstacle",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "桥",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                25,
+                26
+              ],
+              "siblingIndex": 1,
+              "tag": "Obstacle",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "隙間ビルまとめ",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                25,
+                26,
+                38
+              ],
+              "siblingIndex": 2,
+              "tag": "Obstacle",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "壊されたビル",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                25,
+                26,
+                38
+              ],
+              "siblingIndex": 3,
+              "tag": "Obstacle",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "長ビルまとめ",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                25,
+                26,
+                38
+              ],
+              "siblingIndex": 4,
+              "tag": "Obstacle",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "一般ビル",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                25,
+                26,
+                38
+              ],
+              "siblingIndex": 5,
+              "tag": "Obstacle",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "電器タワーとビル",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                25,
+                26,
+                38
+              ],
+              "siblingIndex": 6,
+              "tag": "Obstacle",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "体育館",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                25,
+                26,
+                38
+              ],
+              "siblingIndex": 7,
+              "tag": "Obstacle",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "学校全部 ",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                25,
+                26,
+                38
+              ],
+              "siblingIndex": 8,
+              "tag": "Obstacle",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "隙間ビル分別",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                25,
+                26,
+                38
+              ],
+              "siblingIndex": 9,
+              "tag": "Obstacle",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "隙間ビルまとめ (1)",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                25,
+                26,
+                38
+              ],
+              "siblingIndex": 10,
+              "tag": "Obstacle",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "隙間ビルまとめ (2)",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                25,
+                26,
+                38
+              ],
+              "siblingIndex": 11,
+              "tag": "Obstacle",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "長ビルまとめ (1)",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                25,
+                26,
+                38
+              ],
+              "siblingIndex": 12,
+              "tag": "Obstacle",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "一般ビル (1)",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                25,
+                26,
+                38
+              ],
+              "siblingIndex": 13,
+              "tag": "Obstacle",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "長ビルまとめ (2)",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                25,
+                26,
+                38
+              ],
+              "siblingIndex": 14,
+              "tag": "Obstacle",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "長ビルまとめ (3)",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                25,
+                26,
+                38
+              ],
+              "siblingIndex": 15,
+              "tag": "Obstacle",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "隙間ビル分別 (1)",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                25,
+                26,
+                38
+              ],
+              "siblingIndex": 16,
+              "tag": "Obstacle",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Rubble_Decoration",
+              "isActive": true,
+              "componentsIdx": [
+                0
+              ],
+              "siblingIndex": 17,
+              "tag": "Untagged",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "Obstacle_Course",
+              "isActive": true,
+              "componentsIdx": [
+                0
+              ],
+              "siblingIndex": 18,
+              "tag": "Untagged",
+              "layer": 0,
+              "children": []
+            }
+          ]
+        },
+        {
+          "name": "Sun_LensFlare",
+          "isActive": true,
+          "componentsIdx": [
+            0,
+            39,
+            40
+          ],
+          "siblingIndex": 14,
+          "tag": "Untagged",
+          "layer": 0,
+          "children": []
+        },
+        {
+          "name": "MovingCubes",
+          "isActive": true,
+          "componentsIdx": [
+            0
+          ],
+          "siblingIndex": 15,
+          "tag": "Untagged",
+          "layer": 0,
+          "children": [
+            {
+              "name": "MovingCube_0_0",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                25,
+                20,
+                26,
+                19,
+                41
+              ],
+              "siblingIndex": 0,
+              "tag": "Obstacle",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "MovingCube_0_1",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                25,
+                20,
+                26,
+                19,
+                41
+              ],
+              "siblingIndex": 1,
+              "tag": "Obstacle",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "MovingCube_0_2",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                25,
+                20,
+                26,
+                19,
+                41
+              ],
+              "siblingIndex": 2,
+              "tag": "Obstacle",
+              "layer": 0,
+              "children": []
+            },
+            {
+              "name": "MovingCube_0_3",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                25,
+                20,
+                26,
+                19,
+                41
+              ],
+              "siblingIndex": 3,
+              "tag": "Obstacle",
+              "layer": 0,
+              "children": []
+            }
+          ]
+        },
+        {
+          "name": "AntiAirGuns",
+          "isActive": true,
+          "componentsIdx": [
+            0
+          ],
+          "siblingIndex": 16,
+          "tag": "Untagged",
+          "layer": 0,
+          "children": [
+            {
+              "name": "AntiAirGun_0_0",
+              "isActive": true,
+              "componentsIdx": [
+                0,
+                42
+              ],
+              "siblingIndex": 0,
+              "tag": "Untagged",
+              "layer": 0,
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
