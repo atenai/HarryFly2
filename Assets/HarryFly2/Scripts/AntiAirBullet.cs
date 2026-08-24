@@ -13,8 +13,16 @@ public class AntiAirBullet : MonoBehaviour
 	[SerializeField] float speed = 420f;
 	public float Speed => speed;
 
-	[Tooltip("当たり判定の半径。機体のコライダーは1.5ユニット角と小さいので、点の判定ではまず当たらない")]
-	[SerializeField] float hitRadius = 4f;
+	/// <summary>
+	/// 当たり判定の半径。
+	///
+	/// 移動ぶんを掃いて調べているので、すり抜け対策として大きくする必要はない。
+	/// 大きくすると「曳光弾が明らかに横を通ったのに撃墜された」ことになるので、
+	/// 弾の見た目（幅1.2ユニット）から離れすぎない範囲に収める。
+	/// 命中率は AntiAirGun 側の aimSpreadDegrees と leadRatio で調整すること
+	/// </summary>
+	[Tooltip("当たり判定の半径。大きくすると弾が外れて見えるのに撃墜されるようになる")]
+	[SerializeField] float hitRadius = 2.5f;
 
 	[Tooltip("消えるまでの時間（秒）。当たらなかった弾を残さない")]
 	[SerializeField] float lifetimeSeconds = 5f;
@@ -63,6 +71,13 @@ public class AntiAirBullet : MonoBehaviour
 		{
 			PlaneController plane = hits[i].collider.GetComponentInParent<PlaneController>();
 			if (plane == null)
+			{
+				continue;
+			}
+
+			// 次ステージは飛行中に裏で先読みしており、読み込み直後は同じ座標に
+			// もう1機の機体が居る。撃った側と同じステージの機体だけを狙う
+			if (plane.gameObject.scene != this.gameObject.scene)
 			{
 				continue;
 			}

@@ -49,6 +49,10 @@ public class ObstacleMover : MonoBehaviour
 		cachedRigidbody.useGravity = false;
 		// 物理ステップ間の見た目を滑らかにする
 		cachedRigidbody.interpolation = RigidbodyInterpolation.Interpolate;
+		// キネマティックな剛体は Continuous / Continuous Dynamic の対象外なので、
+		// Discrete のままだと毎秒300〜1500で飛んでくる機体との判定を取りこぼす。
+		// キネマティックでも効く Continuous Speculative にしておく
+		cachedRigidbody.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
 	}
 
 	void FixedUpdate()

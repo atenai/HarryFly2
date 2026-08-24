@@ -97,5 +97,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 420
-  hitRadius: 5
+  hitRadius: 2.5
   lifetimeSeconds: 5

@@ -33,8 +33,17 @@ public class AntiAirGun : MonoBehaviour
 	[Tooltip("狙いのばらつき（度）。0だと必中で避けられない。大きすぎると当たらない")]
 	[SerializeField] float aimSpreadDegrees = 1.2f;
 
+	/// <summary>
+	/// 機体の進む先を読んで撃つ割合。
+	///
+	/// 1未満にすると、その割合ぶんだけ狙点が機体の後ろにずれる。
+	/// 機体は毎秒300で進むので、0.9なら弾の飛行時間が0.5秒あるだけで15ユニット後ろを狙うことになり、
+	/// 「見た目は外れているのに当たり判定では当たっている」状態を作っていた。
+	/// 避けさせるための遊びは aimSpreadDegrees（狙いのばらつき）と、
+	/// 撃たれてから機体を動かせることで確保する
+	/// </summary>
 	[Tooltip("機体の進む先を読んで撃つ割合。1で完全に読む、0で現在位置を狙う")]
-	[SerializeField, Range(0f, 1f)] float leadRatio = 0.9f;
+	[SerializeField, Range(0f, 1f)] float leadRatio = 1f;
 
 	/// <summary>次に撃てるようになる時刻</summary>
 	float nextFireTime = 0f;

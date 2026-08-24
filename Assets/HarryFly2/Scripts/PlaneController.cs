@@ -89,6 +89,16 @@ public class PlaneController : MonoBehaviour
 	Vector3 baseColliderSize = Vector3.one;
 	bool hasBaseColliderSize = false;
 
+	/// <summary>機体の当たり判定。毎フレームの掃き判定でも使うので取得し直さない</summary>
+	BoxCollider cachedBoxCollider = null;
+	bool hasSearchedBoxCollider = false;
+
+	/// <summary>
+	/// 掃き判定の結果を受け取る配列。毎物理ステップ使うので作り直さない。
+	/// 溢れたぶんは捨てられるが、1ステップで触れる障害物がこの数を超えることはない
+	/// </summary>
+	readonly RaycastHit[] sweepHits = new RaycastHit[16];
+
 	/// <summary> 燃料の最大値 </summary>
 
 	[Tooltip("1秒あたりの燃料消費量。60fpsで1フレームにつき1消費していたときと同じ速さになる値を入れてある")]
@@ -250,7 +260,7 @@ public class PlaneController : MonoBehaviour
 	/// <param name="multiplier">元の大きさに対する倍率</param>
 	void ApplyColliderScale(float multiplier)
 	{
-		BoxCollider box = GetComponent<BoxCollider>();
+		BoxCollider box = GetBoxCollider();
 		if (box == null)
 		{
 			return;
@@ -263,6 +273,34 @@ public class PlaneController : MonoBehaviour
 		}
 
 		box.size = baseColliderSize * multiplier;
+	}
+
+	/// <summary>
+	/// 機体の当たり判定を取得する。
+	/// 付いていない機体もあり得るので、見つからなかったことも覚えて探し直さない
+	/// </summary>
+	BoxCollider GetBoxCollider()
+	{
+		if (hasSearchedBoxCollider == false)
+		{
+			cachedBoxCollider = GetComponent<BoxCollider>();
+			hasSearchedBoxCollider = true;
+		}
+		return cachedBoxCollider;
+	}
+
+	/// <summary>
+	/// 自分と同じステージの相手かどうか。
+	///
+	/// 次ステージは飛行中に裏で先読みしている。読み込み直後の1フレームは
+	/// 全ステージ共通のワールド座標のまま実体を持つので、そのままだと
+	/// 現ステージを飛んでいる機体が「次ステージの壁」に当たってしまう。
+	/// シーンが違う相手は当たり判定から外す
+	/// </summary>
+	/// <param name="other">判定する相手</param>
+	bool IsSameStage(GameObject other)
+	{
+		return other.scene == this.gameObject.scene;
 	}
 
 	/// <summary>
@@ -448,13 +486,102 @@ public class PlaneController : MonoBehaviour
 		velocity = velocity + this.transform.forward * addForwordMoveSpeed; // 自動前進
 		velocity = velocity + Vector3.up * (vertical * addVerticalAndHorizontalMoveSpeed * 0.5f); // 上下移動（Y軸）
 		velocity = velocity + this.transform.right * (horizontal * addVerticalAndHorizontalMoveSpeed); // 左右（A/D）
+
+		// このステップで進むぶんを先に掃いて障害物を探す。
+		// 見つかったらここで終わるので、速度も位置も触らない
+		CheckObstacleAhead(velocity);
+		if (hasCrashed == true)
+		{
+			return;
+		}
+
 		rb.velocity = velocity;
 
-		// 位置を範囲内にクランプ（ワールド座標の X/Y）
+		// 位置を範囲内にクランプ（ワールド座標の X/Y）。
+		// rb.position への代入は「瞬間移動」扱いになるので、実際にはみ出したときだけ書き込む
 		Vector3 pos = rb.position;
-		pos.x = Mathf.Clamp(pos.x, horizontalMin, horizontalMax);
-		pos.y = Mathf.Clamp(pos.y, verticalMin, verticalMax);
-		rb.position = pos;
+		Vector3 clampedPos = pos;
+		clampedPos.x = Mathf.Clamp(pos.x, horizontalMin, horizontalMax);
+		clampedPos.y = Mathf.Clamp(pos.y, verticalMin, verticalMax);
+		if (clampedPos != pos)
+		{
+			rb.position = clampedPos;
+		}
+	}
+
+	/// <summary>
+	/// このステップで進むぶんを機体の当たり判定で掃き、障害物に触れるかを先に調べる。
+	///
+	/// 機体は通常でも毎秒300、ブースト中は最大1500で進む。物理は毎秒50回なので
+	/// 1ステップで6〜30ユニットも飛ぶことになり、動く箱（1辺26ユニット）より大きい。
+	/// 動く箱はキネマティックな剛体なので Unity の連続判定（Continuous Dynamic）の
+	/// 対象外で、そのままではブースト中にすり抜けたり、深くめり込んでから
+	/// 見当違いの位置で当たり判定が出たりしていた。
+	/// 弾と同じように移動ぶんを掃いて調べることで、速度に関係なく
+	/// 「最初に触れた位置」で正しく当てられる
+	/// </summary>
+	/// <param name="velocity">このステップで与える速度</param>
+	void CheckObstacleAhead(Vector3 velocity)
+	{
+		BoxCollider box = GetBoxCollider();
+		if (box == null)
+		{
+			return;
+		}
+
+		Vector3 move = velocity * Time.fixedDeltaTime;
+		float distance = move.magnitude;
+		if (distance <= Mathf.Epsilon)
+		{
+			return;
+		}
+
+		Vector3 direction = move / distance;
+		Vector3 center = this.transform.TransformPoint(box.center);
+		Vector3 halfExtents = Vector3.Scale(box.size, this.transform.lossyScale) * 0.5f;
+
+		// アイテムやゴールのトリガーは掃きの対象にしない。
+		// 毎物理ステップ呼ぶので、配列を作り直さない NonAlloc 版を使う
+		int hitCount = Physics.BoxCastNonAlloc(center, halfExtents, direction, sweepHits, this.transform.rotation, distance, ~0, QueryTriggerInteraction.Ignore);
+
+		bool hasFound = false;
+		float nearestDistance = 0f;
+		for (int i = 0; i < hitCount; i++)
+		{
+			GameObject hitObject = sweepHits[i].collider.gameObject;
+
+			if (hitObject.CompareTag("Obstacle") == false)
+			{
+				continue;
+			}
+
+			// 先読み中の次ステージは同じ座標に居るので、自分のステージの障害物だけを見る
+			if (IsSameStage(hitObject) == false)
+			{
+				continue;
+			}
+
+			if (hasFound == false || sweepHits[i].distance < nearestDistance)
+			{
+				hasFound = true;
+				nearestDistance = sweepHits[i].distance;
+			}
+		}
+
+		if (hasFound == false)
+		{
+			return;
+		}
+
+		// 触れる直前まで進めてから爆発させる。
+		// めり込んだ先で止めると、機体の2.5ユニット後ろに居るカメラが接触点を追い越して
+		// 爆発が建物の中に入ってしまう
+		Vector3 stopPosition = rb.position + direction * nearestDistance;
+		this.transform.position = stopPosition;
+		rb.position = stopPosition;
+
+		Debug.Log("障害物に衝突した（掃き判定）");
+		CrashAndAdvanceStage();
 	}
 
 	//自動前進スピードを徐々に変える
@@ -504,6 +631,12 @@ public class PlaneController : MonoBehaviour
 
 	void OnTriggerEnter(Collider collider)
 	{
+		// 先読み中の次ステージのアイテムやゴールを拾わない
+		if (IsSameStage(collider.gameObject) == false)
+		{
+			return;
+		}
+
 		if (collider.CompareTag("Coin") == true)
 		{
 			gameManager.AddCoin(collider.GetComponent<Coin>().Value);
@@ -746,6 +879,12 @@ public class PlaneController : MonoBehaviour
 	{
 		// ゴール後はその場で止まっているだけなので、接触してもステージを切り替えない
 		if (hasGoaled == true)
+		{
+			return;
+		}
+
+		// 先読み中の次ステージの壁や地面で爆発しない
+		if (IsSameStage(collision.gameObject) == false)
 		{
 			return;
 		}

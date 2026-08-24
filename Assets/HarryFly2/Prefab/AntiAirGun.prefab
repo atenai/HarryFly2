@@ -88,7 +88,7 @@ MonoBehaviour:
   fireIntervalSeconds: 0.9
   aimDegreesPerSecond: 90
   aimSpreadDegrees: 0.5
-  leadRatio: 0.9
+  leadRatio: 1
 --- !u!1 &7039668620352040017
 GameObject:
   m_ObjectHideFlags: 0

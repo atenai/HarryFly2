@@ -39,6 +39,12 @@ public class StageManager : MonoBehaviour
 		set { isTriggered = value; }
 	}
 
+	/// <summary>
+	/// いま事前ロード中のシーン名。
+	/// sceneLoaded で「先読みしたシーンだけ」を消すための照合に使う
+	/// </summary>
+	string preloadingSceneName = null;
+
 	void Awake()
 	{
 		// 非同期ロードの優先度を上げる。既定の BelowNormal のままだと、
@@ -116,16 +122,24 @@ public class StageManager : MonoBehaviour
 
 		Debug.Log("Start loading scene: " + sceneName);
 
+		// 読み込みが終わった瞬間に消せるよう、ロードを始める前に受け取り口を用意しておく
+		preloadingSceneName = sceneName;
+		SceneManager.sceneLoaded += OnPreloadedSceneLoaded;
+
 		AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
 
 		if (asyncOperation == null)
 		{
 			Debug.LogError("LoadSceneAsync failed for: " + sceneName);
+			SceneManager.sceneLoaded -= OnPreloadedSceneLoaded;
+			preloadingSceneName = null;
 			yield break;
 		}
 
 		// シンプルに AsyncOperation を待機し、その後シーンが実際にロードされたか確認する
 		yield return asyncOperation;
+
+		SceneManager.sceneLoaded -= OnPreloadedSceneLoaded;
 
 		Scene loadedScene = SceneManager.GetSceneByName(sceneName);
 
@@ -141,21 +155,65 @@ public class StageManager : MonoBehaviour
 
 		if (loadedScene.IsValid() == true && loadedScene.isLoaded == true)
 		{
-			GameObject[] rootObjects = loadedScene.GetRootGameObjects();
-
-			for (int i = 0; i < rootObjects.Length; i++)
-			{
-				rootObjects[i].SetActive(false);
-			}
+			// 通常は sceneLoaded で消え済み。取りこぼしたときのための保険
+			HideSceneRoots(loadedScene);
 		}
 		else
 		{
 			Debug.LogWarning(sceneName + " のロードが完了していません。");
 		}
 
+		preloadingSceneName = null;
 		IsLoaded = true;
 
 		Debug.Log("Finished loading scene: " + sceneName);
+	}
+
+	/// <summary>
+	/// 先読みしたシーンを、読み込まれた「その場」で消す。
+	///
+	/// コルーチンの再開（yield return asyncOperation の続き）は Update フェーズなので、
+	/// そこで消していると、シーンが組み込まれた EarlyUpdate から Update までの間にある
+	/// FixedUpdate（＝物理演算）を1回以上通過してしまう。
+	/// 全ステージは同じワールド座標を使っている（機体は必ず原点、壁は z=600 など）ため、
+	/// その1ステップの間だけ「次ステージの壁・地面・ゴール」が現ステージの飛行中の機体と
+	/// 同じ場所に実体を持ち、何も無い場所で爆発したり勝手にゴールしたりしていた。
+	/// sceneLoaded はシーン組み込みと同じ EarlyUpdate 内で呼ばれるので、
+	/// ここで消せば物理演算に一度も触れさせずに済む
+	/// </summary>
+	void OnPreloadedSceneLoaded(Scene scene, LoadSceneMode mode)
+	{
+		if (mode != LoadSceneMode.Additive)
+		{
+			return;
+		}
+
+		if (scene.name != preloadingSceneName)
+		{
+			return;
+		}
+
+		HideSceneRoots(scene);
+	}
+
+	/// <summary>
+	/// シーン内のルートオブジェクトをまとめて非表示にする
+	/// </summary>
+	/// <param name="scene">対象のシーン</param>
+	void HideSceneRoots(Scene scene)
+	{
+		GameObject[] rootObjects = scene.GetRootGameObjects();
+
+		for (int i = 0; i < rootObjects.Length; i++)
+		{
+			rootObjects[i].SetActive(false);
+		}
+	}
+
+	void OnDestroy()
+	{
+		// ロードの途中で破棄されても購読が残らないようにする
+		SceneManager.sceneLoaded -= OnPreloadedSceneLoaded;
 	}
 
 	void Update()
