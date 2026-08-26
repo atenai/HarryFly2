@@ -15,18 +15,18 @@ RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 9
   m_Fog: 1
-  m_FogColor: {r: 0.76, g: 0.66, b: 0.5, a: 1}
+  m_FogColor: {r: 0.647059, g: 0.918053, b: 1, a: 1}
   m_FogMode: 1
   m_FogDensity: 0.01
-  m_LinearFogStart: 60
-  m_LinearFogEnd: 450
-  m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
-  m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
-  m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
+  m_LinearFogStart: 200
+  m_LinearFogEnd: 1600
+  m_AmbientSkyColor: {r: 0.053922, g: 0.293333, b: 0.541373, a: 1}
+  m_AmbientEquatorColor: {r: 0.355882, g: 0.504929, b: 0.55, a: 1}
+  m_AmbientGroundColor: {r: 0.124559, g: 0.161577, b: 0.154, a: 1}
   m_AmbientIntensity: 0.45
-  m_AmbientMode: 0
+  m_AmbientMode: 1
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 2100000, guid: 52fcefd712182d743a781fde12426775, type: 2}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 56113b3b655ab7349bab4d7d405c258a, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -1126,8 +1126,8 @@ Light:
   serializedVersion: 10
   m_Type: 1
   m_Shape: 0
-  m_Color: {r: 0.62, g: 0.72, b: 1, a: 1}
-  m_Intensity: 0.25
+  m_Color: {r: 1, g: 0.97, b: 0.93, a: 1}
+  m_Intensity: 1.2
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -9504,7 +9504,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28d95038b744a1d4f8c9e1f0d3568a99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  visibleIntensity: 0.3
+  visibleIntensity: 0.35
   fadeSpeed: 5
   blockingLayers:
     serializedVersion: 2
@@ -9522,7 +9522,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_LensFlareData: {fileID: 11400000, guid: cae6987809c33d84f8ab2648362684a7, type: 2}
-  intensity: 0.3
+  intensity: 0.35
   maxAttenuationDistance: 100000
   maxAttenuationScale: 100000
   distanceAttenuationCurve:

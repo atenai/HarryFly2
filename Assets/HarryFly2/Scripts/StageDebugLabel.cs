@@ -28,6 +28,12 @@ public class StageDebugLabel : MonoBehaviour
 	int builtFontSize = -1;
 
 	/// <summary>
+	/// いま表示されているかどうか。
+	/// SRDebugger のトグルは現在値を読んでから反映するので、取得側も要る
+	/// </summary>
+	public bool IsVisible => isVisible;
+
+	/// <summary>
 	/// 表示の切り替え。実機で見せたくない場面のために外から止められるようにしておく
 	/// </summary>
 	/// <param name="visible">表示するかどうか</param>

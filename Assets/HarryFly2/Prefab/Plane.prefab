@@ -139,6 +139,15 @@ MonoBehaviour:
   fuelPickupEffectScale: 0.5
   timerPickupEffectScale: 0.5
   pickupEffectOffset: {x: 0, y: 0, z: 1.5}
+  coinPickupSound: {fileID: 8300000, guid: 881e3f52c86c94f26a60718d35627cd8, type: 3}
+  fuelPickupSound: {fileID: 8300000, guid: 38a17a92b9d9748c6a1e67972041b833, type: 3}
+  timerPickupSound: {fileID: 8300000, guid: 7bd6b897eb5ca4b7d88a205c4a51640c, type: 3}
+  pickupVolume: 0.7
+  boostLoopSound: {fileID: 8300000, guid: 4e1ff8faed12a475eba9be0e46072269, type: 3}
+  boostVolume: 0.45
+  boostPitchMin: 1
+  boostPitchMax: 1.35
+  boostFadeSeconds: 0.12
 --- !u!54 &3658238267189483658
 Rigidbody:
   m_ObjectHideFlags: 0

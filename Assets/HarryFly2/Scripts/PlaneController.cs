@@ -165,6 +165,57 @@ public class PlaneController : MonoBehaviour
 	/// </summary>
 	const float Pickup_Effect_Lifetime_Seconds = 3f;
 
+	[Header("アイテム取得音")]
+	/// <summary>
+	/// コインを取ったときの音。
+	/// コインは32ユニット間隔で並んでいて、通常速度でも毎秒10個ほど拾う。
+	/// 長いクリップを入れると音が重なって潰れるので、0.2秒以下の短いものを使うこと
+	/// </summary>
+	[Tooltip("コインを取ったときの音。重なって鳴るので短いクリップを使う")]
+	[SerializeField] AudioClip coinPickupSound;
+
+	[Tooltip("燃料を取ったときの音")]
+	[SerializeField] AudioClip fuelPickupSound;
+
+	[Tooltip("時間を取ったときの音")]
+	[SerializeField] AudioClip timerPickupSound;
+
+	[Tooltip("アイテム取得音の音量")]
+	[SerializeField, Range(0f, 1f)] float pickupVolume = 0.7f;
+
+	[Header("ブースト音")]
+	/// <summary>
+	/// ブースト中に鳴らし続ける噴射音。
+	/// ループ再生するので、先頭と末尾が無音に近いクリップでないと継ぎ目でブツッと鳴る
+	/// </summary>
+	[Tooltip("ブースト中に鳴らし続ける噴射音。ループするので両端が無音に近いクリップを使う")]
+	[SerializeField] AudioClip boostLoopSound;
+
+	[Tooltip("ブースト音の音量")]
+	[SerializeField, Range(0f, 1f)] float boostVolume = 0.45f;
+
+	[Tooltip("通常速度でのブースト音の高さ")]
+	[SerializeField] float boostPitchMin = 1f;
+
+	[Tooltip("最高速でのブースト音の高さ。上げるほど加速感が出る")]
+	[SerializeField] float boostPitchMax = 1.35f;
+
+	/// <summary>
+	/// ブースト音を出し入れする時間（秒）。
+	/// 加速ボタンは連打されるので、いきなり最大音量で鳴らすとブツブツと途切れて聞こえる
+	/// </summary>
+	[Tooltip("ブースト音を鳴らし始める／止めるまでの時間（秒）")]
+	[SerializeField] float boostFadeSeconds = 0.12f;
+
+	/// <summary>アイテム取得音の再生元。取得のたびに重ねて鳴らす</summary>
+	AudioSource pickupAudioSource;
+
+	/// <summary>ブースト音の再生元。ループ再生しっぱなしにして音量で出し入れする</summary>
+	AudioSource boostAudioSource;
+
+	/// <summary>直前フレームのブースト状態。鳴らし始めを1回だけにするための比較用</summary>
+	bool wasBoosting = false;
+
 	/// <summary>
 	/// ブースト中かどうか。
 	/// 判定は Accelerate() の中にしかなく、噴射トレイルなど外の演出から参照できなかったので公開する。
@@ -185,7 +236,32 @@ public class PlaneController : MonoBehaviour
 		initForwordMoveSpeed = addForwordMoveSpeed;
 		initVerticalAndHorizontalMoveSpeed = addVerticalAndHorizontalMoveSpeed;
 		paticlePrefab.SetActive(false);
+		SetupAudioSources();
 		ChangePlaneModel();
+	}
+
+	/// <summary>
+	/// 音の再生元を用意する。
+	///
+	/// インスペクタで付けるのではなくここで作る。機体のプレハブに AudioSource を
+	/// 並べておくと、用途を取り違えて設定される（ループの付け忘れなど）ため。
+	///
+	/// どちらも 2D で鳴らす。機体はカメラの2.5ユニット前に居るだけなので、
+	/// 距離減衰や定位を効かせても意味がなく、端末によって聞こえ方が変わるだけになる
+	/// </summary>
+	void SetupAudioSources()
+	{
+		pickupAudioSource = this.gameObject.AddComponent<AudioSource>();
+		pickupAudioSource.playOnAwake = false;
+		pickupAudioSource.spatialBlend = 0f;
+
+		boostAudioSource = this.gameObject.AddComponent<AudioSource>();
+		boostAudioSource.playOnAwake = false;
+		boostAudioSource.spatialBlend = 0f;
+		boostAudioSource.loop = true;
+		boostAudioSource.clip = boostLoopSound;
+		// 鳴らし始めは無音から。Play() と同時に最大音量にすると押した瞬間にブツッと鳴る
+		boostAudioSource.volume = 0f;
 	}
 
 	/// <summary>
@@ -642,6 +718,7 @@ public class PlaneController : MonoBehaviour
 			gameManager.AddCoin(collider.GetComponent<Coin>().Value);
 			HapticFeedback.Play(HapticFeedback.Strength.Light);
 			SpawnPickupEffect(coinPickupEffect, coinPickupEffectScale);
+			PlayPickupSound(coinPickupSound);
 		}
 
 		if (collider.CompareTag("Fuel") == true)
@@ -649,6 +726,7 @@ public class PlaneController : MonoBehaviour
 			AddFuel(collider.GetComponent<Fuel>().Value);
 			HapticFeedback.Play(HapticFeedback.Strength.Medium);
 			SpawnPickupEffect(fuelPickupEffect, fuelPickupEffectScale);
+			PlayPickupSound(fuelPickupSound);
 		}
 
 		if (collider.CompareTag("Timer") == true)
@@ -656,6 +734,7 @@ public class PlaneController : MonoBehaviour
 			gameManager.AddTimer(collider.GetComponent<Timer>().Value);
 			HapticFeedback.Play(HapticFeedback.Strength.Medium);
 			SpawnPickupEffect(timerPickupEffect, timerPickupEffectScale);
+			PlayPickupSound(timerPickupSound);
 		}
 
 		if (collider.CompareTag("Goal") == true)
@@ -708,6 +787,81 @@ public class PlaneController : MonoBehaviour
 	/// </summary>
 	/// <param name="prefab">出すエフェクト。未設定なら何もしない</param>
 	/// <param name="scale">エフェクトの大きさ</param>
+	/// <summary>
+	/// アイテム取得音を鳴らす。
+	/// コインは連続で拾うので、鳴っている音を止めずに重ねられる PlayOneShot を使う
+	/// </summary>
+	/// <param name="clip">鳴らす音。未設定なら何もしない</param>
+	void PlayPickupSound(AudioClip clip)
+	{
+		if (clip == null || pickupAudioSource == null)
+		{
+			return;
+		}
+
+		pickupAudioSource.PlayOneShot(clip, pickupVolume);
+	}
+
+	/// <summary>
+	/// ブースト音の再生・停止・音の高さを更新する。
+	///
+	/// LateUpdate から毎フレーム呼ぶ。Update は「ゴール後」「衝突後」「ショップ表示中」で
+	/// 途中 return するので、そちらに書くと噴射音が鳴りっぱなしで残ってしまう。
+	/// ブーストの炎と軌跡が同じ理由で消し忘れていた経緯があるため、
+	/// ここは必ず通る場所に置いている。
+	///
+	/// 鳴らし始め／止めるのは Play()/Stop() ではなく音量で行う。
+	/// 加速ボタンは連打されるので、そのたびに Play() し直すと頭出しが繰り返されて
+	/// ブツブツと途切れて聞こえる
+	/// </summary>
+	void UpdateBoostSound()
+	{
+		if (boostAudioSource == null || boostLoopSound == null)
+		{
+			return;
+		}
+
+		// 鳴らし始めは1回だけ。毎フレーム Play() すると先頭に巻き戻り続けて音にならない
+		if (isBoosting == true && wasBoosting == false && boostAudioSource.isPlaying == false)
+		{
+			boostAudioSource.Play();
+		}
+		wasBoosting = isBoosting;
+
+		boostAudioSource.pitch = Mathf.Lerp(boostPitchMin, boostPitchMax, GetBoostSpeedRatio());
+
+		float targetVolume = isBoosting == true ? boostVolume : 0f;
+		float step = boostFadeSeconds <= 0f ? boostVolume : boostVolume * Time.deltaTime / boostFadeSeconds;
+		boostAudioSource.volume = Mathf.MoveTowards(boostAudioSource.volume, targetVolume, step);
+
+		// 消え切ってから止める。鳴らしっぱなしにすると無音でも再生位置が進み続ける
+		if (isBoosting == false && boostAudioSource.volume <= 0f && boostAudioSource.isPlaying == true)
+		{
+			boostAudioSource.Stop();
+		}
+	}
+
+	/// <summary>
+	/// いまの前進速度が、通常速度から最高速までのどのあたりかを 0〜1 で返す。
+	/// ブースト音の高さを速度に合わせるために使う
+	/// </summary>
+	float GetBoostSpeedRatio()
+	{
+		// 加速の上限は ChangeForwordMoveSpeed() と同じく初期値の5倍
+		float span = initForwordMoveSpeed * 5f - initForwordMoveSpeed;
+		if (span <= 0f)
+		{
+			return 0f;
+		}
+
+		return Mathf.Clamp01((addForwordMoveSpeed - initForwordMoveSpeed) / span);
+	}
+
+	void LateUpdate()
+	{
+		UpdateBoostSound();
+	}
+
 	void SpawnPickupEffect(GameObject prefab, float scale)
 	{
 		if (prefab == null)

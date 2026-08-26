@@ -44,6 +44,8 @@ MonoBehaviour:
     - Purchasing.Common
     - SingularityGroup.HotReload.Runtime
     - SingularityGroup.HotReload.Runtime.Public
+    - StompyRobot.SRDebugger
+    - StompyRobot.SRF
     - uLoopMCP.Runtime
     - UniTask
     - UniTask.Addressables

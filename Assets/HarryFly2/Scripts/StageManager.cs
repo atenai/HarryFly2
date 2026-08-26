@@ -290,4 +290,65 @@ public class StageManager : MonoBehaviour
 		InitScene();
 		LoadNextStage();
 	}
+
+	/// <summary>
+	/// 最後のステージのシーン番号
+	/// </summary>
+	public int LastStageBuildIndex => SceneManager.sceneCountInBuildSettings - 1;
+
+	/// <summary>
+	/// いま表示しているステージのシーン番号
+	/// </summary>
+	public int CurrentStageBuildIndex => SceneManager.GetActiveScene().buildIndex;
+
+	/// <summary>
+	/// 指定したステージへ直接飛ぶ。デバッグ用。
+	///
+	/// 通常の進行（ShowNextStage）は「事前ロード済みの次ステージ」しか出せないので、
+	/// 任意のステージへ行くにはシーンを読み直すしかない。
+	/// Single で読み込むと事前ロード中のシーンごと片付くため、
+	/// 全ステージが同じワールド座標を使っていても二重に存在しない
+	/// </summary>
+	/// <param name="buildIndex">行き先のシーン番号</param>
+	public void JumpToStage(int buildIndex)
+	{
+		if (buildIndex < 0 || LastStageBuildIndex < buildIndex)
+		{
+			Debug.LogWarning("ステージ番号が範囲外です: " + buildIndex + "（0〜" + LastStageBuildIndex + "）");
+			return;
+		}
+
+		// 走っている事前ロードとアンロードを止める。
+		// 残しておくと、飛んだ先で「前のステージの続き」を読み込みにいってしまう
+		StopAllCoroutines();
+		StartCoroutine(JumpToStageCoroutine(buildIndex));
+	}
+
+	IEnumerator JumpToStageCoroutine(int buildIndex)
+	{
+		// 事前ロードの受け取り口を先に外す。
+		// 読み込み中のシーンがあると、飛んだ先で消される側になってしまう
+		SceneManager.sceneLoaded -= OnPreloadedSceneLoaded;
+		preloadingSceneName = null;
+
+		// 切り替え中は機体を止めておく。飛んだ先に着くまで操作させない
+		IsSceneSwitched = true;
+
+		string sceneName = "Stage" + buildIndex;
+		Debug.Log(sceneName + " へ移動します。");
+
+		AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);
+		if (asyncOperation == null)
+		{
+			Debug.LogError("LoadSceneAsync failed for: " + sceneName);
+			IsSceneSwitched = false;
+			yield break;
+		}
+
+		yield return asyncOperation;
+
+		// 飛んだ先を起点にやり直す。次ステージの事前ロードもここから始まる
+		InitScene();
+		LoadNextStage();
+	}
 }

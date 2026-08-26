@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 642733985508517274}
   - component: {fileID: 7594614958593146049}
   - component: {fileID: 5352907906334594337}
+  - component: {fileID: 14489940598324761}
   m_Layer: 0
   m_Name: StageManager
   m_TagString: Untagged
@@ -60,3 +61,20 @@ MonoBehaviour:
   isVisible: 1
   fontHeightRatio: 0.025
   marginRatio: 0.01
+--- !u!114 &14489940598324761
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7246515145790861484}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IsGlobal: 1
+  priority: 0
+  blendDistance: 0
+  weight: 1
+  sharedProfile: {fileID: 11400000, guid: c08f8b78cf80e1d41ba90e3d03fe038a, type: 2}
