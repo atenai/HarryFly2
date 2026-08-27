@@ -282,6 +282,16 @@ public class PlaneController : MonoBehaviour
 	/// <summary>衝突済みかどうか。爆発とステージ切り替えを二重に走らせないための判定に使う</summary>
 	bool hasCrashed = false;
 
+	/// <summary>
+	/// まだ飛んでいるかどうか。
+	///
+	/// 墜落後とゴール後は機体の見た目を消したり止めたりするので、
+	/// エンジンの炎など機体に付いている演出もこれを見て消す。
+	/// HidePlaneModel() は planePrefabs しか消さないため、
+	/// 機体の子に足した演出は自分で止める必要がある
+	/// </summary>
+	public bool IsFlying => hasCrashed == false && hasGoaled == false;
+
 	void Start()
 	{
 		initForwordMoveSpeed = addForwordMoveSpeed;
@@ -951,6 +961,12 @@ public class PlaneController : MonoBehaviour
 	/// いまの前進速度が、通常速度から最高速までのどのあたりかを 0〜1 で返す。
 	/// ブースト音の高さを速度に合わせるために使う
 	/// </summary>
+	/// <summary>
+	/// いまの前進速度が、通常速度から最高速までのどのあたりか（0〜1）。
+	/// 噴射炎など、外の演出から加速具合を参照するために公開する
+	/// </summary>
+	public float BoostSpeedRatio => GetBoostSpeedRatio();
+
 	float GetBoostSpeedRatio()
 	{
 		// 加速の上限は ChangeForwordMoveSpeed() と同じく初期値の5倍
