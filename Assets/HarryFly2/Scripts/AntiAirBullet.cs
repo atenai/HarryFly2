@@ -27,11 +27,24 @@ public class AntiAirBullet : MonoBehaviour
 	[Tooltip("消えるまでの時間（秒）。当たらなかった弾を残さない")]
 	[SerializeField] float lifetimeSeconds = 5f;
 
+	/// <summary>
+	/// この距離まで近づいたら「かすめた」音を鳴らす。
+	/// 当たり判定の半径より広くしないと、外れた弾では一度も鳴らない
+	/// </summary>
+	[Tooltip("かすめた音を鳴らす距離。当たり判定の半径より広くする")]
+	[SerializeField] float nearMissDistance = 14f;
+
 	/// <summary>撃たれてからの経過時間</summary>
 	float elapsed = 0f;
 
 	/// <summary>二重に当てないための判定</summary>
 	bool hasHit = false;
+
+	/// <summary>かすめた音を鳴らしたかどうか。1発につき1回だけ鳴らす</summary>
+	bool hasPlayedNearMiss = false;
+
+	/// <summary>音を鳴らしてもらう相手。毎フレーム探し直さないように覚えておく</summary>
+	PlaneController cachedPlane;
 
 	/// <summary>
 	/// 発射方向を決める
@@ -88,11 +101,49 @@ public class AntiAirBullet : MonoBehaviour
 			// 爆発の位置は機体側で機体の位置に合わせる。
 			// ここで hits[i].point を渡すと、半径4ユニットの球で取った当たり判定の点が
 			// そのまま爆発の位置になり、機体から離れた場所で爆発してしまう
-			plane.CrashAndAdvanceStage();
+			plane.CrashAndAdvanceStage(PlaneController.CrashCause.ShotDown);
 			Destroy(this.gameObject);
 			return;
 		}
 
 		this.transform.position = origin + direction * step;
+
+		CheckNearMiss();
+	}
+
+	/// <summary>
+	/// 機体の近くを通り抜けたら音を鳴らす。
+	///
+	/// 鳴らすのは機体側に任せる。この弾は当たれば即 Destroy されるし寿命でも消えるので、
+	/// 自分で AudioSource を持つと鳴っている途中で切れてしまう
+	/// </summary>
+	void CheckNearMiss()
+	{
+		if (hasPlayedNearMiss == true || nearMissDistance <= 0f)
+		{
+			return;
+		}
+
+		if (cachedPlane == null)
+		{
+			cachedPlane = Object.FindObjectOfType<PlaneController>();
+			if (cachedPlane == null)
+			{
+				return;
+			}
+		}
+
+		// 先読み中の次ステージにも機体が居るので、同じステージのものだけ相手にする
+		if (cachedPlane.gameObject.scene != this.gameObject.scene)
+		{
+			return;
+		}
+
+		float distance = Vector3.Distance(this.transform.position, cachedPlane.transform.position);
+		if (distance <= nearMissDistance)
+		{
+			hasPlayedNearMiss = true;
+			cachedPlane.PlayNearMissSound();
+		}
 	}
 }

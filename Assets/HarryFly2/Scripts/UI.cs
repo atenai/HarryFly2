@@ -72,6 +72,101 @@ public class UI : MonoBehaviour
 	bool buttonDownFlag = false;
 	public bool ButtonDownFlag => buttonDownFlag;
 
+	[Header("UIの効果音")]
+	[Tooltip("ボタンを押したときの音")]
+	[SerializeField] AudioClip clickSound;
+
+	[Tooltip("ショップを開いたときの音")]
+	[SerializeField] AudioClip openSound;
+
+	[Tooltip("ショップを閉じたときの音")]
+	[SerializeField] AudioClip closeSound;
+
+	[Tooltip("UIの効果音の音量")]
+	[SerializeField, Range(0f, 1f)] float uiVolume = 0.5f;
+
+	/// <summary>
+	/// 残り時間のカウントダウン音。
+	///
+	/// 残り5秒でタイマーは赤く明滅するが、横スクロールの飛行ゲームでは
+	/// 視線が前方の障害物に固定されるので、画面上端のHUDは構造的に見落とされる。
+	/// 時間切れは即ステージ終了なので、音が無いと突然死になる
+	/// </summary>
+	[Tooltip("残り時間のカウントダウン音。1秒ごとに鳴らす")]
+	[SerializeField] AudioClip countdownTickSound;
+
+	[Tooltip("カウントダウン音の音量")]
+	[SerializeField, Range(0f, 1f)] float countdownVolume = 0.45f;
+
+	/// <summary>
+	/// 燃料が残りわずかになったときの予告音。
+	///
+	/// 機体側の燃料切れ音は「切れた瞬間」を伝えるが、切れる前の予告が無い。
+	/// 予告が無いとブーストを緩める・燃料アイテムのラインに乗るという
+	/// 能動的な判断ができないまま失火する
+	/// </summary>
+	[Tooltip("燃料が残りわずかになったときの予告音")]
+	[SerializeField] AudioClip fuelWarningSound;
+
+	[Tooltip("燃料予告音の音量")]
+	[SerializeField, Range(0f, 1f)] float fuelWarningVolume = 0.5f;
+
+	/// <summary>
+	/// 最後にカウントダウン音を鳴らした秒数。
+	/// UpdateTimerVisual は毎フレーム通るので、秒が変わった瞬間だけ鳴らすために使う
+	/// </summary>
+	int lastCountdownSecond = -1;
+
+	/// <summary>
+	/// 燃料の予告音を鳴らし終えたかどうか。
+	/// しきい値の上下を往復すると鳴り続けるので、戻すのは別のしきい値で行う
+	/// </summary>
+	bool hasWarnedFuel = false;
+
+	/// <summary>
+	/// 燃料の予告音をもう一度鳴らせるようにする残量。
+	/// 発火する 0.25 より高くしておかないと、境目で行ったり来たりして連発する
+	/// </summary>
+	const float Fuel_Warning_Rearm_Ratio = 0.32f;
+
+	/// <summary>UIの効果音の再生元。押すたびに探し直さないように持っておく</summary>
+	AudioSource uiAudioSource;
+
+	/// <summary>
+	/// UIの効果音を鳴らす。
+	///
+	/// 再生元はここで作る。UIはステージごとに作り直されるので、
+	/// インスペクタで AudioSource を付けて回すと付け忘れたステージだけ無音になる
+	/// </summary>
+	/// <param name="clip">鳴らす音。未設定なら何もしない</param>
+	void PlayUiSound(AudioClip clip)
+	{
+		PlayUiSound(clip, uiVolume);
+	}
+
+	/// <summary>
+	/// 音量を指定して鳴らす。警告音はボタン音とは別の音量で出したい
+	/// </summary>
+	/// <param name="clip">鳴らす音。未設定なら何もしない</param>
+	/// <param name="volume">音量</param>
+	void PlayUiSound(AudioClip clip, float volume)
+	{
+		if (clip == null)
+		{
+			return;
+		}
+
+		if (uiAudioSource == null)
+		{
+			uiAudioSource = this.gameObject.AddComponent<AudioSource>();
+			uiAudioSource.playOnAwake = false;
+			// UIの音に定位は要らない
+			uiAudioSource.spatialBlend = 0f;
+		}
+
+		uiAudioSource.PlayOneShot(clip, volume);
+	}
+
 	[Tooltip("タップテキスト")]
 	[SerializeField] TextMeshProUGUI tapText;
 	private Tween tapTween;
@@ -205,6 +300,7 @@ public class UI : MonoBehaviour
 		// 広告まわりで例外が出ても、最低限プレイを開始できる状態は保つ
 		gameStartButton.onClick.AddListener(() =>
 		{
+			PlayUiSound(clickSound);
 			openShopButton.gameObject.SetActive(false);
 			gameStartButton.gameObject.SetActive(false);
 			gameManager.IsPlay = true;
@@ -295,12 +391,14 @@ public class UI : MonoBehaviour
 
 	void OnClickShopOpen()
 	{
+		PlayUiSound(openSound);
 		Panel_Shop.SetActive(true);
 		gameStartButton.gameObject.SetActive(false);
 	}
 
 	void OnClickShopClose()
 	{
+		PlayUiSound(closeSound);
 		Panel_Shop.SetActive(false);
 		gameStartButton.gameObject.SetActive(true);
 	}
@@ -321,6 +419,8 @@ public class UI : MonoBehaviour
 			Debug.Log("3Dモデルが未設定のスロットなので選択できない: " + index);
 			return;
 		}
+
+		PlayUiSound(clickSound);
 
 		bool result = ShopManager.SingletonInstance.SelectModel(index);
 		if (result)
@@ -436,6 +536,18 @@ public class UI : MonoBehaviour
 			fuelFillImage.color = fuelRatio <= Fuel_Critical_Ratio ? Hud_Critical : Hud_Orange;
 		}
 
+		// ここは毎フレーム通るので、しきい値を上から下へ跨いだ瞬間だけ鳴らす。
+		// 戻すしきい値を別に持たせて、境目で往復したときの連発を防ぐ
+		if (hasWarnedFuel == false && fuelRatio <= Fuel_Critical_Ratio)
+		{
+			hasWarnedFuel = true;
+			PlayUiSound(fuelWarningSound, fuelWarningVolume);
+		}
+		else if (hasWarnedFuel == true && Fuel_Warning_Rearm_Ratio <= fuelRatio)
+		{
+			hasWarnedFuel = false;
+		}
+
 		if (fuelGhostFill == null)
 		{
 			return;
@@ -466,6 +578,8 @@ public class UI : MonoBehaviour
 		if (gameManager.TotalTime > Timer_Critical_Seconds)
 		{
 			timerText.color = Hud_Bone;
+			// 時間アイテムで残り時間が戻ったら、また最初の1秒から鳴らせるようにする
+			lastCountdownSecond = -1;
 			return;
 		}
 
@@ -474,6 +588,37 @@ public class UI : MonoBehaviour
 		Color c = Hud_Critical;
 		c.a = Mathf.Lerp(0.55f, 1f, pulse);
 		timerText.color = c;
+
+		PlayCountdownTick();
+	}
+
+	/// <summary>
+	/// 残り秒数が変わった瞬間だけカウントダウン音を鳴らす。
+	///
+	/// UpdateTimerVisual は毎フレーム通るので、素直に鳴らすと連続ノイズになる。
+	/// また TotalTime は下限を設けていないのでマイナスまで進む。
+	/// 0以下でも鳴らし続けると、時間切れの音に被ってどちらも聞き取れなくなる
+	/// </summary>
+	void PlayCountdownTick()
+	{
+		if (countdownTickSound == null)
+		{
+			return;
+		}
+
+		if (gameManager.TotalTime <= 0f)
+		{
+			return;
+		}
+
+		int second = Mathf.CeilToInt(gameManager.TotalTime);
+		if (second == lastCountdownSecond)
+		{
+			return;
+		}
+
+		lastCountdownSecond = second;
+		PlayUiSound(countdownTickSound, countdownVolume);
 	}
 
 	// ボタンを押したときの処理
@@ -547,6 +692,7 @@ public class UI : MonoBehaviour
 			nextStageButton.onClick.RemoveAllListeners();
 			nextStageButton.onClick.AddListener(() =>
 			{
+				PlayUiSound(clickSound);
 				// 連打でシーン切り替えが二重に走らないようにする
 				nextStageButton.interactable = false;
 				if (onNext != null)

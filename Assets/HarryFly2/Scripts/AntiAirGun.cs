@@ -21,6 +21,26 @@ public class AntiAirGun : MonoBehaviour
 	[Tooltip("発光エフェクトの大きさ。砲の大きさに合わせて調整する")]
 	[SerializeField] float muzzleFlashScale = 1f;
 
+	/// <summary>
+	/// 発砲音。
+	///
+	/// これが無いと、撃たれていることに気づく手がかりが曳光弾と砲口の光だけになる。
+	/// どちらも見ていなければ分からないので、画面外から撃たれると
+	/// 何が起きたか分からないまま撃墜されることになる
+	/// </summary>
+	[Tooltip("発砲音。撃たれていることに気づく手がかりになる")]
+	[SerializeField] AudioClip fireSound;
+
+	[Tooltip("発砲音の音量")]
+	[SerializeField, Range(0f, 1f)] float fireVolume = 0.5f;
+
+	/// <summary>
+	/// 発砲音が最大音量で聞こえる距離。
+	/// これより遠いと、離れるほど小さくなる
+	/// </summary>
+	[Tooltip("発砲音が最大音量で聞こえる距離。遠いほど小さく鳴らす")]
+	[SerializeField] float fireSoundFullVolumeDistance = 150f;
+
 	[Tooltip("この距離まで近づいたら撃ち始める")]
 	[SerializeField] float fireRange = 700f;
 
@@ -206,7 +226,50 @@ public class AntiAirGun : MonoBehaviour
 		}
 
 		SpawnMuzzleFlash(origin, aim);
+		PlayFireSound(origin);
 	}
+
+	/// <summary>
+	/// 発砲音を鳴らす。
+	///
+	/// AudioSource.PlayClipAtPoint は使わない。あれは毎回 GameObject を作って捨てるので、
+	/// 砲が複数あるステージでは発砲のたびにゴミが出る。
+	/// また3Dで鳴らすと、機体が毎秒300〜1500で飛ぶせいでドップラーと定位が暴れる。
+	/// ここでは距離から音量だけを決めて2Dで鳴らす
+	/// </summary>
+	/// <param name="origin">弾が出た位置</param>
+	void PlayFireSound(Vector3 origin)
+	{
+		if (fireSound == null || target == null)
+		{
+			return;
+		}
+
+		float distance = Vector3.Distance(origin, target.transform.position);
+		float volume = fireVolume;
+		if (fireSoundFullVolumeDistance > 0f && fireSoundFullVolumeDistance < distance)
+		{
+			// 距離に反比例させる。遠くの砲が同じ音量で鳴ると、どれに撃たれているか分からない
+			volume = fireVolume * (fireSoundFullVolumeDistance / distance);
+		}
+
+		if (volume <= 0.01f)
+		{
+			return;
+		}
+
+		if (fireAudioSource == null)
+		{
+			fireAudioSource = this.gameObject.AddComponent<AudioSource>();
+			fireAudioSource.playOnAwake = false;
+			fireAudioSource.spatialBlend = 0f;
+		}
+
+		fireAudioSource.PlayOneShot(fireSound, volume);
+	}
+
+	/// <summary>発砲音の再生元。撃つたびに作り直さないように持っておく</summary>
+	AudioSource fireAudioSource;
 
 	/// <summary>
 	/// 砲口を光らせる。

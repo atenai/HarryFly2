@@ -4334,6 +4334,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   flareShellPrefab: {fileID: 386705614774851982, guid: be3963860749e9f43aabfb2e39b439c9,
     type: 3}
+  launchSound: {fileID: 8300000, guid: e6d9e6437dd5c684cb0c8809406243c4, type: 3}
+  launchVolume: 0.25
   shellsPerVolley: 3
   volleyIntervalSeconds: 5
   shellStaggerSeconds: 0.6

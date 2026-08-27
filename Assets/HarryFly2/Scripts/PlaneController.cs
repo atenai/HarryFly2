@@ -207,8 +207,59 @@ public class PlaneController : MonoBehaviour
 	[Tooltip("ブースト音を鳴らし始める／止めるまでの時間（秒）")]
 	[SerializeField] float boostFadeSeconds = 0.12f;
 
+	[Header("その他の効果音")]
+	[Tooltip("ゴールしたときの音")]
+	[SerializeField] AudioClip goalSound;
+
+	[Tooltip("ゴール音の音量")]
+	[SerializeField, Range(0f, 1f)] float goalVolume = 0.8f;
+
+	/// <summary>
+	/// 燃料が尽きたときの警告音。
+	/// ブーストが切れた理由が分からないと、操作不能になったように感じる
+	/// </summary>
+	[Tooltip("燃料が尽きたときの警告音")]
+	[SerializeField] AudioClip fuelEmptySound;
+
+	[Tooltip("燃料切れ警告音の音量")]
+	[SerializeField, Range(0f, 1f)] float fuelEmptyVolume = 0.6f;
+
+	/// <summary>
+	/// 対空砲の弾が脇を通り抜けたときの音。
+	/// かすったことが分かると、避けられたという手応えになる
+	/// </summary>
+	[Tooltip("弾が近くを通り抜けたときの音")]
+	[SerializeField] AudioClip nearMissSound;
+
+	[Tooltip("弾の通過音の音量")]
+	[SerializeField, Range(0f, 1f)] float nearMissVolume = 0.45f;
+
+	/// <summary>
+	/// 障害物に激突したときに爆発の頭へ重ねる金属音。
+	/// 撃墜との聞き分けに使う
+	/// </summary>
+	[Tooltip("障害物に激突したときの金属音。爆発の頭に重ねる")]
+	[SerializeField] AudioClip obstacleImpactSound;
+
+	/// <summary>
+	/// 対空砲に撃ち落とされたときに爆発の頭へ重ねる音。
+	/// 激突との聞き分けに使う
+	/// </summary>
+	[Tooltip("撃墜されたときの音。爆発の頭に重ねる")]
+	[SerializeField] AudioClip shotDownSound;
+
+	[Tooltip("墜落原因を示す音の音量")]
+	[SerializeField, Range(0f, 1f)] float crashCauseVolume = 0.7f;
+
 	/// <summary>アイテム取得音の再生元。取得のたびに重ねて鳴らす</summary>
 	AudioSource pickupAudioSource;
+
+	/// <summary>
+	/// 燃料切れの警告音を鳴らし終えたかどうか。
+	/// 燃料が0のままだと Accelerate() は毎フレーム「残量なし」の分岐に入るので、
+	/// 一度鳴らしたら補給されるまで鳴らさない
+	/// </summary>
+	bool hasPlayedFuelEmpty = false;
 
 	/// <summary>ブースト音の再生元。ループ再生しっぱなしにして音量で出し入れする</summary>
 	AudioSource boostAudioSource;
@@ -514,9 +565,20 @@ public class PlaneController : MonoBehaviour
 			}
 			// ブースト中は振動させない。
 			// 鳴らし続けると、アイテムを取ったときの単発振動がその中に埋もれて感じ取れなくなる
+
+			// 補給されたら次の燃料切れでまた鳴らす
+			hasPlayedFuelEmpty = false;
 		}
 		else
 		{
+			// 押しているのに燃料が無くて出られなかったときだけ警告する。
+			// ここは毎フレーム通るので、鳴らしたかどうかを覚えておかないと鳴り続ける
+			if (ui.ButtonDownFlag == true && currentFuel <= 0f && hasPlayedFuelEmpty == false)
+			{
+				hasPlayedFuelEmpty = true;
+				PlayPickupSound(fuelEmptySound, fuelEmptyVolume);
+			}
+
 			isBoosting = false;
 			paticlePrefab.SetActive(false);
 			ChangeForwordMoveSpeed(changeForwordMoveSpeedPerSecond * -0.5f * Time.deltaTime);
@@ -748,6 +810,7 @@ public class PlaneController : MonoBehaviour
 
 			Debug.Log("ゴール！");
 			HapticFeedback.Play(HapticFeedback.Strength.Heavy);
+			PlayPickupSound(goalSound, goalVolume);
 
 			// ゴール報酬：このステージで拾ったコインを2倍にする。
 			// ApplyGoalBonus を呼ぶと加算後になるので、拾った数は先に控えておく
@@ -758,6 +821,8 @@ public class PlaneController : MonoBehaviour
 			// ブーストの炎と軌跡はここで消す。IsPlay を false にすると Update が Accelerate() まで
 			// 到達しなくなるので、消灯処理が走らないまま出っぱなしになってしまう
 			isBoosting = false;
+			// 噴射音も止める。ゴール音の上に唸りが残らないようにする
+			StopBoostSoundImmediately();
 			paticlePrefab.SetActive(false);
 
 			// 操作と制限時間を止める。止めないとリザルトを見ている間に時間切れになる
@@ -794,12 +859,33 @@ public class PlaneController : MonoBehaviour
 	/// <param name="clip">鳴らす音。未設定なら何もしない</param>
 	void PlayPickupSound(AudioClip clip)
 	{
+		PlayPickupSound(clip, pickupVolume);
+	}
+
+	/// <summary>
+	/// 弾がかすめたときの音を鳴らす。
+	///
+	/// 弾の側ではなく機体の側で鳴らす。弾は当たった瞬間に Destroy されるうえ、
+	/// 寿命でも消えるので、向こうに AudioSource を持たせると鳴っている途中で切れる
+	/// </summary>
+	public void PlayNearMissSound()
+	{
+		PlayPickupSound(nearMissSound, nearMissVolume);
+	}
+
+	/// <summary>
+	/// 音量を指定して鳴らす。ゴールや燃料切れなど、取得音とは別の音量で出したいもの用
+	/// </summary>
+	/// <param name="clip">鳴らす音。未設定なら何もしない</param>
+	/// <param name="volume">音量</param>
+	void PlayPickupSound(AudioClip clip, float volume)
+	{
 		if (clip == null || pickupAudioSource == null)
 		{
 			return;
 		}
 
-		pickupAudioSource.PlayOneShot(clip, pickupVolume);
+		pickupAudioSource.PlayOneShot(clip, volume);
 	}
 
 	/// <summary>
@@ -839,6 +925,26 @@ public class PlaneController : MonoBehaviour
 		{
 			boostAudioSource.Stop();
 		}
+	}
+
+	/// <summary>
+	/// 噴射音をフェードなしで即座に止める。
+	///
+	/// 通常の停止は UpdateBoostSound() が boostFadeSeconds かけて音量を落とすが、
+	/// 撃墜やゴールの瞬間はその0.12秒が爆発音やゴール音の頭に被る。
+	/// ここを通ったあとも LateUpdate は動き続けるが、
+	/// isBoosting が false なら目標音量も0なので鳴り直すことはない
+	/// </summary>
+	void StopBoostSoundImmediately()
+	{
+		if (boostAudioSource == null)
+		{
+			return;
+		}
+
+		boostAudioSource.volume = 0f;
+		boostAudioSource.Stop();
+		wasBoosting = false;
 	}
 
 	/// <summary>
@@ -974,6 +1080,35 @@ public class PlaneController : MonoBehaviour
 	/// 1秒後にステージが切り替わると、このシーンにある音源は破棄されて音が途中で切れる。
 	/// シーンに属さない一時オブジェクトから鳴らすことで、暗転をまたいで最後まで聞こえるようにする
 	/// </summary>
+	/// <summary>
+	/// 墜落の原因ごとの音を、爆発音の直前に重ねる。
+	///
+	/// 爆発音と同じく、シーンをまたいで生き残る入れ物で鳴らす。
+	/// この直後に FreezePlane と HidePlaneModel が走り、
+	/// 機体モデルは SetActive(false) になるため、
+	/// モデル配下の AudioSource で鳴らすと即座に無音になってしまう
+	/// </summary>
+	/// <param name="cause">墜落の原因</param>
+	void PlayCrashCauseSound(CrashCause cause)
+	{
+		AudioClip clip = cause == CrashCause.ShotDown ? shotDownSound : obstacleImpactSound;
+		if (clip == null)
+		{
+			return;
+		}
+
+		GameObject soundObject = new GameObject("CrashCauseSound");
+		DontDestroyOnLoad(soundObject);
+
+		AudioSource source = soundObject.AddComponent<AudioSource>();
+		source.clip = clip;
+		source.volume = crashCauseVolume;
+		source.spatialBlend = 0f;
+		source.Play();
+
+		Destroy(soundObject, clip.length + 0.1f);
+	}
+
 	void PlayExplosionSound()
 	{
 		if (explosionSound == null)
@@ -1070,6 +1205,26 @@ public class PlaneController : MonoBehaviour
 	/// </summary>
 	public void CrashAndAdvanceStage()
 	{
+		CrashAndAdvanceStage(CrashCause.Obstacle);
+	}
+
+	/// <summary>
+	/// 墜落の原因。爆発音の上に重ねる音を変えて、何に殺されたか聞き分けられるようにする
+	/// </summary>
+	public enum CrashCause
+	{
+		/// <summary>障害物への激突</summary>
+		Obstacle,
+		/// <summary>対空砲での被弾</summary>
+		ShotDown,
+	}
+
+	/// <summary>
+	/// 原因を指定して墜落させる
+	/// </summary>
+	/// <param name="cause">墜落の原因</param>
+	public void CrashAndAdvanceStage(CrashCause cause)
+	{
 		if (hasCrashed == true || hasGoaled == true)
 		{
 			return;
@@ -1080,12 +1235,20 @@ public class PlaneController : MonoBehaviour
 
 		// 機体の位置に出す。衝突なら直前に接触点まで戻してあるので、機体も爆発も接触点に来る
 		SpawnExplosion(this.transform.position);
+
+		// 爆発の頭に原因ごとの音を重ねる。
+		// 爆発音だけだと、障害物にぶつかったのか撃ち落とされたのか区別できず、
+		// 次の周回で何を直せばいいのか分からない
+		PlayCrashCauseSound(cause);
 		PlayExplosionSound();
 
 		// ブーストの炎と軌跡を消し、機体を止めて見た目も消す。
 		// 衝突後は Update が Accelerate() まで到達しないので、ここで下ろさないと
 		// 撃墜されたのに軌跡が伸び続ける
 		isBoosting = false;
+		// 噴射音はフェードで消える作りなので、そのままだと爆発音の頭に被る。
+		// ここは撃墜の瞬間なので即座に切る
+		StopBoostSoundImmediately();
 		paticlePrefab.SetActive(false);
 		FreezePlane();
 		HidePlaneModel();

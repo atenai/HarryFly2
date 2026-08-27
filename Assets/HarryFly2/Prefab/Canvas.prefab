@@ -8606,6 +8606,14 @@ MonoBehaviour:
   fuelGhostFill: {fileID: 4008886551617585414}
   floatingJoystick: {fileID: 2836490670849891030}
   accelerateButton: {fileID: 4749368999622168011}
+  clickSound: {fileID: 8300000, guid: fc8d44f162f4bc24aa759f8864162727, type: 3}
+  openSound: {fileID: 8300000, guid: 268c76ca5e3225c449aa4697bad475e4, type: 3}
+  closeSound: {fileID: 8300000, guid: dfe4a99eb31d884479d0e1806b18e083, type: 3}
+  uiVolume: 0.5
+  countdownTickSound: {fileID: 8300000, guid: 446d580c8c9e09a47baf0c8dd3348aa3, type: 3}
+  countdownVolume: 0.45
+  fuelWarningSound: {fileID: 8300000, guid: 1fbbb27019cd96040bc799da25704a8a, type: 3}
+  fuelWarningVolume: 0.5
   tapText: {fileID: 725727983152869150}
   fadeImage: {fileID: 6716689370775868493}
   coinText: {fileID: 2625710587926458579}

@@ -46,6 +46,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1506abc4592f76408d286ab38b20dcb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  transitionSound: {fileID: 8300000, guid: dd40dc967a3d9f34996f304d486382c5, type: 3}
+  transitionVolume: 0.5
 --- !u!114 &5352907906334594337
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -84,6 +84,9 @@ MonoBehaviour:
   muzzleFlashPrefab: {fileID: 7350375532021499917, guid: 5d2e015cffe472a40865d5ea509d20ae,
     type: 3}
   muzzleFlashScale: 1
+  fireSound: {fileID: 8300000, guid: 1436ca54cb51e99499f8e24d63efb066, type: 3}
+  fireVolume: 0.5
+  fireSoundFullVolumeDistance: 150
   fireRange: 700
   fireIntervalSeconds: 0.9
   aimDegreesPerSecond: 90

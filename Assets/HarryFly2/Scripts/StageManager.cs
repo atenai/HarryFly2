@@ -247,8 +247,44 @@ public class StageManager : MonoBehaviour
 		}
 
 		IsSceneSwitched = true;
+		PlayTransitionSound();
 		OnUnloadScene("Stage" + currentSceneIndex);
 		ShowScene("Stage" + nextSceneIndex);
+	}
+
+	[Tooltip("ステージが切り替わるときの音")]
+	[SerializeField] AudioClip transitionSound;
+
+	[Tooltip("ステージ切り替え音の音量")]
+	[SerializeField, Range(0f, 1f)] float transitionVolume = 0.5f;
+
+	/// <summary>ステージ切り替え音の再生元。切り替えのたびに作り直さない</summary>
+	AudioSource transitionAudioSource;
+
+	/// <summary>
+	/// ステージが切り替わる瞬間の音を鳴らす。
+	///
+	/// 鳴らす側はこの StageManager でなければならない。
+	/// 直後の UnloadSceneAsync で旧ステージの AudioSource は全部消えるが、
+	/// StageManager だけは DontDestroyOnLoad なので鳴らし切れる。
+	///
+	/// 呼び出し元は IsSceneSwitched のガードを通った後なので1回しか来ない
+	/// </summary>
+	void PlayTransitionSound()
+	{
+		if (transitionSound == null)
+		{
+			return;
+		}
+
+		if (transitionAudioSource == null)
+		{
+			transitionAudioSource = this.gameObject.AddComponent<AudioSource>();
+			transitionAudioSource.playOnAwake = false;
+			transitionAudioSource.spatialBlend = 0f;
+		}
+
+		transitionAudioSource.PlayOneShot(transitionSound, transitionVolume);
 	}
 
 	/// <summary>

@@ -148,6 +148,15 @@ MonoBehaviour:
   boostPitchMin: 1
   boostPitchMax: 1.35
   boostFadeSeconds: 0.12
+  goalSound: {fileID: 8300000, guid: f92c8b1a5b1ac414bbbeed456ec912be, type: 3}
+  goalVolume: 0.8
+  fuelEmptySound: {fileID: 8300000, guid: 82e74aa97443566429999125a57f47df, type: 3}
+  fuelEmptyVolume: 0.6
+  nearMissSound: {fileID: 8300000, guid: cb4c67909eb938c4b9b07fd774101985, type: 3}
+  nearMissVolume: 0.45
+  obstacleImpactSound: {fileID: 8300000, guid: ae4d56d75f3db554999ecf91271835d6, type: 3}
+  shotDownSound: {fileID: 8300000, guid: e1b963744d46446498080e5849b40ec9, type: 3}
+  crashCauseVolume: 0.7
 --- !u!54 &3658238267189483658
 Rigidbody:
   m_ObjectHideFlags: 0

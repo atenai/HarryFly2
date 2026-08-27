@@ -11,6 +11,12 @@ public class FlareShellLauncher : MonoBehaviour
 	[Tooltip("打ち上げる照明弾のプレハブ")]
 	[SerializeField] GameObject flareShellPrefab;
 
+	[Tooltip("打ち上げの音")]
+	[SerializeField] AudioClip launchSound;
+
+	[Tooltip("打ち上げ音の音量。遠くで上がるものなので控えめにする")]
+	[SerializeField, Range(0f, 1f)] float launchVolume = 0.25f;
+
 	[Tooltip("1回に打ち上げる発数")]
 	[SerializeField] int shellsPerVolley = 3;
 
@@ -101,5 +107,34 @@ public class FlareShellLauncher : MonoBehaviour
 			basePosition.z + aheadDistance + Random.Range(-depthSpread, depthSpread));
 
 		Instantiate(flareShellPrefab, position, Quaternion.identity);
+		PlayLaunchSound();
 	}
+
+	/// <summary>
+	/// 打ち上げ音を鳴らす。
+	///
+	/// 照明弾は機体の700ユニット前方に出るので、3Dで鳴らすと遠すぎて聞こえない。
+	/// 打ち上げは「遠くで上がった」と分かればいいので、2Dで小さく鳴らす。
+	/// 音は照明弾側ではなくここで鳴らす。照明弾は自分で Destroy されるため、
+	/// 向こうに AudioSource を持たせると消えるときに音も切れる
+	/// </summary>
+	void PlayLaunchSound()
+	{
+		if (launchSound == null)
+		{
+			return;
+		}
+
+		if (launchAudioSource == null)
+		{
+			launchAudioSource = this.gameObject.AddComponent<AudioSource>();
+			launchAudioSource.playOnAwake = false;
+			launchAudioSource.spatialBlend = 0f;
+		}
+
+		launchAudioSource.PlayOneShot(launchSound, launchVolume);
+	}
+
+	/// <summary>打ち上げ音の再生元。1発ごとに作り直さないように持っておく</summary>
+	AudioSource launchAudioSource;
 }

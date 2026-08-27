@@ -153,11 +153,65 @@ public class GameManager : MonoBehaviour
 		//Debug.Log("残り時間：" + totalTime);
 		if (totalTime <= 0)
 		{
+			// totalTime に下限を設けていないので、ステージが切り替わるまで
+			// ここは毎フレーム通り続ける。音は一度だけ鳴らす
+			if (hasPlayedTimeUp == false)
+			{
+				hasPlayedTimeUp = true;
+				// 保存より先に鳴らす。ES3 の書き込みは同期なのでフレームが止まり、
+				// その後だと音の立ち上がりが遅れて聞こえる
+				PlayTimeUpSound();
+			}
+
 			// 時間切れもステージの切り替えなので、切り替わる前にコインを保存する
 			SaveCoin();
 			// シーンを切り替える
 			StageManager.SingletonInstance.IsTriggered = true;
 		}
+	}
+
+	[Header("効果音")]
+	/// <summary>
+	/// 時間切れの音。
+	///
+	/// ステージの終わり方は「ゴール」「墜落」「時間切れ」の3つあるが、
+	/// 前2つには音があるのに時間切れだけ無音で、しかも暗転も入らずに
+	/// 次のステージへ飛んでいた。失敗したことにすら気づけない
+	/// </summary>
+	[Tooltip("時間切れの音")]
+	[SerializeField] AudioClip timeUpSound;
+
+	[Tooltip("時間切れ音の音量")]
+	[SerializeField, Range(0f, 1f)] float timeUpVolume = 0.7f;
+
+	/// <summary>時間切れの音を鳴らしたかどうか</summary>
+	bool hasPlayedTimeUp = false;
+
+	/// <summary>
+	/// 時間切れの音を鳴らす。
+	///
+	/// この GameManager はステージごとのシーンに置かれていて、
+	/// 直後のアンロードで AudioSource ごと消える。
+	/// 爆発音（PlaneController.PlayExplosionSound）と同じく、
+	/// シーンをまたいで生き残る入れ物を作ってそこで鳴らす
+	/// </summary>
+	void PlayTimeUpSound()
+	{
+		if (timeUpSound == null)
+		{
+			return;
+		}
+
+		GameObject soundObject = new GameObject("TimeUpSound");
+		DontDestroyOnLoad(soundObject);
+
+		AudioSource source = soundObject.AddComponent<AudioSource>();
+		source.clip = timeUpSound;
+		source.volume = timeUpVolume;
+		source.spatialBlend = 0f;
+		source.Play();
+
+		Destroy(soundObject, timeUpSound.length + 0.1f);
 	}
 
 	/// <summary>
@@ -167,6 +221,12 @@ public class GameManager : MonoBehaviour
 	public void AddTimer(float value)
 	{
 		totalTime = totalTime + value;
+
+		// 時間が戻ったら、次に切れたときにまた鳴らせるようにする
+		if (0 < totalTime)
+		{
+			hasPlayedTimeUp = false;
+		}
 	}
 
 	/// <summary>
