@@ -185,27 +185,35 @@ public class PlaneController : MonoBehaviour
 
 	[Header("ブースト音")]
 	/// <summary>
-	/// ブースト中に鳴らし続ける噴射音。
-	/// ループ再生するので、先頭と末尾が無音に近いクリップでないと継ぎ目でブツッと鳴る
+	/// 加速し始めた瞬間に1回だけ鳴らす音。
+	///
+	/// 以前は加速している間ずっと同じクリップをループさせていた。
+	/// 0.84秒のクリップを鳴らし続けると毎秒1.2回も同じ音塊が繰り返されることになり、
+	/// 継ぎ目が滑らかでも耳が周期を捉えてしまって耳障りだった。
+	/// 加速は「踏み込んだ瞬間」さえ分かればよいので、押し始めに1回だけ鳴らす。
+	///
+	/// 立ち上がりの速いクリップを使うこと。
+	/// ピークまでが遅い素材だと、押してから音が来るまで間が空いて反応が鈍く感じる
 	/// </summary>
-	[Tooltip("ブースト中に鳴らし続ける噴射音。ループするので両端が無音に近いクリップを使う")]
-	[SerializeField] AudioClip boostLoopSound;
+	[Tooltip("加速し始めた瞬間に1回だけ鳴らす音。押している間は鳴らし続けない。立ち上がりの速いクリップを使う")]
+	[SerializeField] AudioClip boostStartSound;
 
 	[Tooltip("ブースト音の音量")]
-	[SerializeField, Range(0f, 1f)] float boostVolume = 0.45f;
-
-	[Tooltip("通常速度でのブースト音の高さ")]
-	[SerializeField] float boostPitchMin = 1f;
-
-	[Tooltip("最高速でのブースト音の高さ。上げるほど加速感が出る")]
-	[SerializeField] float boostPitchMax = 1.35f;
+	[SerializeField, Range(0f, 1f)] float boostVolume = 0.5f;
 
 	/// <summary>
-	/// ブースト音を出し入れする時間（秒）。
-	/// 加速ボタンは連打されるので、いきなり最大音量で鳴らすとブツブツと途切れて聞こえる
+	/// 鳴らすたびに変える音の高さの幅。
+	/// 毎回まったく同じ高さで鳴ると、続けて加速したときに機械的に聞こえる
 	/// </summary>
-	[Tooltip("ブースト音を鳴らし始める／止めるまでの時間（秒）")]
-	[SerializeField] float boostFadeSeconds = 0.12f;
+	[Tooltip("鳴らすたびに変える音の高さの幅。0にすると毎回同じ高さになる")]
+	[SerializeField, Range(0f, 0.3f)] float boostPitchVariation = 0.06f;
+
+	/// <summary>
+	/// 次に鳴らせるようになるまでの最短間隔（秒）。
+	/// 加速ボタンは連打されるので、これがないと押すたびに音が重なって潰れる
+	/// </summary>
+	[Tooltip("ブースト音を鳴らす最短間隔（秒）。連打しても音が重ならないようにする")]
+	[SerializeField] float boostSoundIntervalSeconds = 0.4f;
 
 	[Header("その他の効果音")]
 	[Tooltip("ゴールしたときの音")]
@@ -261,11 +269,14 @@ public class PlaneController : MonoBehaviour
 	/// </summary>
 	bool hasPlayedFuelEmpty = false;
 
-	/// <summary>ブースト音の再生元。ループ再生しっぱなしにして音量で出し入れする</summary>
+	/// <summary>ブースト音の再生元。押し始めに1回ずつ重ねて鳴らす</summary>
 	AudioSource boostAudioSource;
 
-	/// <summary>直前フレームのブースト状態。鳴らし始めを1回だけにするための比較用</summary>
+	/// <summary>直前フレームのブースト状態。鳴らすのを押し始めの1回だけにするための比較用</summary>
 	bool wasBoosting = false;
+
+	/// <summary>次にブースト音を鳴らせるようになる時刻。連打で音が重なるのを防ぐ</summary>
+	float nextBoostSoundTime = 0f;
 
 	/// <summary>
 	/// ブースト中かどうか。
@@ -319,10 +330,10 @@ public class PlaneController : MonoBehaviour
 		boostAudioSource = this.gameObject.AddComponent<AudioSource>();
 		boostAudioSource.playOnAwake = false;
 		boostAudioSource.spatialBlend = 0f;
-		boostAudioSource.loop = true;
-		boostAudioSource.clip = boostLoopSound;
-		// 鳴らし始めは無音から。Play() と同時に最大音量にすると押した瞬間にブツッと鳴る
-		boostAudioSource.volume = 0f;
+		// 押し始めに PlayOneShot で鳴らすので、ループもクリップの割り当ても要らない。
+		// PlayOneShot の音量はここの音量に掛かるため、1 のままにしておくこと
+		boostAudioSource.loop = false;
+		boostAudioSource.volume = 1f;
 	}
 
 	/// <summary>
@@ -912,38 +923,42 @@ public class PlaneController : MonoBehaviour
 	/// </summary>
 	void UpdateBoostSound()
 	{
-		if (boostAudioSource == null || boostLoopSound == null)
+		if (boostAudioSource == null || boostStartSound == null)
 		{
 			return;
 		}
 
-		// 鳴らし始めは1回だけ。毎フレーム Play() すると先頭に巻き戻り続けて音にならない
-		if (isBoosting == true && wasBoosting == false && boostAudioSource.isPlaying == false)
-		{
-			boostAudioSource.Play();
-		}
+		// 押し始めた瞬間だけ鳴らす。
+		// 押している間ずっと鳴らすと、どんな素材でも同じ音の繰り返しになって耳につく
+		bool hasStartedBoosting = isBoosting == true && wasBoosting == false;
 		wasBoosting = isBoosting;
 
-		boostAudioSource.pitch = Mathf.Lerp(boostPitchMin, boostPitchMax, GetBoostSpeedRatio());
-
-		float targetVolume = isBoosting == true ? boostVolume : 0f;
-		float step = boostFadeSeconds <= 0f ? boostVolume : boostVolume * Time.deltaTime / boostFadeSeconds;
-		boostAudioSource.volume = Mathf.MoveTowards(boostAudioSource.volume, targetVolume, step);
-
-		// 消え切ってから止める。鳴らしっぱなしにすると無音でも再生位置が進み続ける
-		if (isBoosting == false && boostAudioSource.volume <= 0f && boostAudioSource.isPlaying == true)
+		if (hasStartedBoosting == false)
 		{
-			boostAudioSource.Stop();
+			return;
 		}
+
+		// 連打されても間隔を空ける。重ねて鳴らすと音が潰れるうえに音量も膨らむ
+		if (Time.time < nextBoostSoundTime)
+		{
+			return;
+		}
+		nextBoostSoundTime = Time.time + boostSoundIntervalSeconds;
+
+		boostAudioSource.pitch = 1f + Random.Range(-boostPitchVariation, boostPitchVariation);
+		boostAudioSource.PlayOneShot(boostStartSound, boostVolume);
 	}
 
 	/// <summary>
-	/// 噴射音をフェードなしで即座に止める。
+	/// 鳴っている噴射音を即座に切る。
 	///
-	/// 通常の停止は UpdateBoostSound() が boostFadeSeconds かけて音量を落とすが、
-	/// 撃墜やゴールの瞬間はその0.12秒が爆発音やゴール音の頭に被る。
+	/// 撃墜やゴールの瞬間は、鳴り残った噴射音が爆発音やゴール音の頭に被る。
 	/// ここを通ったあとも LateUpdate は動き続けるが、
-	/// isBoosting が false なら目標音量も0なので鳴り直すことはない
+	/// 鳴らすのは押し始めの1回だけなので、勝手に鳴り直すことはない。
+	///
+	/// 音量は0にしないこと。
+	/// PlayOneShot の音量はこの音源の音量に掛かるため、
+	/// ここで0にすると次のステージから二度と鳴らなくなる
 	/// </summary>
 	void StopBoostSoundImmediately()
 	{
@@ -952,15 +967,10 @@ public class PlaneController : MonoBehaviour
 			return;
 		}
 
-		boostAudioSource.volume = 0f;
 		boostAudioSource.Stop();
 		wasBoosting = false;
 	}
 
-	/// <summary>
-	/// いまの前進速度が、通常速度から最高速までのどのあたりかを 0〜1 で返す。
-	/// ブースト音の高さを速度に合わせるために使う
-	/// </summary>
 	/// <summary>
 	/// いまの前進速度が、通常速度から最高速までのどのあたりか（0〜1）。
 	/// 噴射炎など、外の演出から加速具合を参照するために公開する

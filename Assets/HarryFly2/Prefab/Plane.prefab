@@ -144,11 +144,10 @@ MonoBehaviour:
   fuelPickupSound: {fileID: 8300000, guid: 38a17a92b9d9748c6a1e67972041b833, type: 3}
   timerPickupSound: {fileID: 8300000, guid: 7bd6b897eb5ca4b7d88a205c4a51640c, type: 3}
   pickupVolume: 0.7
-  boostLoopSound: {fileID: 8300000, guid: 4e1ff8faed12a475eba9be0e46072269, type: 3}
-  boostVolume: 0.45
-  boostPitchMin: 1
-  boostPitchMax: 1.35
-  boostFadeSeconds: 0.12
+  boostStartSound: {fileID: 8300000, guid: 7387dbd5cb7a1344db519bae272ac6a1, type: 3}
+  boostVolume: 0.5
+  boostPitchVariation: 0.06
+  boostSoundIntervalSeconds: 0.4
   goalSound: {fileID: 8300000, guid: f92c8b1a5b1ac414bbbeed456ec912be, type: 3}
   goalVolume: 0.8
   fuelEmptySound: {fileID: 8300000, guid: 82e74aa97443566429999125a57f47df, type: 3}
