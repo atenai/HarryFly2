@@ -14012,7 +14012,7 @@ PrefabInstance:
     - target: {fileID: 8074827458377192832, guid: 4fd6146eef823e245850b5bd8e27bbc1,
         type: 3}
       propertyPath: totalTime
-      value: 29
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 9220397726765511976, guid: 4fd6146eef823e245850b5bd8e27bbc1,
         type: 3}
