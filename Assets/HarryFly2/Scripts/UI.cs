@@ -296,6 +296,14 @@ public class UI : MonoBehaviour
 			panel_Result.SetActive(false);
 		}
 
+		// 電波障害の演出を用意する。
+		// Canvas のプレハブに置くと全13ステージのシーンに差分が出るので、ここで組み立てる
+		Canvas canvas = GetComponentInParent<Canvas>();
+		if (canvas != null)
+		{
+			signalNoise = SignalNoise.Create(canvas.transform, timerText.font);
+		}
+
 		// ゲーム開始ボタンの登録を先に済ませる。
 		// 広告まわりで例外が出ても、最低限プレイを開始できる状態は保つ
 		gameStartButton.onClick.AddListener(() =>
@@ -496,9 +504,9 @@ public class UI : MonoBehaviour
 		// リザルト中も降り続けてほしいので、下の早期リターンより先に進める
 		UpdateConfetti();
 
-		// リザルト中と衝突後は IsPlay が false になる。
+		// リザルト中・衝突後・通信不能のときは IsPlay が false になる。
 		// 下の分岐に落とすと「TAP!」が出てきて演出に重なってしまう
-		if (isResultShown == true || isCrashShown == true)
+		if (isResultShown == true || isCrashShown == true || isSignalLostShown == true)
 		{
 			return;
 		}
@@ -575,6 +583,8 @@ public class UI : MonoBehaviour
 	/// </summary>
 	void UpdateTimerVisual()
 	{
+		UpdateSignalNoise();
+
 		if (gameManager.TotalTime > Timer_Critical_Seconds)
 		{
 			timerText.color = Hud_Bone;
@@ -591,6 +601,47 @@ public class UI : MonoBehaviour
 
 		PlayCountdownTick();
 	}
+
+	/// <summary>電波障害の演出。実行時に作る</summary>
+	SignalNoise signalNoise;
+
+	/// <summary>
+	/// 残り時間が減るほど画面のノイズを強くする。
+	///
+	/// 残り時間そのままの割合で強くすると、赤くなり始めた瞬間から画面が乱れて
+	/// 操作の邪魔になる。二乗して、最後の1〜2秒に効きが寄るようにしている
+	/// </summary>
+	void UpdateSignalNoise()
+	{
+		if (signalNoise == null)
+		{
+			return;
+		}
+
+		float ratio = 1f - Mathf.Clamp01(gameManager.TotalTime / Timer_Critical_Seconds);
+		signalNoise.SetIntensity(ratio * ratio);
+	}
+
+	/// <summary>通信不能を表示中かどうか</summary>
+	bool isSignalLostShown = false;
+
+	/// <summary>
+	/// 通信不能の表示を出す。時間切れの瞬間に GameManager から呼ばれる。
+	///
+	/// 時間切れでは操縦を止めるために IsPlay が false になるが、
+	/// そのままだと衝突のときと同じく「TAP!」が出て演出に重なってしまう
+	/// </summary>
+	public void ShowSignalLost()
+	{
+		isSignalLostShown = true;
+		tapText.gameObject.SetActive(false);
+
+		if (signalNoise != null)
+		{
+			signalNoise.ShowLost();
+		}
+	}
+
 
 	/// <summary>
 	/// 残り秒数が変わった瞬間だけカウントダウン音を鳴らす。

@@ -1,3 +1,5 @@
+using System.Collections;
+using UnityEngine.SceneManagement;
 using UnityEngine;
 
 /// <summary>
@@ -150,23 +152,85 @@ public class GameManager : MonoBehaviour
 	{
 		playTime = playTime + Time.deltaTime;
 		totalTime = totalTime - Time.deltaTime;
-		//Debug.Log("残り時間：" + totalTime);
-		if (totalTime <= 0)
-		{
-			// totalTime に下限を設けていないので、ステージが切り替わるまで
-			// ここは毎フレーム通り続ける。音は一度だけ鳴らす
-			if (hasPlayedTimeUp == false)
-			{
-				hasPlayedTimeUp = true;
-				// 保存より先に鳴らす。ES3 の書き込みは同期なのでフレームが止まり、
-				// その後だと音の立ち上がりが遅れて聞こえる
-				PlayTimeUpSound();
-			}
 
-			// 時間切れもステージの切り替えなので、切り替わる前にコインを保存する
-			SaveCoin();
-			// シーンを切り替える
-			StageManager.SingletonInstance.IsTriggered = true;
+		if (0 < totalTime)
+		{
+			return;
+		}
+
+		// totalTime に下限を設けていないので、切り替わるまでここは毎フレーム通り続ける。
+		// 音も演出もシーン切り替えも一度きりにする
+		if (hasPlayedTimeUp == true)
+		{
+			return;
+		}
+		hasPlayedTimeUp = true;
+
+		// 保存より先に鳴らす。ES3 の書き込みは同期なのでフレームが止まり、
+		// その後だと音の立ち上がりが遅れて聞こえる
+		PlayTimeUpSound();
+
+		// 電波が切れた見立ての演出を出す
+		if (ui != null)
+		{
+			ui.ShowSignalLost();
+		}
+
+		// 操縦できなくなったので、このステージの動くものを止める。
+		// 対空機関砲は IsPlay を見ているので、ここを下ろせば撃つのをやめる
+		isPlay = false;
+		StopStageForSignalLost();
+
+		// 時間切れもステージの切り替えなので、切り替わる前にコインを保存する
+		SaveCoin();
+
+		// ここで直接切り替えると、演出が1フレームも映らないまま次のステージに行く。
+		// 衝突時に爆発を見せてから切り替えているのと同じ考え方
+		StartCoroutine(SwitchStageAfterSignalLost());
+	}
+
+	[Tooltip("通信不能の演出を見せてから次のステージへ切り替えるまでの時間（秒）")]
+	[SerializeField] float signalLostViewSeconds = 1.4f;
+
+	/// <summary>
+	/// 通信不能を見せてからステージを切り替える。
+	///
+	/// 機体は止めて画面からも消してあるので、この間に時計アイテムを拾って
+	/// 復帰することはない。演出を見せるためだけの待ち時間
+	/// </summary>
+	IEnumerator SwitchStageAfterSignalLost()
+	{
+		yield return new WaitForSeconds(signalLostViewSeconds);
+		StageManager.SingletonInstance.IsTriggered = true;
+	}
+
+	/// <summary>
+	/// このステージで動いているものを止める。
+	///
+	/// 次のステージは飛行中に裏で読み込んであり、そちらにも機体や障害物が居る。
+	/// シーンを見ないと、まだ始まっていない次のステージまで止めてしまう
+	/// </summary>
+	void StopStageForSignalLost()
+	{
+		Scene scene = this.gameObject.scene;
+
+		foreach (var plane in FindObjectsOfType<PlaneController>())
+		{
+			if (plane.gameObject.scene != scene) { continue; }
+			plane.StopForSignalLost();
+		}
+
+		foreach (var mover in FindObjectsOfType<ObstacleMover>())
+		{
+			if (mover.gameObject.scene != scene) { continue; }
+			mover.StopMoving();
+		}
+
+		// 撃たれたあとの弾は砲とは別に飛び続けるので、こちらも止める
+		foreach (var bullet in FindObjectsOfType<AntiAirBullet>())
+		{
+			if (bullet.gameObject.scene != scene) { continue; }
+			bullet.StopMoving();
 		}
 	}
 

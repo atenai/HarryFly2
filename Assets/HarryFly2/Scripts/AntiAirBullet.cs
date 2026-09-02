@@ -79,9 +79,23 @@ public class AntiAirBullet : MonoBehaviour
 		this.transform.rotation = Quaternion.LookRotation(direction.normalized);
 	}
 
+	/// <summary>止まっているかどうか。通信が切れたら飛ばさない</summary>
+	bool hasStopped = false;
+
+	/// <summary>
+	/// 飛んでいる弾をその場で止める。時間切れで通信が切れた演出から呼ばれる。
+	///
+	/// 消さずに残すのは、他のものが止まっている中で弾だけ消えると
+	/// 何が起きたのか分からなくなるため
+	/// </summary>
+	public void StopMoving()
+	{
+		hasStopped = true;
+	}
+
 	void Update()
 	{
-		if (hasHit == true)
+		if (hasHit == true || hasStopped == true)
 		{
 			return;
 		}

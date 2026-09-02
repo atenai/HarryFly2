@@ -1022,6 +1022,29 @@ public class PlaneController : MonoBehaviour
 	}
 
 	/// <summary>
+	/// 通信が切れたときに機体を止めて、画面から消す。
+	///
+	/// 見た目は HidePlaneModel では足りない。あれが消すのは機体モデルだけで、
+	/// 常時点いているエンジンの炎とブーストの軌跡が残ってしまう。
+	/// 何を描いているかを個別に数えるより、配下の描画をまとめて止めるほうが取りこぼさない。
+	///
+	/// 止めたあとは操作も当たり判定も起きないので、
+	/// この後に時計アイテムを拾って復帰することはない
+	/// </summary>
+	public void StopForSignalLost()
+	{
+		isBoosting = false;
+		StopBoostSoundImmediately();
+		FreezePlane();
+
+		Renderer[] renderers = GetComponentsInChildren<Renderer>(true);
+		for (int i = 0; i < renderers.Length; i++)
+		{
+			renderers[i].enabled = false;
+		}
+	}
+
+	/// <summary>
 	/// 機体の見た目を消す。爆発したのに機体がそのまま浮いていると違和感が出る
 	/// </summary>
 	void HidePlaneModel()

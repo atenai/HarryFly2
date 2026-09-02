@@ -55,9 +55,28 @@ public class ObstacleMover : MonoBehaviour
 		cachedRigidbody.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
 	}
 
+	/// <summary>止まっているかどうか。通信が切れたら二度と動かさない</summary>
+	bool isStopped = false;
+
 	void FixedUpdate()
 	{
+		if (isStopped == true)
+		{
+			return;
+		}
+
 		cachedRigidbody.MovePosition(startPosition + GetAxis() * GetTravel());
+	}
+
+	/// <summary>
+	/// 動きを止める。時間切れで通信が切れた演出から呼ばれる。
+	///
+	/// 位置は Time.time から毎回計算しているので、
+	/// 呼び出しをやめるだけでその場に留まる
+	/// </summary>
+	public void StopMoving()
+	{
+		isStopped = true;
 	}
 
 	/// <summary>
