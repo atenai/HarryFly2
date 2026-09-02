@@ -141,13 +141,13 @@ MonoBehaviour:
   timerPickupEffectScale: 0.5
   pickupEffectOffset: {x: 0, y: 0, z: 1.5}
   coinPickupSound: {fileID: 8300000, guid: 881e3f52c86c94f26a60718d35627cd8, type: 3}
-  fuelPickupSound: {fileID: 8300000, guid: 38a17a92b9d9748c6a1e67972041b833, type: 3}
+  fuelPickupSound: {fileID: 8300000, guid: cf6c0e7fbef9449c98a0cdb5ea0c4d9f, type: 3}
   timerPickupSound: {fileID: 8300000, guid: 7bd6b897eb5ca4b7d88a205c4a51640c, type: 3}
   pickupVolume: 0.7
-  boostStartSound: {fileID: 8300000, guid: 7387dbd5cb7a1344db519bae272ac6a1, type: 3}
-  boostVolume: 0.5
+  boostStartSound: {fileID: 8300000, guid: 34cb14cfe16de7441981cd6164c81e5f, type: 3}
+  boostVolume: 0.85
   boostPitchVariation: 0.06
-  boostSoundIntervalSeconds: 0.4
+  boostSoundIntervalSeconds: 0.8
   goalSound: {fileID: 8300000, guid: f92c8b1a5b1ac414bbbeed456ec912be, type: 3}
   goalVolume: 0.8
   fuelEmptySound: {fileID: 8300000, guid: 82e74aa97443566429999125a57f47df, type: 3}
@@ -5488,12 +5488,12 @@ PrefabInstance:
     - target: {fileID: 2908834376597041322, guid: c4d8b59e7c4d8254f9143072b15fd0e5,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.4
+      value: 0.305
       objectReference: {fileID: 0}
     - target: {fileID: 2908834376597041322, guid: c4d8b59e7c4d8254f9143072b15fd0e5,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -1.28
+      value: -0.78
       objectReference: {fileID: 0}
     - target: {fileID: 2908834376597041322, guid: c4d8b59e7c4d8254f9143072b15fd0e5,
         type: 3}
