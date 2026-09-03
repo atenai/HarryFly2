@@ -105,6 +105,15 @@ public class SignalNoise : MonoBehaviour
 		lostText = CreateLostText(font);
 
 		SetIntensity(0f);
+
+		// 作った時点で必ず消しておく。
+		//
+		// RawImage は追加した直後から「有効・不透明な白」で描画される。
+		// SetIntensity は内部の値を変えるだけなので、これがないと
+		// 最初に Update が回るまでノイズが全開で映る。
+		// ステージが切り替わるたびにここを通るので、
+		// 次のステージのフェードに1フレームだけノイズが出ていた
+		Hide();
 	}
 
 	/// <summary>
@@ -136,6 +145,9 @@ public class SignalNoise : MonoBehaviour
 		var image = go.AddComponent<RawImage>();
 		// 演出が入力を吸うと、加速ボタンが押せなくなる
 		image.raycastTarget = false;
+		// 追加した直後は「有効・不透明な白」なので、出すと決めるまで描かせない
+		image.color = new Color(1f, 1f, 1f, 0f);
+		image.enabled = false;
 		return image;
 	}
 
