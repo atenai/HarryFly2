@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -309,7 +310,86 @@ public class PlaneController : MonoBehaviour
 		initVerticalAndHorizontalMoveSpeed = addVerticalAndHorizontalMoveSpeed;
 		paticlePrefab.SetActive(false);
 		SetupAudioSources();
+		// 機体モデルの下へ付け替える前に、取り付け位置を控えておく
+		CacheAirframeEffects();
 		ChangePlaneModel();
+	}
+
+	/// <summary>
+	/// 機体に取り付けた演出（エンジンの炎・ブーストの噴射・軌跡）。
+	///
+	/// 上下左右の入力で傾くのは機体モデルだけで、機体そのものは傾かない。
+	/// 演出を機体の直下に置いたままだと傾きに付いていかず、
+	/// 機体が傾いたときに噴射口から外れた場所から火が出ているように見える。
+	/// モデルの子にすれば、モデルと同じように傾く
+	/// </summary>
+	readonly List<Transform> airframeEffects = new List<Transform>();
+
+	/// <summary>演出のモデルから見た取り付け位置。付け替えても同じ場所に出るよう控えておく</summary>
+	readonly List<Vector3> airframeEffectPositions = new List<Vector3>();
+	readonly List<Quaternion> airframeEffectRotations = new List<Quaternion>();
+
+	/// <summary>
+	/// 機体の直下にある演出を控える。
+	///
+	/// 一度モデルの下へ移すと直下からいなくなるので、
+	/// 付け替えが始まる前に一度だけ呼ぶこと
+	/// </summary>
+	void CacheAirframeEffects()
+	{
+		foreach (Transform child in this.transform)
+		{
+			// 機体モデルそのものは対象外。モデルをモデルの子にはできない
+			if (IsPlaneModel(child.gameObject) == true)
+			{
+				continue;
+			}
+
+			airframeEffects.Add(child);
+			airframeEffectPositions.Add(child.localPosition);
+			airframeEffectRotations.Add(child.localRotation);
+		}
+	}
+
+	/// <summary>
+	/// 機体モデルとして登録されているかどうか
+	/// </summary>
+	/// <param name="target">調べる相手</param>
+	bool IsPlaneModel(GameObject target)
+	{
+		for (int i = 0; i < planePrefabs.Length; i++)
+		{
+			if (planePrefabs[i] == target)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/// <summary>
+	/// 演出を、いま出ている機体モデルの下へ付け替える。
+	///
+	/// モデルは機体の原点を中心に傾くので、控えておいた位置と向きを
+	/// そのまま入れ直せば、傾いた状態でも取り付け位置は変わらない
+	/// </summary>
+	/// <param name="model">付け替え先のモデル</param>
+	void AttachEffectsToModel(Transform model)
+	{
+		for (int i = 0; i < airframeEffects.Count; i++)
+		{
+			Transform effect = airframeEffects[i];
+			if (effect == null || effect.parent == model)
+			{
+				// ショップを開いている間は毎フレーム呼ばれるので、
+				// 付け替え済みなら何もしない
+				continue;
+			}
+
+			effect.SetParent(model, false);
+			effect.localPosition = airframeEffectPositions[i];
+			effect.localRotation = airframeEffectRotations[i];
+		}
 	}
 
 	/// <summary>
@@ -370,6 +450,9 @@ public class PlaneController : MonoBehaviour
 		if (HasModel(index) == true)
 		{
 			planePrefabs[index].SetActive(true);
+			// 炎や軌跡を、いま出ているモデルに付け直す。
+			// モデルを乗り換えても取り付け位置が変わらないようにする
+			AttachEffectsToModel(planePrefabs[index].transform);
 		}
 
 		ApplyPlaneSpec(index);
