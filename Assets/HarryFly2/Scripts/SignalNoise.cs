@@ -205,15 +205,23 @@ public class SignalNoise : MonoBehaviour
 			return;
 		}
 
+		// ステージの切り替えが始まったら消す。
+		//
+		// 旧ステージは UnloadSceneAsync で消えるので、切り替えを始めても
+		// しばらくは残っていて Update も回り続ける。
+		// そのままだと次のステージのフェードにノイズが重なって見えてしまう
+		StageManager stageManager = StageManager.SingletonInstance;
+		if (stageManager != null && stageManager.IsSceneSwitched == true)
+		{
+			Hide();
+			return;
+		}
+
 		float alpha = isLost == true ? Lost_Alpha : intensity * Approach_Max_Alpha;
 		if (alpha <= 0.001f)
 		{
 			// 完全に消えているときは描画も止める。常時 RawImage を重ねると無駄に塗る
-			if (noiseImage.enabled == true)
-			{
-				noiseImage.enabled = false;
-				glitchBand.enabled = false;
-			}
+			Hide();
 			return;
 		}
 
@@ -235,6 +243,26 @@ public class SignalNoise : MonoBehaviour
 			Color c = lostText.color;
 			c.a = Mathf.Lerp(0.35f, 1f, pulse);
 			lostText.color = c;
+		}
+	}
+
+	/// <summary>
+	/// 描画をまとめて止める。
+	/// 文字も一緒に消さないと、ノイズだけ消えて SIGNAL LOST が残る
+	/// </summary>
+	void Hide()
+	{
+		if (noiseImage != null && noiseImage.enabled == true)
+		{
+			noiseImage.enabled = false;
+		}
+		if (glitchBand != null && glitchBand.enabled == true)
+		{
+			glitchBand.enabled = false;
+		}
+		if (lostText != null && lostText.gameObject.activeSelf == true)
+		{
+			lostText.gameObject.SetActive(false);
 		}
 	}
 
