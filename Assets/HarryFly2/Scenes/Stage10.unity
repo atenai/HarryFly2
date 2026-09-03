@@ -6196,6 +6196,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 551752629}
     m_Modifications:
+    - target: {fileID: 1544475302714836466, guid: e9ac488d8b9081046a87d6fde0831d28,
+        type: 3}
+      propertyPath: shotsPerBurst
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1544475302714836466, guid: e9ac488d8b9081046a87d6fde0831d28,
+        type: 3}
+      propertyPath: shotIntervalSeconds
+      value: 0.11
+      objectReference: {fileID: 0}
+    - target: {fileID: 1544475302714836466, guid: e9ac488d8b9081046a87d6fde0831d28,
+        type: 3}
+      propertyPath: burstIntervalSeconds
+      value: 0.95
+      objectReference: {fileID: 0}
     - target: {fileID: 6323546293260792276, guid: e9ac488d8b9081046a87d6fde0831d28,
         type: 3}
       propertyPath: m_Name
@@ -11753,6 +11768,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 551752629}
     m_Modifications:
+    - target: {fileID: 1544475302714836466, guid: e9ac488d8b9081046a87d6fde0831d28,
+        type: 3}
+      propertyPath: shotsPerBurst
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1544475302714836466, guid: e9ac488d8b9081046a87d6fde0831d28,
+        type: 3}
+      propertyPath: shotIntervalSeconds
+      value: 0.11
+      objectReference: {fileID: 0}
+    - target: {fileID: 1544475302714836466, guid: e9ac488d8b9081046a87d6fde0831d28,
+        type: 3}
+      propertyPath: burstIntervalSeconds
+      value: 0.95
+      objectReference: {fileID: 0}
     - target: {fileID: 6323546293260792276, guid: e9ac488d8b9081046a87d6fde0831d28,
         type: 3}
       propertyPath: m_Name
@@ -12591,6 +12621,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 551752629}
     m_Modifications:
+    - target: {fileID: 1544475302714836466, guid: e9ac488d8b9081046a87d6fde0831d28,
+        type: 3}
+      propertyPath: shotsPerBurst
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1544475302714836466, guid: e9ac488d8b9081046a87d6fde0831d28,
+        type: 3}
+      propertyPath: shotIntervalSeconds
+      value: 0.11
+      objectReference: {fileID: 0}
+    - target: {fileID: 1544475302714836466, guid: e9ac488d8b9081046a87d6fde0831d28,
+        type: 3}
+      propertyPath: burstIntervalSeconds
+      value: 0.95
+      objectReference: {fileID: 0}
     - target: {fileID: 6323546293260792276, guid: e9ac488d8b9081046a87d6fde0831d28,
         type: 3}
       propertyPath: m_Name
@@ -16453,6 +16498,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 551752629}
     m_Modifications:
+    - target: {fileID: 1544475302714836466, guid: e9ac488d8b9081046a87d6fde0831d28,
+        type: 3}
+      propertyPath: shotsPerBurst
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1544475302714836466, guid: e9ac488d8b9081046a87d6fde0831d28,
+        type: 3}
+      propertyPath: shotIntervalSeconds
+      value: 0.11
+      objectReference: {fileID: 0}
+    - target: {fileID: 1544475302714836466, guid: e9ac488d8b9081046a87d6fde0831d28,
+        type: 3}
+      propertyPath: burstIntervalSeconds
+      value: 0.95
+      objectReference: {fileID: 0}
     - target: {fileID: 6323546293260792276, guid: e9ac488d8b9081046a87d6fde0831d28,
         type: 3}
       propertyPath: m_Name
