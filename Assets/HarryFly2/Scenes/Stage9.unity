@@ -4949,17 +4949,17 @@ PrefabInstance:
     - target: {fileID: 1544475302714836466, guid: e9ac488d8b9081046a87d6fde0831d28,
         type: 3}
       propertyPath: shotsPerBurst
-      value: 6
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 1544475302714836466, guid: e9ac488d8b9081046a87d6fde0831d28,
         type: 3}
       propertyPath: shotIntervalSeconds
-      value: 0.12
+      value: 0.075
       objectReference: {fileID: 0}
     - target: {fileID: 1544475302714836466, guid: e9ac488d8b9081046a87d6fde0831d28,
         type: 3}
       propertyPath: burstIntervalSeconds
-      value: 1.1
+      value: 0.85
       objectReference: {fileID: 0}
     - target: {fileID: 6323546293260792276, guid: e9ac488d8b9081046a87d6fde0831d28,
         type: 3}
@@ -5802,17 +5802,17 @@ PrefabInstance:
     - target: {fileID: 1544475302714836466, guid: e9ac488d8b9081046a87d6fde0831d28,
         type: 3}
       propertyPath: shotsPerBurst
-      value: 6
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 1544475302714836466, guid: e9ac488d8b9081046a87d6fde0831d28,
         type: 3}
       propertyPath: shotIntervalSeconds
-      value: 0.12
+      value: 0.075
       objectReference: {fileID: 0}
     - target: {fileID: 1544475302714836466, guid: e9ac488d8b9081046a87d6fde0831d28,
         type: 3}
       propertyPath: burstIntervalSeconds
-      value: 1.1
+      value: 0.85
       objectReference: {fileID: 0}
     - target: {fileID: 6323546293260792276, guid: e9ac488d8b9081046a87d6fde0831d28,
         type: 3}
@@ -9564,17 +9564,17 @@ PrefabInstance:
     - target: {fileID: 1544475302714836466, guid: e9ac488d8b9081046a87d6fde0831d28,
         type: 3}
       propertyPath: shotsPerBurst
-      value: 6
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 1544475302714836466, guid: e9ac488d8b9081046a87d6fde0831d28,
         type: 3}
       propertyPath: shotIntervalSeconds
-      value: 0.12
+      value: 0.075
       objectReference: {fileID: 0}
     - target: {fileID: 1544475302714836466, guid: e9ac488d8b9081046a87d6fde0831d28,
         type: 3}
       propertyPath: burstIntervalSeconds
-      value: 1.1
+      value: 0.85
       objectReference: {fileID: 0}
     - target: {fileID: 6323546293260792276, guid: e9ac488d8b9081046a87d6fde0831d28,
         type: 3}
@@ -18971,17 +18971,17 @@ PrefabInstance:
     - target: {fileID: 1544475302714836466, guid: e9ac488d8b9081046a87d6fde0831d28,
         type: 3}
       propertyPath: shotsPerBurst
-      value: 6
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 1544475302714836466, guid: e9ac488d8b9081046a87d6fde0831d28,
         type: 3}
       propertyPath: shotIntervalSeconds
-      value: 0.12
+      value: 0.075
       objectReference: {fileID: 0}
     - target: {fileID: 1544475302714836466, guid: e9ac488d8b9081046a87d6fde0831d28,
         type: 3}
       propertyPath: burstIntervalSeconds
-      value: 1.1
+      value: 0.85
       objectReference: {fileID: 0}
     - target: {fileID: 6323546293260792276, guid: e9ac488d8b9081046a87d6fde0831d28,
         type: 3}

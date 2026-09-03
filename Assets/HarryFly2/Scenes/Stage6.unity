@@ -11580,13 +11580,18 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1544475302714836466, guid: e9ac488d8b9081046a87d6fde0831d28,
         type: 3}
+      propertyPath: shotsPerBurst
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 1544475302714836466, guid: e9ac488d8b9081046a87d6fde0831d28,
+        type: 3}
       propertyPath: shotIntervalSeconds
-      value: 0.15
+      value: 0.09
       objectReference: {fileID: 0}
     - target: {fileID: 1544475302714836466, guid: e9ac488d8b9081046a87d6fde0831d28,
         type: 3}
       propertyPath: burstIntervalSeconds
-      value: 1.55
+      value: 1.15
       objectReference: {fileID: 0}
     - target: {fileID: 6323546293260792276, guid: e9ac488d8b9081046a87d6fde0831d28,
         type: 3}
@@ -11664,13 +11669,18 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1544475302714836466, guid: e9ac488d8b9081046a87d6fde0831d28,
         type: 3}
+      propertyPath: shotsPerBurst
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 1544475302714836466, guid: e9ac488d8b9081046a87d6fde0831d28,
+        type: 3}
       propertyPath: shotIntervalSeconds
-      value: 0.15
+      value: 0.09
       objectReference: {fileID: 0}
     - target: {fileID: 1544475302714836466, guid: e9ac488d8b9081046a87d6fde0831d28,
         type: 3}
       propertyPath: burstIntervalSeconds
-      value: 1.55
+      value: 1.15
       objectReference: {fileID: 0}
     - target: {fileID: 6323546293260792276, guid: e9ac488d8b9081046a87d6fde0831d28,
         type: 3}
@@ -15010,13 +15020,18 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1544475302714836466, guid: e9ac488d8b9081046a87d6fde0831d28,
         type: 3}
+      propertyPath: shotsPerBurst
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 1544475302714836466, guid: e9ac488d8b9081046a87d6fde0831d28,
+        type: 3}
       propertyPath: shotIntervalSeconds
-      value: 0.15
+      value: 0.09
       objectReference: {fileID: 0}
     - target: {fileID: 1544475302714836466, guid: e9ac488d8b9081046a87d6fde0831d28,
         type: 3}
       propertyPath: burstIntervalSeconds
-      value: 1.55
+      value: 1.15
       objectReference: {fileID: 0}
     - target: {fileID: 6323546293260792276, guid: e9ac488d8b9081046a87d6fde0831d28,
         type: 3}
