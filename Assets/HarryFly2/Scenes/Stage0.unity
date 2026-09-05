@@ -15279,6 +15279,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Canvas
       objectReference: {fileID: 0}
+    - target: {fileID: 4540283152252762295, guid: b807181cffb14ca4db2b4e9e143bfc3a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4775502524537712628, guid: b807181cffb14ca4db2b4e9e143bfc3a,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -15617,7 +15622,7 @@ SceneRoots:
   - {fileID: 1383451434}
   - {fileID: 1248699878}
   - {fileID: 129322189}
-  - {fileID: 637947365}
   - {fileID: 29602923}
+  - {fileID: 637947365}
   - {fileID: 118391854}
   - {fileID: 1126290133}

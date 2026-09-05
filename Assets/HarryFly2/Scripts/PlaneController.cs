@@ -223,10 +223,6 @@ public class PlaneController : MonoBehaviour
 	[Tooltip("ゴール音の音量")]
 	[SerializeField, Range(0f, 1f)] float goalVolume = 0.8f;
 
-	/// <summary>
-	/// 燃料が尽きたときの警告音。
-	/// ブーストが切れた理由が分からないと、操作不能になったように感じる
-	/// </summary>
 	[Tooltip("燃料が尽きたときの警告音")]
 	[SerializeField] AudioClip fuelEmptySound;
 
@@ -1394,44 +1390,5 @@ public class PlaneController : MonoBehaviour
 
 		// 暗転とシーン切り替えは爆発を見せてから
 		StartCoroutine(SwitchStageAfterExplosion());
-	}
-
-	void OnGUI()
-	{
-#if UNITY_EDITOR//Unityエディター上での処理
-
-		GUIStyle styleGreen = new GUIStyle();
-		styleGreen.fontSize = 30;
-		GUIStyleState styleStateGreen = new GUIStyleState();
-		styleStateGreen.textColor = Color.green;
-		styleGreen.normal = styleStateGreen;
-
-		GUIStyle styleRed = new GUIStyle();
-		styleRed.fontSize = 30;
-		GUIStyleState styleStateRed = new GUIStyleState();
-		styleStateRed.textColor = Color.red;
-		styleRed.normal = styleStateRed;
-
-		GUIStyle styleBlack = new GUIStyle();
-		styleBlack.fontSize = 30;
-		GUIStyleState styleStateBlack = new GUIStyleState();
-		styleStateBlack.textColor = Color.black;
-		styleBlack.normal = styleStateBlack;
-
-		GUIStyle styleYellow = new GUIStyle();
-		styleYellow.fontSize = 30;
-		GUIStyleState styleStateYellow = new GUIStyleState();
-		styleStateYellow.textColor = Color.yellow;
-		styleYellow.normal = styleStateYellow;
-
-		int lineHeight = 50;
-
-		float joystickHorizontal = ui.FloatingJoystick.Horizontal;
-		float joystickVertical = ui.FloatingJoystick.Vertical;
-		GUI.Box(new Rect(10, 0 * lineHeight, 100, 50), "inputHorizontal", styleRed);
-		GUI.Box(new Rect(350, 0 * lineHeight, 100, 50), joystickHorizontal.ToString(), styleRed);
-		GUI.Box(new Rect(10, 1 * lineHeight, 100, 50), "inputVertical", styleRed);
-		GUI.Box(new Rect(350, 1 * lineHeight, 100, 50), joystickVertical.ToString(), styleRed);
-#endif //終了  
 	}
 }

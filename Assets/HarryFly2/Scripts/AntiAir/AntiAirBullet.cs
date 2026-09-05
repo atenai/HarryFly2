@@ -3,12 +3,22 @@ using UnityEngine;
 /// <summary>
 /// 対空機関砲が撃つ弾。
 ///
-/// 当たりは Physics を使わず、このフレームで弾と機体が最も近づいた距離で取る。
+/// 当たりは Physics を使わず、この物理ステップで弾と機体が最も近づいた距離で取る。
 /// 砲は機体の進む向きと交差する向きへ撃つので、弾と機体は互いにすれ違う形になる。
-/// 弾だけを掃いて調べていると、機体側の移動ぶん（ブースト中は1フレームに25ユニット）が
+/// 弾だけを掃いて調べていると、機体側の移動ぶん（ブースト中は1ステップに30ユニット）が
 /// 抜け落ちて、弾の間をすり抜けてしまう。
-/// 両方の移動を同じ時刻で見比べれば、どれだけ速くても取りこぼさない
+/// 両方の移動を同じ時刻で見比べれば、どれだけ速くても取りこぼさない。
+///
+/// 「同じ時刻」を守れるのは物理の刻みの上だけなので、この弾は FixedUpdate で動かす。
+/// 機体は剛体で、動くのは物理ステップのときだけだからである
 /// </summary>
+///
+/// <remarks>
+/// 実行順を機体より後ろにしている。
+/// 機体は FixedUpdate で速度を入れ直し、壁際では位置も補正するので、
+/// 先に走ると1ステップ古い値で当たりを取ることになる
+/// </remarks>
+[DefaultExecutionOrder(100)]
 public class AntiAirBullet : MonoBehaviour
 {
 	[Tooltip("弾速（1秒あたりの移動量）。速すぎると曳光弾が視界を通り過ぎるだけになる")]
@@ -93,14 +103,20 @@ public class AntiAirBullet : MonoBehaviour
 		hasStopped = true;
 	}
 
-	void Update()
+	void FixedUpdate()
 	{
 		if (hasHit == true || hasStopped == true)
 		{
 			return;
 		}
 
-		elapsed = elapsed + Time.deltaTime;
+		// 機体は剛体なので、動くのは物理の刻み（0.02秒）だけ。
+		// 弾を描画の刻み（60fpsなら0.0167秒）で進めると、
+		// 弾と機体が別々の時計で動くことになり、
+		// 「同じ時刻で見比べる」というこの判定の前提そのものが崩れる
+		float step = Time.fixedDeltaTime;
+
+		elapsed = elapsed + step;
 		if (lifetimeSeconds <= elapsed)
 		{
 			Destroy(this.gameObject);
@@ -108,7 +124,7 @@ public class AntiAirBullet : MonoBehaviour
 		}
 
 		Vector3 from = this.transform.position;
-		Vector3 to = from + this.transform.forward * (speed * Time.deltaTime);
+		Vector3 to = from + this.transform.forward * (speed * step);
 
 		float distance = GetClosestDistanceToPlane(from, to);
 
@@ -124,7 +140,7 @@ public class AntiAirBullet : MonoBehaviour
 	}
 
 	/// <summary>
-	/// このフレームの間に弾と機体が最も近づいた距離を返す。
+	/// この物理ステップの間に弾と機体が最も近づいた距離を返す。
 	///
 	/// 弾は from から to へ、機体も同じ時間で動いている。
 	/// 両者の差を1本のベクトルとして見れば、最も近づく瞬間は
@@ -132,8 +148,8 @@ public class AntiAirBullet : MonoBehaviour
 	/// 弾と機体を別々の線分として見比べてはいけない。
 	/// それでは「弾が通った場所を、機体が別の時刻に通った」だけでも当たったことになってしまう
 	/// </summary>
-	/// <param name="from">このフレームの初めの弾の位置</param>
-	/// <param name="to">このフレームの終わりの弾の位置</param>
+	/// <param name="from">このステップの初めの弾の位置</param>
+	/// <param name="to">このステップの終わりの弾の位置</param>
 	float GetClosestDistanceToPlane(Vector3 from, Vector3 to)
 	{
 		if (FindPlane() == false)
@@ -141,9 +157,14 @@ public class AntiAirBullet : MonoBehaviour
 			return float.MaxValue;
 		}
 
-		// 機体がこのフレームで動いたぶん。剛体の速度から求める
-		Vector3 planeMove = cachedPlaneBody != null ? cachedPlaneBody.velocity * Time.deltaTime : Vector3.zero;
-		Vector3 planeFrom = cachedPlane.transform.position - planeMove;
+		// 機体がこのステップで動くぶん。
+		// 剛体には重力も抗力も掛かっておらず、機体側が毎ステップ velocity を直接入れているので、
+		// このあとの物理演算で機体はちょうどこのぶんだけ進む
+		Vector3 planeMove = cachedPlaneBody != null
+			? cachedPlaneBody.velocity * Time.fixedDeltaTime
+			: Vector3.zero;
+
+		Vector3 planeFrom = GetPlaneCenter();
 
 		Vector3 gap = from - planeFrom;
 		Vector3 gapChange = (to - from) - planeMove;
@@ -157,6 +178,32 @@ public class AntiAirBullet : MonoBehaviour
 		}
 
 		return (gap + gapChange * rate).magnitude;
+	}
+
+	/// <summary>
+	/// このステップの初めの、機体の当たり判定の中心。
+	///
+	/// 剛体の位置を使う。transform.position から機体の移動ぶんを引いて求めてはいけない。
+	/// 補間を切ってあるので transform は最後の物理ステップの位置で止まっており、
+	/// そこからさらに1描画フレームぶん引くと、実際より最大で1ステップ＋1フレーム後ろを指す。
+	/// ブースト中はそれが55ユニットにもなり、判定半径2.6の20倍ずれる。
+	/// 当たり判定が機体の後ろに張り付いて、機体を貫く弾が当たらなくなっていた。
+	///
+	/// 当たり判定の箱は機体の原点から少しずれた位置にあるので、その分も足す
+	/// </summary>
+	Vector3 GetPlaneCenter()
+	{
+		Vector3 origin = cachedPlaneBody != null
+			? cachedPlaneBody.position
+			: cachedPlane.transform.position;
+
+		if (cachedPlaneCollider == null)
+		{
+			return origin;
+		}
+
+		// 箱の中心は機体のローカル座標なので、機体の向きと大きさを通してから足す
+		return origin + cachedPlane.transform.TransformVector(cachedPlaneCollider.center);
 	}
 
 	/// <summary>
