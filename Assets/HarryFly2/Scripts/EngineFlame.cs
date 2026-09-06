@@ -103,7 +103,7 @@ public class EngineFlame : MonoBehaviour
 			return;
 		}
 
-		float target = plane.IsBoosting == true ? plane.BoostSpeedRatio : 0f;
+		float target = plane.IsBoosting == true ? plane.GetBoostSpeedRatio() : 0f;
 		currentRatio = Mathf.MoveTowards(currentRatio, target, followSpeed * Time.deltaTime);
 
 		float sizeMultiplier = Mathf.Lerp(1f, boostSizeMultiplier, currentRatio);

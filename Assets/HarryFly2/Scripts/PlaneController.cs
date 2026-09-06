@@ -300,17 +300,6 @@ public class PlaneController : MonoBehaviour
 	/// </summary>
 	public bool IsFlying => hasCrashed == false && hasGoaled == false;
 
-	void Start()
-	{
-		initForwordMoveSpeed = addForwordMoveSpeed;
-		initVerticalAndHorizontalMoveSpeed = addVerticalAndHorizontalMoveSpeed;
-		paticlePrefab.SetActive(false);
-		SetupAudioSources();
-		// 機体モデルの下へ付け替える前に、取り付け位置を控えておく
-		CacheAirframeEffects();
-		ChangePlaneModel();
-	}
-
 	/// <summary>
 	/// 機体に取り付けた演出（エンジンの炎・ブーストの噴射・軌跡）。
 	///
@@ -324,6 +313,55 @@ public class PlaneController : MonoBehaviour
 	/// <summary>演出のモデルから見た取り付け位置。付け替えても同じ場所に出るよう控えておく</summary>
 	readonly List<Vector3> airframeEffectPositions = new List<Vector3>();
 	readonly List<Quaternion> airframeEffectRotations = new List<Quaternion>();
+
+	/// <summary>ショップに並ぶ機体スロット数</summary>
+	public int ModelCount => planePrefabs.Length;
+
+	/// <summary>
+	/// 墜落の原因。爆発音の上に重ねる音を変えて、何に殺されたか聞き分けられるようにする
+	/// </summary>
+	public enum CrashCause
+	{
+		/// <summary>障害物への激突</summary>
+		Obstacle,
+		/// <summary>対空砲での被弾</summary>
+		ShotDown,
+	}
+
+	void Start()
+	{
+		initForwordMoveSpeed = addForwordMoveSpeed;
+		initVerticalAndHorizontalMoveSpeed = addVerticalAndHorizontalMoveSpeed;
+		paticlePrefab.SetActive(false);
+		SetupAudioSources();
+		// 機体モデルの下へ付け替える前に、取り付け位置を控えておく
+		CacheAirframeEffects();
+		ChangePlaneModel();
+	}
+
+	/// <summary>
+	/// 音の再生元を用意する。
+	///
+	/// インスペクタで付けるのではなくここで作る。機体のプレハブに AudioSource を
+	/// 並べておくと、用途を取り違えて設定される（ループの付け忘れなど）ため。
+	///
+	/// どちらも 2D で鳴らす。機体はカメラの2.5ユニット前に居るだけなので、
+	/// 距離減衰や定位を効かせても意味がなく、端末によって聞こえ方が変わるだけになる
+	/// </summary>
+	void SetupAudioSources()
+	{
+		pickupAudioSource = this.gameObject.AddComponent<AudioSource>();
+		pickupAudioSource.playOnAwake = false;
+		pickupAudioSource.spatialBlend = 0f;
+
+		boostAudioSource = this.gameObject.AddComponent<AudioSource>();
+		boostAudioSource.playOnAwake = false;
+		boostAudioSource.spatialBlend = 0f;
+		// 押し始めに PlayOneShot で鳴らすので、ループもクリップの割り当ても要らない。
+		// PlayOneShot の音量はここの音量に掛かるため、1 のままにしておくこと
+		boostAudioSource.loop = false;
+		boostAudioSource.volume = 1f;
+	}
 
 	/// <summary>
 	/// 機体の直下にある演出を控える。
@@ -364,68 +402,8 @@ public class PlaneController : MonoBehaviour
 	}
 
 	/// <summary>
-	/// 演出を、いま出ている機体モデルの下へ付け替える。
-	///
-	/// モデルは機体の原点を中心に傾くので、控えておいた位置と向きを
-	/// そのまま入れ直せば、傾いた状態でも取り付け位置は変わらない
+	/// ショップで選んだ機体モデルに切り替える。
 	/// </summary>
-	/// <param name="model">付け替え先のモデル</param>
-	void AttachEffectsToModel(Transform model)
-	{
-		for (int i = 0; i < airframeEffects.Count; i++)
-		{
-			Transform effect = airframeEffects[i];
-			if (effect == null || effect.parent == model)
-			{
-				// ショップを開いている間は毎フレーム呼ばれるので、
-				// 付け替え済みなら何もしない
-				continue;
-			}
-
-			effect.SetParent(model, false);
-			effect.localPosition = airframeEffectPositions[i];
-			effect.localRotation = airframeEffectRotations[i];
-		}
-	}
-
-	/// <summary>
-	/// 音の再生元を用意する。
-	///
-	/// インスペクタで付けるのではなくここで作る。機体のプレハブに AudioSource を
-	/// 並べておくと、用途を取り違えて設定される（ループの付け忘れなど）ため。
-	///
-	/// どちらも 2D で鳴らす。機体はカメラの2.5ユニット前に居るだけなので、
-	/// 距離減衰や定位を効かせても意味がなく、端末によって聞こえ方が変わるだけになる
-	/// </summary>
-	void SetupAudioSources()
-	{
-		pickupAudioSource = this.gameObject.AddComponent<AudioSource>();
-		pickupAudioSource.playOnAwake = false;
-		pickupAudioSource.spatialBlend = 0f;
-
-		boostAudioSource = this.gameObject.AddComponent<AudioSource>();
-		boostAudioSource.playOnAwake = false;
-		boostAudioSource.spatialBlend = 0f;
-		// 押し始めに PlayOneShot で鳴らすので、ループもクリップの割り当ても要らない。
-		// PlayOneShot の音量はここの音量に掛かるため、1 のままにしておくこと
-		boostAudioSource.loop = false;
-		boostAudioSource.volume = 1f;
-	}
-
-	/// <summary>
-	/// 指定番号の機体モデルが設定されているか。
-	/// ショップの枠は6個先に用意してあるので、モデル未設定のスロットを
-	/// 選ばせないための判定に使う
-	/// </summary>
-	/// <param name="index">機体スロット番号</param>
-	public bool HasModel(int index)
-	{
-		return 0 <= index && index < planePrefabs.Length && planePrefabs[index] != null;
-	}
-
-	/// <summary>ショップに並ぶ機体スロット数</summary>
-	public int ModelCount => planePrefabs.Length;
-
 	void ChangePlaneModel()
 	{
 		foreach (var model in planePrefabs)
@@ -455,6 +433,42 @@ public class PlaneController : MonoBehaviour
 	}
 
 	/// <summary>
+	/// 指定番号の機体モデルが設定されているか。
+	/// ショップの枠は6個先に用意してあるので、モデル未設定のスロットを
+	/// 選ばせないための判定に使う
+	/// </summary>
+	/// <param name="index">機体スロット番号</param>
+	public bool HasModel(int index)
+	{
+		return 0 <= index && index < planePrefabs.Length && planePrefabs[index] != null;
+	}
+
+	/// <summary>
+	/// 演出を、いま出ている機体モデルの下へ付け替える。
+	///
+	/// モデルは機体の原点を中心に傾くので、控えておいた位置と向きを
+	/// そのまま入れ直せば、傾いた状態でも取り付け位置は変わらない
+	/// </summary>
+	/// <param name="model">付け替え先のモデル</param>
+	void AttachEffectsToModel(Transform model)
+	{
+		for (int i = 0; i < airframeEffects.Count; i++)
+		{
+			Transform effect = airframeEffects[i];
+			if (effect == null || effect.parent == model)
+			{
+				// ショップを開いている間は毎フレーム呼ばれるので、
+				// 付け替え済みなら何もしない
+				continue;
+			}
+
+			effect.SetParent(model, false);
+			effect.localPosition = airframeEffectPositions[i];
+			effect.localRotation = airframeEffectRotations[i];
+		}
+	}
+
+	/// <summary>
 	/// 選んだ機体の性能を反映する。
 	/// ショップを開いている間は毎フレーム呼ばれるので、
 	/// 機体が変わったときだけ処理する（毎回燃料を満タンに戻してしまわないため）
@@ -479,6 +493,19 @@ public class PlaneController : MonoBehaviour
 		currentFuel = maxFuel;
 
 		ApplyColliderScale(spec.colliderScaleMultiplier);
+	}
+
+	/// <summary>
+	/// 機体の性能を取得する。未設定なら既定値（すべて等倍）を返す
+	/// </summary>
+	/// <param name="index">機体スロット番号</param>
+	public PlaneSpec GetPlaneSpec(int index)
+	{
+		if (planeSpecs != null && 0 <= index && index < planeSpecs.Length && planeSpecs[index] != null)
+		{
+			return planeSpecs[index];
+		}
+		return new PlaneSpec();
 	}
 
 	/// <summary>
@@ -514,33 +541,6 @@ public class PlaneController : MonoBehaviour
 			hasSearchedBoxCollider = true;
 		}
 		return cachedBoxCollider;
-	}
-
-	/// <summary>
-	/// 自分と同じステージの相手かどうか。
-	///
-	/// 次ステージは飛行中に裏で先読みしている。読み込み直後の1フレームは
-	/// 全ステージ共通のワールド座標のまま実体を持つので、そのままだと
-	/// 現ステージを飛んでいる機体が「次ステージの壁」に当たってしまう。
-	/// シーンが違う相手は当たり判定から外す
-	/// </summary>
-	/// <param name="other">判定する相手</param>
-	bool IsSameStage(GameObject other)
-	{
-		return other.scene == this.gameObject.scene;
-	}
-
-	/// <summary>
-	/// 機体の性能を取得する。未設定なら既定値（すべて等倍）を返す
-	/// </summary>
-	/// <param name="index">機体スロット番号</param>
-	public PlaneSpec GetPlaneSpec(int index)
-	{
-		if (planeSpecs != null && 0 <= index && index < planeSpecs.Length && planeSpecs[index] != null)
-		{
-			return planeSpecs[index];
-		}
-		return new PlaneSpec();
 	}
 
 	void Update()
@@ -686,6 +686,53 @@ public class PlaneController : MonoBehaviour
 		}
 	}
 
+	/// <summary>
+	/// 音量を指定して鳴らす。ゴールや燃料切れなど、取得音とは別の音量で出したいもの用
+	/// </summary>
+	/// <param name="clip">鳴らす音。未設定なら何もしない</param>
+	/// <param name="volume">音量</param>
+	void PlayPickupSound(AudioClip clip, float volume)
+	{
+		if (clip == null || pickupAudioSource == null)
+		{
+			return;
+		}
+
+		pickupAudioSource.PlayOneShot(clip, volume);
+	}
+
+	//自動前進スピードを徐々に変える
+	void ChangeForwordMoveSpeed(float value)
+	{
+		addForwordMoveSpeed = addForwordMoveSpeed + value;
+
+		if (initForwordMoveSpeed * 5 <= addForwordMoveSpeed)
+		{
+			addForwordMoveSpeed = initForwordMoveSpeed * 5;
+		}
+
+		if (addForwordMoveSpeed <= initForwordMoveSpeed)
+		{
+			addForwordMoveSpeed = initForwordMoveSpeed;
+		}
+	}
+
+	//上下左右の移動スピードを徐々に変える
+	void ChangeVerticalAndHorizontalMoveSpeed(float value)
+	{
+		addVerticalAndHorizontalMoveSpeed = addVerticalAndHorizontalMoveSpeed + value;
+
+		if (initVerticalAndHorizontalMoveSpeed * 2 <= addVerticalAndHorizontalMoveSpeed)
+		{
+			addVerticalAndHorizontalMoveSpeed = initVerticalAndHorizontalMoveSpeed * 2;
+		}
+
+		if (addVerticalAndHorizontalMoveSpeed <= initVerticalAndHorizontalMoveSpeed)
+		{
+			addVerticalAndHorizontalMoveSpeed = initVerticalAndHorizontalMoveSpeed;
+		}
+	}
+
 	void FixedUpdate()
 	{
 		// ゴール後・衝突後はキネマティックにして固定してある。
@@ -822,49 +869,63 @@ public class PlaneController : MonoBehaviour
 		CrashAndAdvanceStage();
 	}
 
-	//自動前進スピードを徐々に変える
-	void ChangeForwordMoveSpeed(float value)
+	/// <summary>
+	/// 自分と同じステージの相手かどうか。
+	///
+	/// 次ステージは飛行中に裏で先読みしている。読み込み直後の1フレームは
+	/// 全ステージ共通のワールド座標のまま実体を持つので、そのままだと
+	/// 現ステージを飛んでいる機体が「次ステージの壁」に当たってしまう。
+	/// シーンが違う相手は当たり判定から外す
+	/// </summary>
+	/// <param name="other">判定する相手</param>
+	bool IsSameStage(GameObject other)
 	{
-		addForwordMoveSpeed = addForwordMoveSpeed + value;
-
-		if (initForwordMoveSpeed * 5 <= addForwordMoveSpeed)
-		{
-			addForwordMoveSpeed = initForwordMoveSpeed * 5;
-		}
-
-		if (addForwordMoveSpeed <= initForwordMoveSpeed)
-		{
-			addForwordMoveSpeed = initForwordMoveSpeed;
-		}
+		return other.scene == this.gameObject.scene;
 	}
 
-	//上下左右の移動スピードを徐々に変える
-	void ChangeVerticalAndHorizontalMoveSpeed(float value)
+	void LateUpdate()
 	{
-		addVerticalAndHorizontalMoveSpeed = addVerticalAndHorizontalMoveSpeed + value;
-
-		if (initVerticalAndHorizontalMoveSpeed * 2 <= addVerticalAndHorizontalMoveSpeed)
-		{
-			addVerticalAndHorizontalMoveSpeed = initVerticalAndHorizontalMoveSpeed * 2;
-		}
-
-		if (addVerticalAndHorizontalMoveSpeed <= initVerticalAndHorizontalMoveSpeed)
-		{
-			addVerticalAndHorizontalMoveSpeed = initVerticalAndHorizontalMoveSpeed;
-		}
+		UpdateBoostSound();
 	}
 
 	/// <summary>
-	/// 燃料の追加
+	/// ブースト音の再生・停止・音の高さを更新する。
+	///
+	/// LateUpdate から毎フレーム呼ぶ。Update は「ゴール後」「衝突後」「ショップ表示中」で
+	/// 途中 return するので、そちらに書くと噴射音が鳴りっぱなしで残ってしまう。
+	/// ブーストの炎と軌跡が同じ理由で消し忘れていた経緯があるため、
+	/// ここは必ず通る場所に置いている。
+	///
+	/// 鳴らし始め／止めるのは Play()/Stop() ではなく音量で行う。
+	/// 加速ボタンは連打されるので、そのたびに Play() し直すと頭出しが繰り返されて
+	/// ブツブツと途切れて聞こえる
 	/// </summary>
-	/// <param name="value">追加量</param>
-	void AddFuel(float value)
+	void UpdateBoostSound()
 	{
-		currentFuel = currentFuel + value;
-		if (maxFuel <= currentFuel)
+		if (boostAudioSource == null || boostStartSound == null)
 		{
-			currentFuel = maxFuel;
+			return;
 		}
+
+		// 押し始めた瞬間だけ鳴らす。
+		// 押している間ずっと鳴らすと、どんな素材でも同じ音の繰り返しになって耳につく
+		bool hasStartedBoosting = isBoosting == true && wasBoosting == false;
+		wasBoosting = isBoosting;
+
+		if (hasStartedBoosting == false)
+		{
+			return;
+		}
+
+		// 連打されても間隔を空ける。重ねて鳴らすと音が潰れるうえに音量も膨らむ
+		if (Time.time < nextBoostSoundTime)
+		{
+			return;
+		}
+		nextBoostSoundTime = Time.time + boostSoundIntervalSeconds;
+
+		boostAudioSource.pitch = 1f + Random.Range(-boostPitchVariation, boostPitchVariation);
+		boostAudioSource.PlayOneShot(boostStartSound, boostVolume);
 	}
 
 	void OnTriggerEnter(Collider collider)
@@ -939,6 +1000,20 @@ public class PlaneController : MonoBehaviour
 		}
 	}
 
+	void SpawnPickupEffect(GameObject prefab, float scale)
+	{
+		if (prefab == null)
+		{
+			return;
+		}
+
+		GameObject effect = Instantiate(prefab, this.transform);
+		effect.transform.localPosition = pickupEffectOffset;
+		effect.transform.localRotation = Quaternion.identity;
+		effect.transform.localScale = Vector3.one * scale;
+		Destroy(effect, Pickup_Effect_Lifetime_Seconds);
+	}
+
 	/// <summary>
 	/// アイテムを取ったことを知らせるエフェクトを、機体の定位置に出す。
 	///
@@ -963,69 +1038,16 @@ public class PlaneController : MonoBehaviour
 	}
 
 	/// <summary>
-	/// 弾がかすめたときの音を鳴らす。
-	///
-	/// 弾の側ではなく機体の側で鳴らす。弾は当たった瞬間に Destroy されるうえ、
-	/// 寿命でも消えるので、向こうに AudioSource を持たせると鳴っている途中で切れる
+	/// 燃料の追加
 	/// </summary>
-	public void PlayNearMissSound()
+	/// <param name="value">追加量</param>
+	void AddFuel(float value)
 	{
-		PlayPickupSound(nearMissSound, nearMissVolume);
-	}
-
-	/// <summary>
-	/// 音量を指定して鳴らす。ゴールや燃料切れなど、取得音とは別の音量で出したいもの用
-	/// </summary>
-	/// <param name="clip">鳴らす音。未設定なら何もしない</param>
-	/// <param name="volume">音量</param>
-	void PlayPickupSound(AudioClip clip, float volume)
-	{
-		if (clip == null || pickupAudioSource == null)
+		currentFuel = currentFuel + value;
+		if (maxFuel <= currentFuel)
 		{
-			return;
+			currentFuel = maxFuel;
 		}
-
-		pickupAudioSource.PlayOneShot(clip, volume);
-	}
-
-	/// <summary>
-	/// ブースト音の再生・停止・音の高さを更新する。
-	///
-	/// LateUpdate から毎フレーム呼ぶ。Update は「ゴール後」「衝突後」「ショップ表示中」で
-	/// 途中 return するので、そちらに書くと噴射音が鳴りっぱなしで残ってしまう。
-	/// ブーストの炎と軌跡が同じ理由で消し忘れていた経緯があるため、
-	/// ここは必ず通る場所に置いている。
-	///
-	/// 鳴らし始め／止めるのは Play()/Stop() ではなく音量で行う。
-	/// 加速ボタンは連打されるので、そのたびに Play() し直すと頭出しが繰り返されて
-	/// ブツブツと途切れて聞こえる
-	/// </summary>
-	void UpdateBoostSound()
-	{
-		if (boostAudioSource == null || boostStartSound == null)
-		{
-			return;
-		}
-
-		// 押し始めた瞬間だけ鳴らす。
-		// 押している間ずっと鳴らすと、どんな素材でも同じ音の繰り返しになって耳につく
-		bool hasStartedBoosting = isBoosting == true && wasBoosting == false;
-		wasBoosting = isBoosting;
-
-		if (hasStartedBoosting == false)
-		{
-			return;
-		}
-
-		// 連打されても間隔を空ける。重ねて鳴らすと音が潰れるうえに音量も膨らむ
-		if (Time.time < nextBoostSoundTime)
-		{
-			return;
-		}
-		nextBoostSoundTime = Time.time + boostSoundIntervalSeconds;
-
-		boostAudioSource.pitch = 1f + Random.Range(-boostPitchVariation, boostPitchVariation);
-		boostAudioSource.PlayOneShot(boostStartSound, boostVolume);
 	}
 
 	/// <summary>
@@ -1051,43 +1073,6 @@ public class PlaneController : MonoBehaviour
 	}
 
 	/// <summary>
-	/// いまの前進速度が、通常速度から最高速までのどのあたりか（0〜1）。
-	/// 噴射炎など、外の演出から加速具合を参照するために公開する
-	/// </summary>
-	public float BoostSpeedRatio => GetBoostSpeedRatio();
-
-	float GetBoostSpeedRatio()
-	{
-		// 加速の上限は ChangeForwordMoveSpeed() と同じく初期値の5倍
-		float span = initForwordMoveSpeed * 5f - initForwordMoveSpeed;
-		if (span <= 0f)
-		{
-			return 0f;
-		}
-
-		return Mathf.Clamp01((addForwordMoveSpeed - initForwordMoveSpeed) / span);
-	}
-
-	void LateUpdate()
-	{
-		UpdateBoostSound();
-	}
-
-	void SpawnPickupEffect(GameObject prefab, float scale)
-	{
-		if (prefab == null)
-		{
-			return;
-		}
-
-		GameObject effect = Instantiate(prefab, this.transform);
-		effect.transform.localPosition = pickupEffectOffset;
-		effect.transform.localRotation = Quaternion.identity;
-		effect.transform.localScale = Vector3.one * scale;
-		Destroy(effect, Pickup_Effect_Lifetime_Seconds);
-	}
-
-	/// <summary>
 	/// 機体を完全に止める。
 	/// 速度を0にするだけでは足りない。ゴール枠や建物に接触した状態だと、
 	/// 物理側のめり込み解消で機体が押し出され続け、カメラの外まで飛んでいってしまう。
@@ -1098,180 +1083,6 @@ public class PlaneController : MonoBehaviour
 		rb.velocity = Vector3.zero;
 		rb.angularVelocity = Vector3.zero;
 		rb.isKinematic = true;
-	}
-
-	/// <summary>
-	/// 通信が切れたときに機体を止めて、画面から消す。
-	///
-	/// 見た目は HidePlaneModel では足りない。あれが消すのは機体モデルだけで、
-	/// 常時点いているエンジンの炎とブーストの軌跡が残ってしまう。
-	/// 何を描いているかを個別に数えるより、配下の描画をまとめて止めるほうが取りこぼさない。
-	///
-	/// 止めたあとは操作も当たり判定も起きないので、
-	/// この後に時計アイテムを拾って復帰することはない
-	/// </summary>
-	public void StopForSignalLost()
-	{
-		isBoosting = false;
-		StopBoostSoundImmediately();
-		FreezePlane();
-
-		Renderer[] renderers = GetComponentsInChildren<Renderer>(true);
-		for (int i = 0; i < renderers.Length; i++)
-		{
-			renderers[i].enabled = false;
-		}
-	}
-
-	/// <summary>
-	/// 機体の見た目を消す。爆発したのに機体がそのまま浮いていると違和感が出る
-	/// </summary>
-	void HidePlaneModel()
-	{
-		for (int i = 0; i < planePrefabs.Length; i++)
-		{
-			if (planePrefabs[i] != null)
-			{
-				planePrefabs[i].SetActive(false);
-			}
-		}
-	}
-
-	/// <summary>
-	/// 指定した位置に爆発を出す
-	/// </summary>
-	/// <param name="position">爆発を出す位置</param>
-	void SpawnExplosion(Vector3 position)
-	{
-		if (explosionPrefab == null)
-		{
-			return;
-		}
-
-		GameObject explosion = Instantiate(explosionPrefab, position, Quaternion.identity);
-		explosion.transform.localScale = Vector3.one * explosionScale;
-		Destroy(explosion, Explosion_Lifetime_Seconds);
-
-		SpawnShockwave(position);
-	}
-
-	/// <summary>
-	/// 衝突地点に衝撃波のリングを出す。
-	///
-	/// リングはカメラの方を向かせる。板ポリなので、真横から見ると線にしか見えない。
-	/// 衝突地点はカメラのすぐ前なので、向きを合わせないと衝撃波として認識できない
-	/// </summary>
-	/// <param name="position">出す位置</param>
-	void SpawnShockwave(Vector3 position)
-	{
-		if (shockwavePrefab == null)
-		{
-			return;
-		}
-
-		Quaternion rotation = Quaternion.identity;
-		Camera camera = Camera.main;
-		if (camera != null)
-		{
-			rotation = Quaternion.LookRotation(position - camera.transform.position);
-		}
-
-		GameObject shockwave = Instantiate(shockwavePrefab, position, rotation);
-		shockwave.transform.localScale = Vector3.one * shockwaveScale;
-		Destroy(shockwave, Explosion_Lifetime_Seconds);
-	}
-
-	/// <summary>
-	/// 機体を接触した地点まで戻す。
-	///
-	/// 機体は毎秒300ユニット進むので、衝突を検知した時点では1物理ステップぶん
-	/// （約6ユニット）建物にめり込んだ先まで進んでいる。そのまま止めると、
-	/// 機体の2.5ユニット後ろにいるカメラが接触点を追い越してしまい、
-	/// 爆発が建物の中や画面の外に出てしまう。
-	/// 接触点まで戻してから止めることで、機体の位置に出す爆発がカメラの正面に来る
-	/// </summary>
-	/// <param name="collision">衝突情報</param>
-	void MoveBackToImpactPoint(Collision collision)
-	{
-		if (collision.contactCount <= 0)
-		{
-			return;
-		}
-
-		Vector3 impactPoint = collision.GetContact(0).point;
-		this.transform.position = impactPoint;
-		rb.position = impactPoint;
-	}
-
-	/// <summary>
-	/// 爆発音を鳴らす。
-	/// 1秒後にステージが切り替わると、このシーンにある音源は破棄されて音が途中で切れる。
-	/// シーンに属さない一時オブジェクトから鳴らすことで、暗転をまたいで最後まで聞こえるようにする
-	/// </summary>
-	/// <summary>
-	/// 墜落の原因ごとの音を、爆発音の直前に重ねる。
-	///
-	/// 爆発音と同じく、シーンをまたいで生き残る入れ物で鳴らす。
-	/// この直後に FreezePlane と HidePlaneModel が走り、
-	/// 機体モデルは SetActive(false) になるため、
-	/// モデル配下の AudioSource で鳴らすと即座に無音になってしまう
-	/// </summary>
-	/// <param name="cause">墜落の原因</param>
-	void PlayCrashCauseSound(CrashCause cause)
-	{
-		AudioClip clip = cause == CrashCause.ShotDown ? shotDownSound : obstacleImpactSound;
-		if (clip == null)
-		{
-			return;
-		}
-
-		GameObject soundObject = new GameObject("CrashCauseSound");
-		DontDestroyOnLoad(soundObject);
-
-		AudioSource source = soundObject.AddComponent<AudioSource>();
-		source.clip = clip;
-		source.volume = crashCauseVolume;
-		source.spatialBlend = 0f;
-		source.Play();
-
-		Destroy(soundObject, clip.length + 0.1f);
-	}
-
-	void PlayExplosionSound()
-	{
-		if (explosionSound == null)
-		{
-			return;
-		}
-
-		GameObject soundObject = new GameObject("ExplosionSound");
-		DontDestroyOnLoad(soundObject);
-
-		AudioSource source = soundObject.AddComponent<AudioSource>();
-		source.clip = explosionSound;
-		source.volume = explosionVolume;
-		// 衝突地点はカメラのすぐ前なので、距離減衰を掛けずに2Dで鳴らす
-		source.spatialBlend = 0f;
-		source.Play();
-
-		Destroy(soundObject, explosionSound.length + 0.1f);
-	}
-
-	/// <summary>
-	/// 爆発を見せてから次のステージへ切り替える。
-	/// 衝突と同時に切り替えると、暗転が入って爆発が1フレームも見えない
-	/// </summary>
-	IEnumerator SwitchStageAfterExplosion()
-	{
-		yield return new WaitForSeconds(explosionViewSeconds);
-
-		if (AdsManager.SingletonInstance != null)
-		{
-			AdsManager.SingletonInstance.ShowAdsInterstitialCount();
-		}
-
-		ui.FadeIn();
-		StageManager.SingletonInstance.IsTriggered = true;
 	}
 
 	/// <summary>
@@ -1323,6 +1134,28 @@ public class PlaneController : MonoBehaviour
 	}
 
 	/// <summary>
+	/// 機体を接触した地点まで戻す。
+	///
+	/// 機体は毎秒300ユニット進むので、衝突を検知した時点では1物理ステップぶん
+	/// （約6ユニット）建物にめり込んだ先まで進んでいる。そのまま止めると、
+	/// 機体の2.5ユニット後ろにいるカメラが接触点を追い越してしまい、
+	/// 爆発が建物の中や画面の外に出てしまう。
+	/// 接触点まで戻してから止めることで、機体の位置に出す爆発がカメラの正面に来る
+	/// </summary>
+	/// <param name="collision">衝突情報</param>
+	void MoveBackToImpactPoint(Collision collision)
+	{
+		if (collision.contactCount <= 0)
+		{
+			return;
+		}
+
+		Vector3 impactPoint = collision.GetContact(0).point;
+		this.transform.position = impactPoint;
+		rb.position = impactPoint;
+	}
+
+	/// <summary>
 	/// 撃墜・衝突でステージを終わらせる。
 	/// 爆発を見せてから次のステージへ切り替える。
 	/// 障害物への衝突と対空砲の被弾で、同じ演出と流れを使う。
@@ -1334,17 +1167,6 @@ public class PlaneController : MonoBehaviour
 	public void CrashAndAdvanceStage()
 	{
 		CrashAndAdvanceStage(CrashCause.Obstacle);
-	}
-
-	/// <summary>
-	/// 墜落の原因。爆発音の上に重ねる音を変えて、何に殺されたか聞き分けられるようにする
-	/// </summary>
-	public enum CrashCause
-	{
-		/// <summary>障害物への激突</summary>
-		Obstacle,
-		/// <summary>対空砲での被弾</summary>
-		ShotDown,
 	}
 
 	/// <summary>
@@ -1390,5 +1212,189 @@ public class PlaneController : MonoBehaviour
 
 		// 暗転とシーン切り替えは爆発を見せてから
 		StartCoroutine(SwitchStageAfterExplosion());
+	}
+
+	/// <summary>
+	/// 指定した位置に爆発を出す
+	/// </summary>
+	/// <param name="position">爆発を出す位置</param>
+	void SpawnExplosion(Vector3 position)
+	{
+		if (explosionPrefab == null)
+		{
+			return;
+		}
+
+		GameObject explosion = Instantiate(explosionPrefab, position, Quaternion.identity);
+		explosion.transform.localScale = Vector3.one * explosionScale;
+		Destroy(explosion, Explosion_Lifetime_Seconds);
+
+		SpawnShockwave(position);
+	}
+
+	/// <summary>
+	/// 衝突地点に衝撃波のリングを出す。
+	///
+	/// リングはカメラの方を向かせる。板ポリなので、真横から見ると線にしか見えない。
+	/// 衝突地点はカメラのすぐ前なので、向きを合わせないと衝撃波として認識できない
+	/// </summary>
+	/// <param name="position">出す位置</param>
+	void SpawnShockwave(Vector3 position)
+	{
+		if (shockwavePrefab == null)
+		{
+			return;
+		}
+
+		Quaternion rotation = Quaternion.identity;
+		Camera camera = Camera.main;
+		if (camera != null)
+		{
+			rotation = Quaternion.LookRotation(position - camera.transform.position);
+		}
+
+		GameObject shockwave = Instantiate(shockwavePrefab, position, rotation);
+		shockwave.transform.localScale = Vector3.one * shockwaveScale;
+		Destroy(shockwave, Explosion_Lifetime_Seconds);
+	}
+
+	/// <summary>
+	/// 爆発音を鳴らす。
+	/// 1秒後にステージが切り替わると、このシーンにある音源は破棄されて音が途中で切れる。
+	/// シーンに属さない一時オブジェクトから鳴らすことで、暗転をまたいで最後まで聞こえるようにする
+	/// </summary>
+	/// <summary>
+	/// 墜落の原因ごとの音を、爆発音の直前に重ねる。
+	///
+	/// 爆発音と同じく、シーンをまたいで生き残る入れ物で鳴らす。
+	/// この直後に FreezePlane と HidePlaneModel が走り、
+	/// 機体モデルは SetActive(false) になるため、
+	/// モデル配下の AudioSource で鳴らすと即座に無音になってしまう
+	/// </summary>
+	/// <param name="cause">墜落の原因</param>
+	void PlayCrashCauseSound(CrashCause cause)
+	{
+		AudioClip clip = cause == CrashCause.ShotDown ? shotDownSound : obstacleImpactSound;
+		if (clip == null)
+		{
+			return;
+		}
+
+		GameObject soundObject = new GameObject("CrashCauseSound");
+		DontDestroyOnLoad(soundObject);
+
+		AudioSource source = soundObject.AddComponent<AudioSource>();
+		source.clip = clip;
+		source.volume = crashCauseVolume;
+		source.spatialBlend = 0f;
+		source.Play();
+
+		Destroy(soundObject, clip.length + 0.1f);
+	}
+
+
+	void PlayExplosionSound()
+	{
+		if (explosionSound == null)
+		{
+			return;
+		}
+
+		GameObject soundObject = new GameObject("ExplosionSound");
+		DontDestroyOnLoad(soundObject);
+
+		AudioSource source = soundObject.AddComponent<AudioSource>();
+		source.clip = explosionSound;
+		source.volume = explosionVolume;
+		// 衝突地点はカメラのすぐ前なので、距離減衰を掛けずに2Dで鳴らす
+		source.spatialBlend = 0f;
+		source.Play();
+
+		Destroy(soundObject, explosionSound.length + 0.1f);
+	}
+
+
+	/// <summary>
+	/// 機体の見た目を消す。爆発したのに機体がそのまま浮いていると違和感が出る
+	/// </summary>
+	void HidePlaneModel()
+	{
+		for (int i = 0; i < planePrefabs.Length; i++)
+		{
+			if (planePrefabs[i] != null)
+			{
+				planePrefabs[i].SetActive(false);
+			}
+		}
+	}
+
+	/// <summary>
+	/// 爆発を見せてから次のステージへ切り替える。
+	/// 衝突と同時に切り替えると、暗転が入って爆発が1フレームも見えない
+	/// </summary>
+	IEnumerator SwitchStageAfterExplosion()
+	{
+		yield return new WaitForSeconds(explosionViewSeconds);
+
+		if (AdsManager.SingletonInstance != null)
+		{
+			AdsManager.SingletonInstance.ShowAdsInterstitialCount();
+		}
+
+		ui.FadeIn();
+		StageManager.SingletonInstance.IsTriggered = true;
+	}
+
+
+	//===外部から参照される公開メソッド===//
+
+	/// <summary>
+	/// 弾がかすめたときの音を鳴らす。
+	///
+	/// 弾の側ではなく機体の側で鳴らす。弾は当たった瞬間に Destroy されるうえ、
+	/// 寿命でも消えるので、向こうに AudioSource を持たせると鳴っている途中で切れる
+	/// </summary>
+	public void PlayNearMissSound()
+	{
+		PlayPickupSound(nearMissSound, nearMissVolume);
+	}
+
+	/// <summary>
+	/// いまの前進速度が、通常速度から最高速までのどのあたりか（0〜1）。
+	/// 噴射炎など、外の演出から加速具合を参照するために公開する
+	/// </summary>
+	public float GetBoostSpeedRatio()
+	{
+		// 加速の上限は ChangeForwordMoveSpeed() と同じく初期値の5倍
+		float span = initForwordMoveSpeed * 5f - initForwordMoveSpeed;
+		if (span <= 0f)
+		{
+			return 0f;
+		}
+
+		return Mathf.Clamp01((addForwordMoveSpeed - initForwordMoveSpeed) / span);
+	}
+
+	/// <summary>
+	/// 通信が切れたときに機体を止めて、画面から消す。
+	///
+	/// 見た目は HidePlaneModel では足りない。あれが消すのは機体モデルだけで、
+	/// 常時点いているエンジンの炎とブーストの軌跡が残ってしまう。
+	/// 何を描いているかを個別に数えるより、配下の描画をまとめて止めるほうが取りこぼさない。
+	///
+	/// 止めたあとは操作も当たり判定も起きないので、
+	/// この後に時計アイテムを拾って復帰することはない
+	/// </summary>
+	public void StopForSignalLost()
+	{
+		isBoosting = false;
+		StopBoostSoundImmediately();
+		FreezePlane();
+
+		Renderer[] renderers = GetComponentsInChildren<Renderer>(true);
+		for (int i = 0; i < renderers.Length; i++)
+		{
+			renderers[i].enabled = false;
+		}
 	}
 }
